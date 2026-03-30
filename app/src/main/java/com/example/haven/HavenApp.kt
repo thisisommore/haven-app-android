@@ -189,21 +189,16 @@ internal fun HavenApp() {
             )
         }
 
-        Route.home -> Page(
-            title = "Chats",
-            actions = {
-                TextButton(onClick = { route = Route.codenameGenerator }) { Text("Names") }
-                TextButton(onClick = { route = Route.logViewer }) { Text("Logs") }
-            }
-        ) { p ->
-            HomePage(
-                modifier = Modifier.padding(p),
+        Route.home -> {
+            HomeScreen(
                 viewModel = homeViewModel,
                 onOpenChat = { id -> 
                     chatId = id
                     chatViewModel.loadChat(id)
                     route = Route.chat 
-                }
+                },
+                onNewChat = { /* TODO: implement new chat */ },
+                modifier = Modifier.fillMaxSize()
             )
         }
 
