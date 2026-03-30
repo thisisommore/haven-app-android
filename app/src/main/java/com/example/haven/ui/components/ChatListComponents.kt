@@ -1,11 +1,8 @@
 package com.example.haven.ui.components
 
-
 import androidx.compose.foundation.layout.Arrangement
-
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,23 +10,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-
-
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.CardDefaults
-
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.Modifier
-
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -44,78 +36,55 @@ fun ChatListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+    ListItem(
+        headlineContent = {
+            Text(
+                text = chat.title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = if (chat.unreadCount > 0) FontWeight.SemiBold else FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        supportingContent = {
+            Text(
+                text = stripHtml(chat.preview),
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (chat.unreadCount > 0) {
+                    MaterialTheme.colorScheme.onSurface
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        trailingContent = {
             Column(
-                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                if (chat.timestamp > 0) {
                     Text(
-                        text = chat.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
-                    )
-                    
-                    if (chat.timestamp > 0) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = formatChatTime(chat.timestamp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = if (chat.unreadCount > 0) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            }
-                        )
-                    }
-                }
-                
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stripHtml(chat.preview),
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = formatChatTime(chat.timestamp),
+                        style = MaterialTheme.typography.labelSmall,
                         color = if (chat.unreadCount > 0) {
-                            MaterialTheme.colorScheme.onSurface
+                            MaterialTheme.colorScheme.primary
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
+                        }
                     )
-                    
-                    if (chat.unreadCount > 0) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        UnreadBadge(count = chat.unreadCount)
-                    }
+                }
+                if (chat.unreadCount > 0) {
+                    UnreadBadge(count = chat.unreadCount)
                 }
             }
-        }
-    }
+        },
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        modifier = modifier.fillMaxWidth().clickable(onClick = onClick)
+    )
 }
 
 @Composable
@@ -123,7 +92,7 @@ fun UnreadBadge(count: Int, modifier: Modifier = Modifier) {
     Surface(
         shape = CircleShape,
         color = MaterialTheme.colorScheme.primary,
-        modifier = modifier.defaultMinSize(minWidth = 24.dp, minHeight = 24.dp)
+        modifier = modifier
     ) {
         Box(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -194,5 +163,3 @@ private fun formatChatTime(timestamp: Long): String {
         else -> SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(date)
     }
 }
-
-
