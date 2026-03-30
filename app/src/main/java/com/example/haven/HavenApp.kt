@@ -216,6 +216,7 @@ internal fun HavenApp() {
                 onInputChange = { chatViewModel.onInputChange(it) },
                 onSendClick = { chatViewModel.sendMessage() },
                 onReplyClick = { /* TODO: implement reply */ },
+                onBackClick = { route = Route.home },
                 modifier = Modifier.fillMaxSize()
             )
         }
