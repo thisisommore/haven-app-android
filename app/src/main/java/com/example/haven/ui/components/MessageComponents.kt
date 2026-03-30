@@ -1,9 +1,9 @@
 package com.example.haven.ui.components
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
+
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.CircleShape
+
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -30,7 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -67,14 +67,6 @@ fun MessageBubble(
             .padding(vertical = 2.dp),
         horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start
     ) {
-        if (!isMe) {
-            AvatarPlaceholder(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .align(Alignment.Bottom)
-            )
-        }
-
         Card(
             shape = bubbleShape,
             colors = CardDefaults.cardColors(containerColor = backgroundColor, contentColor = contentColor),
@@ -131,23 +123,6 @@ private fun MessageFooter(
             Spacer(modifier = Modifier.width(4.dp))
             MessageStatusIcon(status = message.getMessageStatus(), tint = contentColor.copy(alpha = 0.7f))
         }
-    }
-}
-
-@Composable
-fun AvatarPlaceholder(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .size(32.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primaryContainer),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "?",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
     }
 }
 
