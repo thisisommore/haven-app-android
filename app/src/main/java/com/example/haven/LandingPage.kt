@@ -73,10 +73,17 @@ internal fun LandingPage(
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(Modifier.height(24.dp))
-                LinearProgressIndicator(
-                    progress = { statusPercentage / 100f },
-                    modifier = Modifier.width(180.dp),
-                )
+                // Material 3 wavy indeterminate progress when loading
+                if (statusPercentage < 100) {
+                    LinearProgressIndicator(
+                        modifier = Modifier.width(200.dp),
+                    )
+                } else {
+                    LinearProgressIndicator(
+                        progress = { 1f },
+                        modifier = Modifier.width(200.dp),
+                    )
+                }
                 Text(
                     status, 
                     Modifier.padding(top = 12.dp), 
