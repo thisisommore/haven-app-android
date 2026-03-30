@@ -16,11 +16,11 @@ import androidx.compose.foundation.layout.wrapContentWidth
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
+
+
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Create
+
+
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -36,7 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.haven.data.db.ChatMessageEntity
-import com.example.haven.data.db.MessageStatus
+
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -91,19 +91,7 @@ fun MessageBubble(
             }
         }
 
-        if (isMe) {
-            Spacer(modifier = Modifier.width(8.dp))
-            IconButton(
-                onClick = onReplyClick,
-                modifier = Modifier.size(32.dp).align(Alignment.Bottom)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Reply",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                )
-            }
-        }
+
     }
 }
 
@@ -125,10 +113,7 @@ private fun MessageFooter(
             color = contentColor.copy(alpha = 0.7f)
         )
 
-        if (isMe) {
-            Spacer(modifier = Modifier.width(4.dp))
-            MessageStatusIcon(status = message.getMessageStatus(), tint = contentColor.copy(alpha = 0.7f))
-        }
+
     }
 }
 
@@ -143,13 +128,8 @@ fun ReplyIndicator(replyToId: String, isMe: Boolean, modifier: Modifier = Modifi
             modifier = Modifier.padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier.size(14.dp),
-                tint = if (isMe) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f) else MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.width(4.dp))
+            // Reply icon removed
+            
             Text(
                 text = "Reply to message",
                 style = MaterialTheme.typography.labelSmall,
@@ -174,11 +154,7 @@ fun ReplyPreview(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
+            // Reply icon removed
             Spacer(modifier = Modifier.width(8.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -203,23 +179,6 @@ fun ReplyPreview(
             }
         }
     }
-}
-
-@Composable
-private fun MessageStatusIcon(status: MessageStatus, tint: Color, modifier: Modifier = Modifier) {
-    val icon = when (status) {
-        MessageStatus.SENT -> Icons.Default.Check
-        MessageStatus.DELIVERED -> Icons.Default.Check
-        MessageStatus.FAILED -> Icons.Default.Delete
-        else -> Icons.Default.Create
-    }
-
-    Icon(
-        imageVector = icon,
-        contentDescription = status.name,
-        modifier = modifier.size(14.dp),
-        tint = if (status == MessageStatus.FAILED) MaterialTheme.colorScheme.error else tint
-    )
 }
 
 private fun formatTime(date: java.util.Date): String {
