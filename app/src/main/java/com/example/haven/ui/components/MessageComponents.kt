@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -71,10 +72,11 @@ fun MessageBubble(
             shape = bubbleShape,
             colors = CardDefaults.cardColors(containerColor = backgroundColor, contentColor = contentColor),
             modifier = Modifier
-                .widthIn(max = 320.dp)
+                .widthIn(max = 280.dp)
+                .wrapContentWidth()
                 .animateContentSize()
         ) {
-            Column(modifier = Modifier.padding(12.dp)) {
+            Column(modifier = Modifier.padding(12.dp).wrapContentWidth()) {
                 if (message.replyTo != null) {
                     ReplyIndicator(replyToId = message.replyTo, isMe = isMe, modifier = Modifier.padding(bottom = 8.dp))
                 }
@@ -113,7 +115,7 @@ private fun MessageFooter(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -135,7 +137,7 @@ fun ReplyIndicator(replyToId: String, isMe: Boolean, modifier: Modifier = Modifi
     Surface(
         color = if (isMe) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
         shape = RoundedCornerShape(8.dp),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         Row(
             modifier = Modifier.padding(8.dp),
