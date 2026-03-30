@@ -1,10 +1,11 @@
 package com.example.haven.ui.components
 
-import androidx.compose.foundation.background
+
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,19 +13,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Person
+
+
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.CardDefaults
+
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -55,8 +59,6 @@ fun ChatListItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ChatAvatar(title = chat.title, modifier = Modifier.padding(end = 16.dp))
-            
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -112,45 +114,6 @@ fun ChatListItem(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun ChatAvatar(
-    title: String,
-    modifier: Modifier = Modifier
-) {
-    val isChannel = title.contains("Channel", ignoreCase = true) || 
-                    title.contains("#", ignoreCase = true)
-    
-    Box(
-        modifier = modifier
-            .size(52.dp)
-            .clip(CircleShape)
-            .background(
-                if (isChannel) {
-                    MaterialTheme.colorScheme.tertiaryContainer
-                } else {
-                    MaterialTheme.colorScheme.primaryContainer
-                }
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        if (isChannel) {
-            Icon(
-                imageVector = Icons.Default.Email,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                modifier = Modifier.size(24.dp)
-            )
-        } else {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(24.dp)
-            )
         }
     }
 }
