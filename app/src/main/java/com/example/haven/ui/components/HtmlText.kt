@@ -30,7 +30,7 @@ fun HtmlText(
             textView.text = HtmlCompat.fromHtml(
                 html,
                 HtmlCompat.FROM_HTML_MODE_COMPACT
-            )
+            ).toString().trim()
         }
     )
 }
