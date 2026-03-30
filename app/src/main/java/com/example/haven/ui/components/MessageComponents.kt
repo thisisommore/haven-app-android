@@ -79,7 +79,11 @@ fun MessageBubble(
                     ReplyIndicator(replyToId = message.replyTo, isMe = isMe, modifier = Modifier.padding(bottom = 8.dp))
                 }
 
-                HtmlText(html = message.message, modifier = Modifier.padding(bottom = 4.dp))
+                HtmlText(
+                    html = message.message,
+                    color = contentColor,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
 
                 MessageFooter(message = message, isMe = isMe, contentColor = contentColor)
             }
