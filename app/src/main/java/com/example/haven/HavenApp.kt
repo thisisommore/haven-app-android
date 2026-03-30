@@ -208,29 +208,16 @@ internal fun HavenApp() {
         }
 
         Route.chat -> {
-            Page(
-                title = currentChatName,
-                onBack = { route = Route.home },
-                bottomBar = {
-                    Row(
-                        Modifier.fillMaxWidth().padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        OutlinedTextField(
-                            value = inputText,
-                            onValueChange = { chatViewModel.onInputChange(it) },
-                            modifier = Modifier.weight(1f),
-                            placeholder = { Text("Message") }
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Button(onClick = { 
-                            chatViewModel.sendMessage()
-                        }) { Text("Send") }
-                    }
-                }
-            ) { p ->
-                ChatPage(Modifier.padding(p), chatMessages)
-            }
+            val currentChat by chatViewModel.currentChat.collectAsState()
+            ChatScreen(
+                chat = currentChat,
+                messages = chatMessages,
+                inputText = inputText,
+                onInputChange = { chatViewModel.onInputChange(it) },
+                onSendClick = { chatViewModel.sendMessage() },
+                onReplyClick = { /* TODO: implement reply */ },
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
         Route.logViewer -> Page("Logs", { route = Route.home }) { p ->
