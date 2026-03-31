@@ -164,7 +164,12 @@ fun MessageBubble(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
 
-                MessageFooter(message = message, isMe = isMe, contentColor = contentColor.copy(alpha = 0.8f))
+                MessageFooter(
+                    message = message,
+                    isMe = isMe,
+                    contentColor = contentColor.copy(alpha = 0.8f),
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
