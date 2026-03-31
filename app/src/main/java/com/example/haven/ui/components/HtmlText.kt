@@ -36,7 +36,7 @@ fun HtmlText(
             textView.text = HtmlCompat.fromHtml(
                 html,
                 HtmlCompat.FROM_HTML_MODE_COMPACT
-            ).toString().trim()
+            )
             // Set text color if specified
             if (color != Color.Unspecified) {
                 textView.setTextColor(color.toArgb())

@@ -32,6 +32,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -67,10 +69,11 @@ internal fun HavenApp() {
             "INFO Chat page with DB messages",
         )
     }
-    // For new users: start with landing page
+    // For new users: start directly at password setup
     // For existing users: start directly at home (with loading indicator)
-    var route by rememberSaveable { 
-        mutableStateOf(if (appStorage.isSetupComplete) Route.home else Route.landing) 
+    // Use remember (not rememberSaveable) to always check isSetupComplete on app start
+    var route by remember { 
+        mutableStateOf(if (appStorage.isSetupComplete) Route.home else Route.password) 
     }
     
     // For returning users: auto-load cmix when home page is shown
@@ -99,6 +102,8 @@ internal fun HavenApp() {
     var logSearch by rememberSaveable { mutableStateOf("") }
     var passwordBusy by rememberSaveable { mutableStateOf(false) }
     var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
+    // NDF download state - starts when password page opens
+    var ndfDeferred by remember { mutableStateOf<Deferred<ByteArray>?>(null) }
     var codenameBusy by rememberSaveable { mutableStateOf(false) }
     var codenameError by rememberSaveable { mutableStateOf<String?>(null) }
     val currentChatTitle by homeViewModel.filteredChats.collectAsState(initial = emptyList())
@@ -126,10 +131,20 @@ internal fun HavenApp() {
                 modifier = Modifier.fillMaxSize(),
                 status = xxdk.status,
                 statusPercentage = xxdk.statusPercentage,
-                isSetupComplete = appStorage.isSetupComplete
+                isSetupComplete = appStorage.isSetupComplete,
+                onLoadingComplete = { route = Route.home }
             )
 
             Route.password -> Page("Join the alpha", onBack = null) { p ->
+                // Start NDF download as soon as password page opens
+                LaunchedEffect(Unit) {
+                    if (ndfDeferred == null) {
+                        ndfDeferred = scope.async {
+                            xxdk.downloadNdf()
+                        }
+                    }
+                }
+                
                 PasswordPage(
                     modifier = Modifier.padding(p),
                     password = password,
@@ -143,7 +158,8 @@ internal fun HavenApp() {
                             runCatching {
                                 appStorage.password = password
                                 xxdk.setAppStorage(appStorage)
-                                val ndf = xxdk.downloadNdf()
+                                // Wait for NDF download to complete if still in progress
+                                val ndf = ndfDeferred?.await() ?: xxdk.downloadNdf()
                                 xxdk.newCmix(ndf)
                                 xxdk.loadCmix()
                                 codenames = xxdk.generateIdentities(10)

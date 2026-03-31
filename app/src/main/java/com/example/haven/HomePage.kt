@@ -2,27 +2,25 @@ package com.example.haven
 
 
 import androidx.compose.foundation.layout.Arrangement
-
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-
-
-
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LoadingIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -46,7 +44,7 @@ import com.example.haven.ui.HomeViewModel
 import com.example.haven.ui.components.ChatListItem
 import com.example.haven.ui.components.EmptyChatsState
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun HomeScreen(
     viewModel: HomeViewModel,
@@ -65,11 +63,22 @@ internal fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Chat",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "Chat",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        if (isLoading) {
+                            LoadingIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow
@@ -83,7 +92,7 @@ internal fun HomeScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = Icons.Outlined.BookmarkBorder,
                     contentDescription = "New chat"
                 )
             }
@@ -95,14 +104,6 @@ internal fun HomeScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
-            // Loading indicator
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            
             // Material 3 DockedSearchBar
             DockedSearchBar(
                 inputField = {
@@ -212,7 +213,7 @@ private fun LegacyChatCard(
                 modifier = Modifier.weight(1f), 
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(chat.title, fontWeight = FontWeight.SemiBold)
+                Text(if (chat.title == "<self>") "Notes" else chat.title, fontWeight = FontWeight.SemiBold)
                 Text(
                     chat.preview,
                     style = MaterialTheme.typography.bodySmall,

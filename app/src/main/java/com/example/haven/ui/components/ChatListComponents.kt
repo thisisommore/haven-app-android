@@ -39,7 +39,7 @@ fun ChatListItem(
     ListItem(
         headlineContent = {
             Text(
-                text = chat.title,
+                text = if (chat.title == "<self>") "Notes" else chat.title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = if (chat.unreadCount > 0) FontWeight.SemiBold else FontWeight.Medium,
                 maxLines = 1,

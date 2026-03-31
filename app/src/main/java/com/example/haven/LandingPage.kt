@@ -43,6 +43,7 @@ internal fun LandingPage(
     status: String,
     statusPercentage: Int,
     isSetupComplete: Boolean,
+    onLoadingComplete: () -> Unit = {},
 ) {
     var showProgress by remember { mutableStateOf(false) }
     var isLoadingDone by remember { mutableStateOf(false) }
@@ -63,16 +64,20 @@ internal fun LandingPage(
         showProgress = true
     }
 
-    // Mark loading done when complete
+    // Mark loading done when complete and navigate to home
     LaunchedEffect(showProgress, statusPercentage, isSetupComplete) {
         if (showProgress && statusPercentage == 100 && isSetupComplete && !isLoadingDone) {
             isLoadingDone = true
+            delay(500) // Small delay to show completion
+            onLoadingComplete()
         }
     }
 
     LaunchedEffect(isSetupComplete) {
         if (isSetupComplete && !isLoadingDone) {
             isLoadingDone = true
+            delay(500)
+            onLoadingComplete()
         }
     }
 
