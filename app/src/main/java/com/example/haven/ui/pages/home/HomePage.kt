@@ -22,10 +22,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -34,8 +32,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -149,45 +145,7 @@ internal fun HomeScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = HavenHeaderStart,
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onNewChat,
-                containerColor = HavenPrimary,
-                contentColor = Color.White,
-                shape = CircleShape,
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 6.dp,
-                    pressedElevation = 10.dp
-                )
-            ) {
-                // Custom thin plus icon for FAB
-                Canvas(modifier = Modifier.size(26.dp)) {
-                    val strokeWidth = 1.5.dp.toPx()
-                    val color = Color.White
-                    val centerX = size.width / 2
-                    val centerY = size.height / 2
-                    val lineLength = size.minDimension * 0.35f
-                    
-                    // Horizontal line
-                    drawLine(
-                        color = color,
-                        start = androidx.compose.ui.geometry.Offset(centerX - lineLength, centerY),
-                        end = androidx.compose.ui.geometry.Offset(centerX + lineLength, centerY),
-                        strokeWidth = strokeWidth,
-                        cap = androidx.compose.ui.graphics.StrokeCap.Round
-                    )
-                    // Vertical line
-                    drawLine(
-                        color = color,
-                        start = androidx.compose.ui.geometry.Offset(centerX, centerY - lineLength),
-                        end = androidx.compose.ui.geometry.Offset(centerX, centerY + lineLength),
-                        strokeWidth = strokeWidth,
-                        cap = androidx.compose.ui.graphics.StrokeCap.Round
-                    )
-                }
-            }
-        }
+        containerColor = HavenHeaderStart
     ) { paddingValues ->
         Column(
             modifier = Modifier

@@ -67,7 +67,7 @@ fun ChatListItem(
             Spacer(modifier = Modifier.width(4.dp)) // Minimal space between icon and text
             Text(
                 text = "Notes",
-                style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+                style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp),
                 fontWeight = if (chat.unreadCount > 0) FontWeight.SemiBold else FontWeight.Medium,
                 color = ChatNameColor,
                 maxLines = 1,

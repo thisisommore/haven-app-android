@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -115,6 +116,17 @@ internal fun HavenApp() {
     var codenameError by rememberSaveable { mutableStateOf<String?>(null) }
     val currentChatTitle by homeViewModel.filteredChats.collectAsState(initial = emptyList())
     val currentChatName = currentChatTitle.firstOrNull { it.id == chatId }?.title ?: "Chat"
+
+    // Handle back button navigation
+    BackHandler(enabled = route != Route.home && route != Route.password) {
+        when (route) {
+            Route.chat -> route = Route.home
+            Route.codenameGenerator -> route = Route.password
+            Route.landing -> route = Route.home
+            Route.logViewer -> route = Route.home
+            else -> { /* Let system handle back */ }
+        }
+    }
 
     AnimatedContent(
         targetState = route,

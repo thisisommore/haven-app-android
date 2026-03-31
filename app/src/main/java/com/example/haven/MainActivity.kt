@@ -12,11 +12,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Set status bar color to match header background (#FFEEE2)
+        // Edge-to-edge with peach background and dark icons
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(
-                scrim = Color.parseColor("#FFEEE2"),
+                scrim = Color.parseColor("#FFEEE2"),  // peach header
                 darkScrim = Color.parseColor("#FFEEE2")
+            ),
+            navigationBarStyle = SystemBarStyle.light(
+                scrim = android.graphics.Color.WHITE,
+                darkScrim = android.graphics.Color.WHITE
             )
         )
         
