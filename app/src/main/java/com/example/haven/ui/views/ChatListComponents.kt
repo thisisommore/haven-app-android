@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.haven.ui.pages.home.ChatWithPreview
 import androidx.compose.ui.graphics.Color
 import java.text.SimpleDateFormat
@@ -59,7 +60,7 @@ fun ChatListItem(
         headlineContent = {
             Text(
                 text = if (chat.title == "<self>") "Notes" else chat.title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
                 fontWeight = if (chat.unreadCount > 0) FontWeight.SemiBold else FontWeight.Medium,
                 color = ChatNameColor,
                 maxLines = 1,
@@ -68,20 +69,21 @@ fun ChatListItem(
         },
         supportingContent = if (isNotesEmpty) null else {
             {
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
                     // Sender name above message (like iOS)
                     chat.senderName?.let { sender ->
                         Text(
                             text = sender,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = SecondaryTextColor,
+                            modifier = Modifier.padding(top = 4.dp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
                     Text(
                         text = stripHtml(chat.preview),
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                         color = SecondaryTextColor,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -97,7 +99,7 @@ fun ChatListItem(
                 if (chat.timestamp > 0) {
                     Text(
                         text = formatChatTime(chat.timestamp),
-                        style = MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                         color = if (chat.unreadCount > 0) {
                             MaterialTheme.colorScheme.primary
                         } else {

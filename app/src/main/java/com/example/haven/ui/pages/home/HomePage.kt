@@ -106,7 +106,7 @@ internal fun HomeScreen(
             title = {
                 Text(
                     "Logout",
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Normal
                 )
             },
             text = {
