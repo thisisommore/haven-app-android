@@ -81,7 +81,7 @@ fun ChatListItem(
             }
         },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         modifier = modifier.fillMaxWidth().clickable(onClick = onClick)
     )
