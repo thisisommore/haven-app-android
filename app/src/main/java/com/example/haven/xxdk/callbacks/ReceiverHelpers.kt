@@ -1,4 +1,4 @@
-package com.example.haven.xxdk
+package com.example.haven.xxdk.callbacks
 
 import android.content.Context
 import com.example.haven.data.model.ChatModel
@@ -7,6 +7,7 @@ import com.example.haven.data.DatabaseModule
 import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.data.model.MessageStatus
 import bindings.Bindings
+import com.example.haven.xxdk.Parser
 import java.util.Date
 import java.util.UUID
 

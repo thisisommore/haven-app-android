@@ -12,7 +12,8 @@ import com.example.haven.data.model.MessageReactionModel
 import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.data.model.MessageStatus
 import com.example.haven.xxdk.MessageDecoding
-import com.example.haven.xxdk.ReceiverHelpers
+
+import com.example.haven.xxdk.callbacks.ReceiverHelpers
 import kotlinx.coroutines.runBlocking
 import java.util.Date
 

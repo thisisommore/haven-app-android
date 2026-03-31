@@ -10,7 +10,8 @@ import com.example.haven.data.model.MessageStatus
 import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.xxdk.MessageDecoding
 import com.example.haven.xxdk.Parser
-import com.example.haven.xxdk.ReceiverHelpers
+
+import com.example.haven.xxdk.callbacks.ReceiverHelpers
 import kotlinx.coroutines.runBlocking
 
 /**
