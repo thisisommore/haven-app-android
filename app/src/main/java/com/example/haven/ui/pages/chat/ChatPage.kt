@@ -82,29 +82,34 @@ internal fun ChatScreen(
     ) {
         TopAppBar(
             title = {
-                Column {
-                    Text(
-                        text = when (chat?.name) {
-                            null -> "Chat"
-                            "<self>" -> "Notes"
-                            else -> chat.name
-                        },
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    if (chat?.pubKey != null) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Direct Message",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = when (chat?.name) {
+                                null -> "Chat"
+                                "<self>" -> "Notes"
+                                else -> chat.name
+                            },
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
-                    } else if (chat?.channelId != null) {
-                        Text(
-                            text = "Channel",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        if (chat?.pubKey != null) {
+                            Text(
+                                text = "Direct Message",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        } else if (chat?.channelId != null) {
+                            Text(
+                                text = "Channel",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             },
