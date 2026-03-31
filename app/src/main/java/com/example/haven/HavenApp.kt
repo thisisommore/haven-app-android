@@ -1,5 +1,12 @@
 package com.example.haven
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -102,129 +109,147 @@ internal fun HavenApp() {
     val currentChatTitle by homeViewModel.filteredChats.collectAsState(initial = emptyList())
     val currentChatName = currentChatTitle.firstOrNull { it.id == chatId }?.title ?: "Chat"
 
-    when (route) {
-        Route.landing -> LandingPage(
-            modifier = Modifier.fillMaxSize(),
-            status = xxdk.status,
-            statusPercentage = xxdk.statusPercentage,
-            isSetupComplete = appStorage.isSetupComplete
-        )
-
-        Route.password -> Page("Join the alpha", onBack = null) { p ->
-            PasswordPage(
-                modifier = Modifier.padding(p),
-                password = password,
-                confirm = confirm,
-                onPassword = { password = it },
-                onConfirm = { confirm = it },
-                onContinue = {
-                    scope.launch {
-                        passwordBusy = true
-                        passwordError = null
-                        runCatching {
-                            appStorage.password = password
-                            xxdk.setAppStorage(appStorage)
-                            val ndf = xxdk.downloadNdf()
-                            xxdk.newCmix(ndf)
-                            xxdk.loadCmix()
-                            codenames = xxdk.generateIdentities(10)
-                            require(codenames.isNotEmpty()) { "No identities generated" }
-                            selectedCodename = ""
-                            route = Route.codenameGenerator
-                        }.onFailure {
-                            passwordError = it.message ?: "Password setup failed"
-                        }
-                        passwordBusy = false
-                    }
-                },
-                onImport = {
-                    passwordError = "Import needs a real encrypted identity file. File selection is not wired yet."
-                },
+    AnimatedContent(
+        targetState = route,
+        transitionSpec = {
+            // Home to Chat: slide in from right, slide out to left
+            // Chat to Home: slide in from left, slide out to right
+            val isForward = targetState == Route.chat && initialState == Route.home
+            slideInHorizontally(
+                animationSpec = tween(300),
+                initialOffsetX = { if (isForward) it else -it }
+            ) + fadeIn(animationSpec = tween(300)) togetherWith
+            slideOutHorizontally(
+                animationSpec = tween(300),
+                targetOffsetX = { if (isForward) -it else it }
+            ) + fadeOut(animationSpec = tween(300))
+        },
+        modifier = Modifier.fillMaxSize()
+    ) { targetRoute ->
+        when (targetRoute) {
+            Route.landing -> LandingPage(
+                modifier = Modifier.fillMaxSize(),
                 status = xxdk.status,
-                isLoading = passwordBusy,
-                error = passwordError
+                statusPercentage = xxdk.statusPercentage,
+                isSetupComplete = appStorage.isSetupComplete
             )
-        }
 
-        Route.codenameGenerator -> Page("Codename", { route = Route.password }) { p ->
-            CodenamePage(
-                modifier = Modifier.padding(p),
-                codenames = codenames,
-                selected = selectedCodename,
-                onSelect = { selectedCodename = it },
-                onGenerate = {
-                    scope.launch {
-                        codenameBusy = true
-                        codenameError = null
-                        runCatching {
-                            codenames = xxdk.generateIdentities(10)
-                            require(codenames.isNotEmpty()) { "No identities generated" }
-                            selectedCodename = ""
-                        }.onFailure {
-                            codenameError = it.message ?: "Could not generate codenames"
-                        }
-                        codenameBusy = false
-                    }
-                },
-                onClaim = {
-                    scope.launch {
-                        codenameBusy = true
-                        codenameError = null
-                        runCatching {
-                            val identity = codenames.first { it.pubkey == selectedCodename }
-                            xxdk.applyIdentity(identity)
-                            xxdk.setupClients(identity.privateIdentity) {
-                                appStorage.isSetupComplete = true
+            Route.password -> Page("Join the alpha", onBack = null) { p ->
+                PasswordPage(
+                    modifier = Modifier.padding(p),
+                    password = password,
+                    confirm = confirm,
+                    onPassword = { password = it },
+                    onConfirm = { confirm = it },
+                    onContinue = {
+                        scope.launch {
+                            passwordBusy = true
+                            passwordError = null
+                            runCatching {
+                                appStorage.password = password
+                                xxdk.setAppStorage(appStorage)
+                                val ndf = xxdk.downloadNdf()
+                                xxdk.newCmix(ndf)
+                                xxdk.loadCmix()
+                                codenames = xxdk.generateIdentities(10)
+                                require(codenames.isNotEmpty()) { "No identities generated" }
+                                selectedCodename = ""
+                                route = Route.codenameGenerator
+                            }.onFailure {
+                                passwordError = it.message ?: "Password setup failed"
                             }
-                            route = Route.landing
-                        }.onFailure {
-                            codenameError = it.message ?: "Could not claim codename"
+                            passwordBusy = false
                         }
-                        codenameBusy = false
-                    }
-                },
-                status = xxdk.status,
-                isLoading = codenameBusy,
-                error = codenameError
-            )
-        }
+                    },
+                    onImport = {
+                        passwordError = "Import needs a real encrypted identity file. File selection is not wired yet."
+                    },
+                    status = xxdk.status,
+                    isLoading = passwordBusy,
+                    error = passwordError
+                )
+            }
 
-        Route.home -> {
-            HomeScreen(
-                viewModel = homeViewModel,
-                onOpenChat = { id -> 
-                    chatId = id
-                    chatViewModel.loadChat(id)
-                    route = Route.chat 
-                },
-                onNewChat = { /* TODO: implement new chat */ },
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+            Route.codenameGenerator -> Page("Codename", { route = Route.password }) { p ->
+                CodenamePage(
+                    modifier = Modifier.padding(p),
+                    codenames = codenames,
+                    selected = selectedCodename,
+                    onSelect = { selectedCodename = it },
+                    onGenerate = {
+                        scope.launch {
+                            codenameBusy = true
+                            codenameError = null
+                            runCatching {
+                                codenames = xxdk.generateIdentities(10)
+                                require(codenames.isNotEmpty()) { "No identities generated" }
+                                selectedCodename = ""
+                            }.onFailure {
+                                codenameError = it.message ?: "Could not generate codenames"
+                            }
+                            codenameBusy = false
+                        }
+                    },
+                    onClaim = {
+                        scope.launch {
+                            codenameBusy = true
+                            codenameError = null
+                            runCatching {
+                                val identity = codenames.first { it.pubkey == selectedCodename }
+                                xxdk.applyIdentity(identity)
+                                xxdk.setupClients(identity.privateIdentity) {
+                                    appStorage.isSetupComplete = true
+                                }
+                                route = Route.landing
+                            }.onFailure {
+                                codenameError = it.message ?: "Could not claim codename"
+                            }
+                            codenameBusy = false
+                        }
+                    },
+                    status = xxdk.status,
+                    isLoading = codenameBusy,
+                    error = codenameError
+                )
+            }
 
-        Route.chat -> {
-            val currentChat by chatViewModel.currentChat.collectAsState()
-            ChatScreen(
-                chat = currentChat,
-                messages = chatMessages,
-                inputText = inputText,
-                onInputChange = { chatViewModel.onInputChange(it) },
-                onSendClick = { chatViewModel.sendMessage() },
-                onReplyClick = { /* TODO: implement reply */ },
-                onBackClick = { route = Route.home },
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+            Route.home -> {
+                HomeScreen(
+                    viewModel = homeViewModel,
+                    onOpenChat = { id -> 
+                        chatId = id
+                        chatViewModel.loadChat(id)
+                        route = Route.chat 
+                    },
+                    onNewChat = { /* TODO: implement new chat */ },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
-        Route.logViewer -> Page("Logs", { route = Route.home }) { p ->
-            LogPage(
-                modifier = Modifier.padding(p),
-                logs = allLogs,
-                filter = logFilter,
-                search = logSearch,
-                onFilter = { logFilter = it },
-                onSearch = { logSearch = it }
-            )
+            Route.chat -> {
+                val currentChat by chatViewModel.currentChat.collectAsState()
+                ChatScreen(
+                    chat = currentChat,
+                    messages = chatMessages,
+                    inputText = inputText,
+                    onInputChange = { chatViewModel.onInputChange(it) },
+                    onSendClick = { chatViewModel.sendMessage() },
+                    onReplyClick = { /* TODO: implement reply */ },
+                    onBackClick = { route = Route.home },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            Route.logViewer -> Page("Logs", { route = Route.home }) { p ->
+                LogPage(
+                    modifier = Modifier.padding(p),
+                    logs = allLogs,
+                    filter = logFilter,
+                    search = logSearch,
+                    onFilter = { logFilter = it },
+                    onSearch = { logSearch = it }
+                )
+            }
         }
     }
 }
