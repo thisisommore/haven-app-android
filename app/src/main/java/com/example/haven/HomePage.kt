@@ -94,10 +94,9 @@ internal fun HomeScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
-            // Material 3 Contained Loading Indicator (LinearProgressIndicator)
+            // Material 3 Contained Loading Indicator (indeterminate)
             if (isLoading) {
                 LinearProgressIndicator(
-                    progress = { statusPercentage / 100f },
                     modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
