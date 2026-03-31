@@ -7,9 +7,9 @@ val HavenOrangeLight = Color(0xFFFF9300)
 val HavenOrangeDark = Color(0xFFFF9F0A)
 val HavenOrangeHighContrast = Color(0xFFC93400)
 
-// Secondary colors (complementary)
-val SecondaryLight = Color(0xFF5856D6)
-val SecondaryDark = Color(0xFF5E5CE6)
+// Secondary colors (orange tints)
+val SecondaryLight = Color(0xFFFFB347)
+val SecondaryDark = Color(0xFFFFB340)
 
 // Background colors (iOS style)
 val BackgroundLight = Color(0xFFFFFFFF)
