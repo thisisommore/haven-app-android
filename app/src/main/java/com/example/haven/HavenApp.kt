@@ -209,7 +209,6 @@ internal fun HavenApp() {
             }
 
             Route.home -> {
-                val isLoading = appStorage.isSetupComplete && xxdk.cmix == null
                 HomeScreen(
                     viewModel = homeViewModel,
                     onOpenChat = { id -> 
@@ -218,8 +217,6 @@ internal fun HavenApp() {
                         route = Route.chat 
                     },
                     onNewChat = { /* TODO: implement new chat */ },
-                    isLoading = isLoading,
-                    status = xxdk.status,
                     statusPercentage = xxdk.statusPercentage,
                     modifier = Modifier.fillMaxSize()
                 )
