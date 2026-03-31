@@ -206,7 +206,7 @@ internal fun HomeScreen(
                                     letterSpacing = (-0.5).sp
                                 ),
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1C1C1E)
+                                color = HavenPrimary
                             )
                             if (isLoading) {
                                 LoadingIndicator(
