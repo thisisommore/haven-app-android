@@ -30,14 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Color
 import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.ui.views.MessageBubble
 import com.example.haven.ui.views.MessageInputBar
 import com.example.haven.ui.views.ReplyPreview
-
-private val ChatBgColor = Color(0xFFFFF8F5) // Light peach/off-white background
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +68,7 @@ internal fun ChatScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(ChatBgColor)
+            .background(MaterialTheme.colorScheme.background)
             .navigationBarsPadding()
             .imePadding()
     ) {
