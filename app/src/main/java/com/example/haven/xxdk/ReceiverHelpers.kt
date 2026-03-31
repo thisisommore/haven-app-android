@@ -131,7 +131,7 @@ class ReceiverHelpers private constructor(private val context: Context) {
             ChatMessageEntity(
                 id = id,
                 externalId = messageId,
-                message = text,
+                message = text.trim(),
                 timestamp = Date(timestamp / 1_000_000), // Convert nanoseconds to milliseconds
                 isIncoming = isIncoming,
                 isRead = !isIncoming,

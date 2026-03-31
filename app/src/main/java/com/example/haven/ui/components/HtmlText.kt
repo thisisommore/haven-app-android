@@ -33,10 +33,9 @@ fun HtmlText(
             }
         },
         update = { textView ->
-            textView.text = HtmlCompat.fromHtml(
-                html,
-                HtmlCompat.FROM_HTML_MODE_COMPACT
-            )
+            // Trim HTML to remove trailing whitespace/newlines before parsing
+            val trimmedHtml = html.trimEnd()
+            textView.text = HtmlCompat.fromHtml(trimmedHtml, HtmlCompat.FROM_HTML_MODE_COMPACT)
             // Set text color if specified
             if (color != Color.Unspecified) {
                 textView.setTextColor(color.toArgb())
