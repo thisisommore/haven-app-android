@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Base64
 import android.util.Log
 import bindings.DMReceiver
+import bindings.DMReceiverBuilder
+import bindings.DmCallbacks
 import com.example.haven.data.model.ChatModel
 import com.example.haven.data.DatabaseModule
 import com.example.haven.data.model.MessageStatus
@@ -317,6 +319,58 @@ class DmReceiver(private val context: Context) : DMReceiver {
             }
             return allChats.firstOrNull { it.name == codename }
                 ?: throw IllegalStateException("pubkey required")
+        }
+    }
+}
+/**
+ * Builder for DMReceiver
+ * Mirrors iOS DMReceiverBuilder implementation
+ */
+class DmReceiverBuilder(private val context: Context) : DMReceiverBuilder {
+
+    private val receiver: DMReceiver by lazy { DmReceiver(context) }
+
+    override fun build(path: String?): DMReceiver {
+        return receiver
+    }
+}
+/**
+ * DM events callback implementation
+ * Mirrors iOS DMReceiver's DmCallbacks implementation
+ */
+class DmEvents : DmCallbacks {
+    companion object {
+        private const val TAG = "DmEvents"
+    }
+
+    override fun eventUpdate(eventType: Long, jsonData: ByteArray?) {
+        if (jsonData == null) {
+            Log.e(TAG, "DM event update payload is nil for eventType $eventType")
+            return
+        }
+
+        Log.i(TAG, "Push: eventUpdate $eventType")
+
+        when (eventType) {
+            1000L -> {
+                // DmNotificationUpdate
+                Log.d(TAG, "DM Notification Update received")
+            }
+            2000L -> {
+                // DmBlockedUser
+                Log.d(TAG, "DM Blocked User received")
+            }
+            3000L -> {
+                // DmMessageReceived
+                Log.d(TAG, "DM Message Received received")
+            }
+            4000L -> {
+                // DmMessageDeleted
+                Log.d(TAG, "DM Message Deleted received")
+            }
+            else -> {
+                Log.w(TAG, "Unknown DM event type: $eventType")
+            }
         }
     }
 }
