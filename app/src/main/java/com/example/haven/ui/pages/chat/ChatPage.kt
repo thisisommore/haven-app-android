@@ -83,6 +83,7 @@ internal fun ChatScreen(
             .imePadding()
     ) {
         CenterAlignedTopAppBar(
+            modifier = Modifier.padding(horizontal = 20.dp),
             title = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
@@ -93,8 +94,7 @@ internal fun ChatScreen(
                         },
                         style = MaterialTheme.typography.titleMedium,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(horizontal = 40.dp)
+                        overflow = TextOverflow.Ellipsis
                     )
                     if (chat?.pubKey != null) {
                         Text(
