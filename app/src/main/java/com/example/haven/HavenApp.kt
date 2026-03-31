@@ -47,6 +47,7 @@ import com.example.haven.xxdk.XXDKStorage
 import com.example.haven.xxdk.applyIdentity
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import android.util.Log
 
 @Composable
 internal fun HavenApp() {
@@ -127,14 +128,29 @@ internal fun HavenApp() {
         modifier = Modifier.fillMaxSize()
     ) { targetRoute ->
         when (targetRoute) {
-            Route.landing -> LandingPage(
-                modifier = Modifier.fillMaxSize(),
-                status = xxdk.status,
-                statusPercentage = xxdk.statusPercentage,
-                isSetupComplete = appStorage.isSetupComplete,
-                onLoadingComplete = { route = Route.home },
-                appStorage = appStorage
-            )
+            Route.landing -> {
+                // Start network follower when landing page is shown and setup is complete
+                LaunchedEffect(appStorage.isSetupComplete) {
+                    if (appStorage.isSetupComplete && xxdk.cmix != null) {
+                        runCatching {
+                            xxdk.startNetworkFollower()
+                            val identity = xxdk.loadSavedPrivateIdentity()
+                            xxdk.loadClients(identity)
+                        }.onFailure {
+                            Log.e("HavenApp", "Failed to start network: ${it.message}")
+                        }
+                    }
+                }
+                
+                LandingPage(
+                    modifier = Modifier.fillMaxSize(),
+                    status = xxdk.status,
+                    statusPercentage = xxdk.statusPercentage,
+                    isSetupComplete = appStorage.isSetupComplete,
+                    onLoadingComplete = { route = Route.home },
+                    appStorage = appStorage
+                )
+            }
 
             Route.password -> Page("Join the alpha", onBack = null) { p ->
                 // Start NDF download as soon as password page opens

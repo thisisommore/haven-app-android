@@ -16,7 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ import kotlinx.coroutines.delay
  * Landing page showing app branding and loading progress.
  * Matches iOS LandingPage design.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun LandingPage(
     modifier: Modifier,
@@ -128,10 +130,10 @@ internal fun LandingPage(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    LinearProgressIndicator(
+                    LinearWavyProgressIndicator(
                         progress = { statusPercentage / 100f },
                         modifier = Modifier.width(120.dp),
-                        color = MaterialTheme.colorScheme.outline
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = status,
