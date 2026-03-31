@@ -24,7 +24,7 @@ fun MessageInputBar(
     value: String,
     onValueChange: (String) -> Unit,
     onSend: () -> Unit,
-    placeholder: String = "Message...",
+    placeholder: String = "Aa",
     modifier: Modifier = Modifier
 ) {
     Row(
