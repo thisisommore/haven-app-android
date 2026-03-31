@@ -277,7 +277,6 @@ internal fun HomeScreen(
                         placeholder = {
                             Text(
                                 "Search",
-                                color = SubtitleGray,
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     fontSize = 22.sp
                                 )
