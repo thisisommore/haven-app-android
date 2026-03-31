@@ -23,7 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MailOutline
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -128,7 +128,7 @@ fun MessageBubble(
                         },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.ThumbUp,
+                                imageVector = Icons.Outlined.Face,
                                 contentDescription = null,
                                 modifier = Modifier.size(20.dp)
                             )
