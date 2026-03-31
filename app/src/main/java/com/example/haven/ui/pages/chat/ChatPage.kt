@@ -111,7 +111,7 @@ internal fun ChatScreen(
             navigationIcon = {
                 Box(
                     modifier = Modifier
-                        .size(22.dp)
+                        .size(34.dp)
                         .background(
                             color = Color(0xFF5D4127),
                             shape = RoundedCornerShape(22.dp)
@@ -131,7 +131,7 @@ internal fun ChatScreen(
             actions = {
                 Box(
                     modifier = Modifier
-                        .size(22.dp)
+                        .size(34.dp)
                         .background(
                             color = Color(0xFF5D4127),
                             shape = RoundedCornerShape(22.dp)
