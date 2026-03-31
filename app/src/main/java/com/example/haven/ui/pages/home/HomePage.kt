@@ -1,21 +1,27 @@
 package com.example.haven.ui.pages.home
 
-
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,6 +30,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,11 +38,10 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.DockedSearchBar
-import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,12 +50,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.haven.ui.pages.home.ChatWithPreview
 import com.example.haven.ui.pages.home.HomeViewModel
 import com.example.haven.ui.views.ChatListItem
 import com.example.haven.ui.views.EmptyChatsState
+
+// Haven brand colors
+private val HavenOrange = Color(0xFFE8860C)
+private val HavenHeaderBg = Color(0xFFFFF5EB)   // very light warm orange tint
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -64,15 +77,12 @@ internal fun HomeScreen(
 ) {
     val search by viewModel.searchQuery.collectAsState()
     val chats by viewModel.filteredChats.collectAsState(initial = emptyList())
-    var expanded by remember { mutableStateOf(false) }
-    // Only show loading if setup is not complete AND status is not 100
-    // This handles new users who just completed setup
     val isLoading = !isSetupComplete && statusPercentage != 100
-    
-    // User menu state
+
+    // Menu / logout state
     var showMenu by remember { mutableStateOf(false) }
     var showLogoutConfirm by remember { mutableStateOf(false) }
-    
+
     // Logout confirmation dialog
     if (showLogoutConfirm) {
         AlertDialog(
@@ -89,8 +99,9 @@ internal fun HomeScreen(
                         showLogoutConfirm = false
                         onLogout()
                     },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
                     )
                 ) {
                     Text("Logout")
@@ -108,77 +119,19 @@ internal fun HomeScreen(
             }
         )
     }
-    
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            text = "Chat",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        if (isLoading) {
-                            LoadingIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    // User menu button
-                    Box {
-                        IconButton(onClick = { showMenu = true }) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "Menu"
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = showMenu,
-                            onDismissRequest = { showMenu = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("Export") },
-                                onClick = { 
-                                    showMenu = false
-                                    // TODO: Implement export
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text("QR Code") },
-                                onClick = { 
-                                    showMenu = false
-                                    // TODO: Implement QR code
-                                }
-                            )
-                            HorizontalDivider()
-                            DropdownMenuItem(
-                                text = { Text("Logout") },
-                                onClick = { 
-                                    showMenu = false
-                                    showLogoutConfirm = true
-                                }
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                )
-            )
-        },
+        containerColor = HavenHeaderBg,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onNewChat,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                containerColor = HavenOrange,
+                contentColor = Color.White,
+                shape = RoundedCornerShape(16.dp),
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 4.dp
+                )
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -191,134 +144,162 @@ internal fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp)
         ) {
-            // Material 3 DockedSearchBar
-            DockedSearchBar(
-                inputField = {
-                    SearchBarDefaults.InputField(
-                        query = search,
-                        onQueryChange = { viewModel.onSearchChange(it) },
-                        onSearch = { expanded = false },
-                        expanded = expanded,
-                        onExpandedChange = { expanded = it },
-                        placeholder = { Text("Search chats...") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = null
-                            )
-                        }
-                    )
-                },
-                expanded = expanded,
-                onExpandedChange = { expanded = it },
+            // ── Header section: orange/haven tinted background ──
+            Surface(
+                color = HavenHeaderBg,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Search suggestions can be added here
-            }
-            
-            // Chat List
-            if (chats.isEmpty()) {
-                EmptyChatsState(modifier = Modifier.weight(1f))
-            } else {
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(vertical = 8.dp)
+                Column(
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .padding(horizontal = 20.dp)
                 ) {
-                    items(
-                        items = chats,
-                        key = { it.id }
-                    ) { chat ->
-                        ChatListItem(
-                            chat = chat,
-                            onClick = {
-                                viewModel.clearUnreadCount(chat.id)
-                                onOpenChat(chat.id)
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Title row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text(
+                                text = "Chat",
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontWeight = FontWeight.Normal,
+                                color = HavenOrange
+                            )
+                            if (isLoading) {
+                                LoadingIndicator(
+                                    modifier = Modifier.size(22.dp),
+                                    color = HavenOrange
+                                )
                             }
-                        )
-                        HorizontalDivider(
-                            color = MaterialTheme.colorScheme.outlineVariant,
-                            thickness = 0.5.dp
-                        )
+                        }
+
+                        // Overflow menu
+                        Box {
+                            IconButton(onClick = { showMenu = true }) {
+                                Canvas(
+                                    modifier = Modifier.size(22.dp)
+                                ) {
+                                    val stroke = 2.2.dp.toPx()
+                                    val w = size.width
+                                    val h = size.height
+                                    val color = HavenOrange.copy(alpha = 0.7f)
+                                    // Three tilted lines (leaning right), rotated 20 degrees
+                                    val gap = w / 4f
+                                    val topY = h * 0.15f
+                                    val botY = h * 0.85f
+                                    rotate(degrees = 20f, pivot = center) {
+                                        for (i in 0..2) {
+                                            val cx = gap * (i + 1)
+                                            drawLine(
+                                                color = color,
+                                                start = androidx.compose.ui.geometry.Offset(cx - 1.5f, botY),
+                                                end = androidx.compose.ui.geometry.Offset(cx + 1.5f, topY),
+                                                strokeWidth = stroke,
+                                                cap = androidx.compose.ui.graphics.StrokeCap.Round
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            DropdownMenu(
+                                expanded = showMenu,
+                                onDismissRequest = { showMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("Export") },
+                                    onClick = {
+                                        showMenu = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("QR Code") },
+                                    onClick = {
+                                        showMenu = false
+                                    }
+                                )
+                                HorizontalDivider()
+                                DropdownMenuItem(
+                                    text = { Text("Logout") },
+                                    onClick = {
+                                        showMenu = false
+                                        showLogoutConfirm = true
+                                    }
+                                )
+                            }
+                        }
                     }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Search field – near-square corners, no icon
+                    TextField(
+                        value = search,
+                        onValueChange = { viewModel.onSearchChange(it) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(6.dp)),
+                        placeholder = {
+                            Text(
+                                "Search",
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+                            )
+                        },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            cursorColor = HavenOrange
+                        ),
+                        shape = RoundedCornerShape(6.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-        }
-    }
-}
 
-// Legacy HomePage for backward compatibility
-@Composable
-internal fun HomePage(
-    modifier: Modifier,
-    viewModel: HomeViewModel,
-    onOpenChat: (String) -> Unit,
-) {
-    val search by viewModel.searchQuery.collectAsState()
-    val chats by viewModel.filteredChats.collectAsState(initial = emptyList())
-    
-    Column(
-        modifier = modifier.fillMaxSize().padding(16.dp), 
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        OutlinedTextField(
-            value = search,
-            onValueChange = { viewModel.onSearchChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Search chats") }
-        )
-        LazyColumn(
-            modifier = Modifier.weight(1f), 
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            items(chats, key = { it.id }) { chat ->
-                LegacyChatCard(
-                    chat = chat,
-                    onClick = { 
-                        viewModel.clearUnreadCount(chat.id)
-                        onOpenChat(chat.id) 
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun LegacyChatCard(
-    chat: ChatWithPreview,
-    onClick: () -> Unit
-) {
-    androidx.compose.material3.Card(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        androidx.compose.foundation.layout.Row(
-            Modifier.fillMaxWidth().padding(16.dp), 
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f), 
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            // ── Chat list section: white surface with rounded top corners ──
+            Surface(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) {
-                Text(if (chat.title == "<self>") "Notes" else chat.title, fontWeight = FontWeight.SemiBold)
-                Text(
-                    chat.preview,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1
-                )
-            }
-            if (chat.unreadCount > 0) {
-                androidx.compose.material3.Surface(
-                    shape = MaterialTheme.shapes.small, 
-                    color = MaterialTheme.colorScheme.primaryContainer
-                ) {
-                    Text(
-                        chat.unreadCount.toString(), 
-                        Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
-                    )
+                if (chats.isEmpty()) {
+                    EmptyChatsState(modifier = Modifier.fillMaxSize())
+                } else {
+                    LazyColumn(
+                        contentPadding = PaddingValues(top = 8.dp, bottom = 4.dp)
+                    ) {
+                        items(
+                            items = chats,
+                            key = { it.id }
+                        ) { chat ->
+                            ChatListItem(
+                                chat = chat,
+                                onClick = {
+                                    viewModel.clearUnreadCount(chat.id)
+                                    onOpenChat(chat.id)
+                                }
+                            )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 20.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+                                thickness = 0.5.dp
+                            )
+                        }
+                    }
                 }
             }
         }
