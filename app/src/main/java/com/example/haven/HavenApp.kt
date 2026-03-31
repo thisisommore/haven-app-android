@@ -87,9 +87,9 @@ internal fun HavenApp() {
                 val identity = xxdk.loadSavedPrivateIdentity()
                 xxdk.loadClients(identity)
             }.onFailure {
-                // If loading fails, go to password setup
-                appStorage.isSetupComplete = false
-                route = Route.password
+                // If loading fails for existing user, don't reset isSetupComplete
+                // Just log the error - user stays on home page
+                Log.e("HavenApp", "Failed to load cmix for existing user: ${it.message}")
             }
         }
     }
