@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -41,7 +41,7 @@ fun ChatListItem(
         leadingContent = if (chat.title == "<self>") {
             {
                 Icon(
-                    imageVector = Icons.Outlined.BookmarkBorder,
+                    imageVector = Icons.Filled.Bookmark,
                     contentDescription = "Notes",
                     modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.primary

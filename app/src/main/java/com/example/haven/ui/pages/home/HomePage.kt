@@ -1,8 +1,10 @@
 package com.example.haven.ui.pages.home
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,12 +18,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -36,7 +41,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -51,18 +55,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.haven.ui.pages.home.ChatWithPreview
 import com.example.haven.ui.pages.home.HomeViewModel
 import com.example.haven.ui.views.ChatListItem
 import com.example.haven.ui.views.EmptyChatsState
 
-// Haven brand colors
+// ── Haven brand palette ──────────────────────────────────────────────
 private val HavenOrange = Color(0xFFE8860C)
-private val HavenHeaderBg = Color(0xFFFFF5EB)   // very light warm orange tint
+private val HavenOrangeDark = Color(0xFFD07808)
+private val HavenHeaderStart = Color(0xFFFFF8F0)   // top of gradient
+private val HavenHeaderEnd = Color(0xFFFFF1E0)     // bottom of gradient
+private val SearchBg = Color(0xFFFFF9F3)
+private val SearchBorder = Color(0xFFE8D5BF)
+private val SubtitleGray = Color(0xFF8E8E93)
+private val DividerColor = Color(0xFFF2F2F7)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -83,16 +99,24 @@ internal fun HomeScreen(
     var showMenu by remember { mutableStateOf(false) }
     var showLogoutConfirm by remember { mutableStateOf(false) }
 
-    // Logout confirmation dialog
+    // ── Logout confirmation dialog ──────────────────────────────────
     if (showLogoutConfirm) {
         AlertDialog(
             onDismissRequest = { showLogoutConfirm = false },
-            title = { Text("Logout") },
-            text = {
+            title = {
                 Text(
-                    "If you haven't backed up your identity, you will lose access to it permanently. Are you sure you want to logout?"
+                    "Logout",
+                    fontWeight = FontWeight.SemiBold
                 )
             },
+            text = {
+                Text(
+                    "If you haven't backed up your identity, you will lose access to it permanently. Are you sure you want to logout?",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            },
+            shape = RoundedCornerShape(20.dp),
             confirmButton = {
                 Button(
                     onClick = {
@@ -102,7 +126,8 @@ internal fun HomeScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.onError
-                    )
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text("Logout")
                 }
@@ -111,7 +136,7 @@ internal fun HomeScreen(
                 Button(
                     onClick = { showLogoutConfirm = false },
                     colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
                 ) {
                     Text("Cancel")
@@ -122,20 +147,22 @@ internal fun HomeScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = HavenHeaderBg,
+        containerColor = MaterialTheme.colorScheme.surface,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onNewChat,
                 containerColor = HavenOrange,
                 contentColor = Color.White,
-                shape = RoundedCornerShape(16.dp),
+                shape = CircleShape,
                 elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 4.dp
+                    defaultElevation = 6.dp,
+                    pressedElevation = 10.dp
                 )
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "New chat"
+                    contentDescription = "New chat",
+                    modifier = Modifier.size(26.dp)
                 )
             }
         }
@@ -145,19 +172,24 @@ internal fun HomeScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // ── Header section: orange/haven tinted background ──
-            Surface(
-                color = HavenHeaderBg,
-                modifier = Modifier.fillMaxWidth()
+            // ── Header: gradient background ─────────────────────────
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(HavenHeaderStart, HavenHeaderEnd)
+                        )
+                    )
             ) {
                 Column(
                     modifier = Modifier
                         .windowInsetsPadding(WindowInsets.statusBars)
                         .padding(horizontal = 20.dp)
                 ) {
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
-                    // Title row
+                    // ── Top bar: title + loading + menu ─────────────
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -169,65 +201,64 @@ internal fun HomeScreen(
                         ) {
                             Text(
                                 text = "Chat",
-                                style = MaterialTheme.typography.headlineLarge,
-                                fontWeight = FontWeight.Normal,
-                                color = HavenOrange
+                                style = MaterialTheme.typography.headlineLarge.copy(
+                                    fontSize = 30.sp,
+                                    letterSpacing = (-0.5).sp
+                                ),
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1C1C1E)
                             )
                             if (isLoading) {
                                 LoadingIndicator(
-                                    modifier = Modifier.size(22.dp),
+                                    modifier = Modifier.size(20.dp),
                                     color = HavenOrange
                                 )
                             }
                         }
 
-                        // Overflow menu
+                        // Overflow / menu icon
                         Box {
                             IconButton(onClick = { showMenu = true }) {
-                                Canvas(
-                                    modifier = Modifier.size(22.dp)
-                                ) {
-                                    val stroke = 2.2.dp.toPx()
-                                    val w = size.width
-                                    val h = size.height
-                                    val color = HavenOrange.copy(alpha = 0.7f)
-                                    // Three tilted lines (leaning right), rotated 20 degrees
-                                    val gap = w / 4f
-                                    val topY = h * 0.15f
-                                    val botY = h * 0.85f
-                                    rotate(degrees = 20f, pivot = center) {
-                                        for (i in 0..2) {
-                                            val cx = gap * (i + 1)
-                                            drawLine(
-                                                color = color,
-                                                start = androidx.compose.ui.geometry.Offset(cx - 1.5f, botY),
-                                                end = androidx.compose.ui.geometry.Offset(cx + 1.5f, topY),
-                                                strokeWidth = stroke,
-                                                cap = androidx.compose.ui.graphics.StrokeCap.Round
+                                Canvas(modifier = Modifier.size(20.dp)) {
+                                    val dotRadius = 2.8.dp.toPx()
+                                    val color = Color(0xFF1C1C1E).copy(alpha = 0.55f)
+                                    val spacing = size.width / 3f
+                                    for (i in 0..2) {
+                                        drawCircle(
+                                            color = color,
+                                            radius = dotRadius,
+                                            center = Offset(
+                                                x = spacing * i + spacing / 2f,
+                                                y = center.y
                                             )
-                                        }
+                                        )
                                     }
                                 }
                             }
                             DropdownMenu(
                                 expanded = showMenu,
-                                onDismissRequest = { showMenu = false }
+                                onDismissRequest = { showMenu = false },
+                                shape = RoundedCornerShape(14.dp)
                             ) {
                                 DropdownMenuItem(
                                     text = { Text("Export") },
-                                    onClick = {
-                                        showMenu = false
-                                    }
+                                    onClick = { showMenu = false }
                                 )
                                 DropdownMenuItem(
                                     text = { Text("QR Code") },
-                                    onClick = {
-                                        showMenu = false
-                                    }
+                                    onClick = { showMenu = false }
                                 )
-                                HorizontalDivider()
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 12.dp),
+                                    color = DividerColor
+                                )
                                 DropdownMenuItem(
-                                    text = { Text("Logout") },
+                                    text = {
+                                        Text(
+                                            "Logout",
+                                            color = MaterialTheme.colorScheme.error
+                                        )
+                                    },
                                     onClick = {
                                         showMenu = false
                                         showLogoutConfirm = true
@@ -237,19 +268,26 @@ internal fun HomeScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
-                    // Search field – near-square corners, no icon
+                    // ── Search bar: pill-shaped with icon ───────────
                     TextField(
                         value = search,
                         onValueChange = { viewModel.onSearchChange(it) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(6.dp)),
+                            .shadow(
+                                elevation = 2.dp,
+                                shape = RoundedCornerShape(14.dp),
+                                ambientColor = HavenOrange.copy(alpha = 0.08f),
+                                spotColor = HavenOrange.copy(alpha = 0.12f)
+                            )
+                            .clip(RoundedCornerShape(14.dp)),
                         placeholder = {
                             Text(
                                 "Search",
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+                                color = SubtitleGray,
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         },
                         singleLine = true,
@@ -261,17 +299,18 @@ internal fun HomeScreen(
                             disabledIndicatorColor = Color.Transparent,
                             cursorColor = HavenOrange
                         ),
-                        shape = RoundedCornerShape(6.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(18.dp))
                 }
             }
 
-            // ── Chat list section: white surface with rounded top corners ──
+            // ── Chat list: white surface, rounded top corners ───────
             Surface(
                 color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                shadowElevation = 8.dp,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -280,7 +319,7 @@ internal fun HomeScreen(
                     EmptyChatsState(modifier = Modifier.fillMaxSize())
                 } else {
                     LazyColumn(
-                        contentPadding = PaddingValues(top = 8.dp, bottom = 4.dp)
+                        contentPadding = PaddingValues(top = 12.dp, bottom = 80.dp)
                     ) {
                         items(
                             items = chats,
@@ -294,8 +333,11 @@ internal fun HomeScreen(
                                 }
                             )
                             HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 20.dp),
-                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+                                modifier = Modifier.padding(
+                                    start = 76.dp,  // inset past the avatar
+                                    end = 20.dp
+                                ),
+                                color = DividerColor,
                                 thickness = 0.5.dp
                             )
                         }
