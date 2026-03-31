@@ -1,6 +1,5 @@
 package com.example.haven.ui.views
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,7 +30,6 @@ fun MessageInputBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(InputBgColor)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
