@@ -1,6 +1,11 @@
-package com.example.haven.data.db
+package com.example.haven.data
 
 import android.content.Context
+import com.example.haven.data.model.ChatEntity
+import com.example.haven.data.model.MessageSenderEntity
+import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.data.model.MessageReactionEntity
+import com.example.haven.data.model.MessageStatus
 import kotlinx.coroutines.flow.Flow
 
 /**

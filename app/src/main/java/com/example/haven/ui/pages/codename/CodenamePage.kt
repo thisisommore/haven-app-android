@@ -1,4 +1,4 @@
-package com.example.haven
+package com.example.haven.ui.pages.codename
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

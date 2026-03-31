@@ -1,4 +1,4 @@
-package com.example.haven
+package com.example.haven.ui.pages.landing
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring

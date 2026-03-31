@@ -1,4 +1,4 @@
-package com.example.haven.ui.components
+package com.example.haven.ui.views
 
 import android.content.Intent
 import android.net.Uri

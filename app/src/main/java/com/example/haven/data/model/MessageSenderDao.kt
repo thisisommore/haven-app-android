@@ -1,4 +1,4 @@
-package com.example.haven.data.db
+package com.example.haven.data.model
 
 import androidx.room.Dao
 import androidx.room.Delete

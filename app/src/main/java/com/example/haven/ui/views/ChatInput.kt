@@ -1,4 +1,4 @@
-package com.example.haven.ui.components
+package com.example.haven.ui.views
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

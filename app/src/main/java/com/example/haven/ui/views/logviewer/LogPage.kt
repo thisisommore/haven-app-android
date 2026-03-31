@@ -1,4 +1,4 @@
-package com.example.haven
+package com.example.haven.ui.views.logviewer
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

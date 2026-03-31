@@ -1,4 +1,4 @@
-package com.example.haven
+package com.example.haven.ui.pages.home
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -46,10 +46,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.haven.ui.ChatWithPreview
-import com.example.haven.ui.HomeViewModel
-import com.example.haven.ui.components.ChatListItem
-import com.example.haven.ui.components.EmptyChatsState
+import com.example.haven.ui.pages.home.ChatWithPreview
+import com.example.haven.ui.pages.home.HomeViewModel
+import com.example.haven.ui.views.ChatListItem
+import com.example.haven.ui.views.EmptyChatsState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable

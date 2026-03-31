@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import bindings.Cmix
-import com.example.haven.data.db.ChatEntity
-import com.example.haven.data.db.DatabaseModule
-import com.example.haven.data.db.MessageSenderEntity
+import com.example.haven.data.model.ChatEntity
+import com.example.haven.data.DatabaseModule
+import com.example.haven.data.model.MessageSenderEntity
 import com.example.haven.xxdk.callbacks.ChannelEventModelBuilder
 import com.example.haven.xxdk.callbacks.ChannelUICallbacks
 import com.example.haven.xxdk.callbacks.DmEvents

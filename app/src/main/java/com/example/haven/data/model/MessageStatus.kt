@@ -1,4 +1,4 @@
-package com.example.haven.data.db
+package com.example.haven.data.model
 
 enum class MessageStatus(val value: Int) {
     UNSENT(0),

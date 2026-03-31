@@ -1,4 +1,4 @@
-package com.example.haven
+package com.example.haven.ui.pages.password
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

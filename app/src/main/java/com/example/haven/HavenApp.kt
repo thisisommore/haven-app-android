@@ -39,8 +39,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.haven.ui.ChatViewModel
-import com.example.haven.ui.HomeViewModel
+import com.example.haven.ui.pages.chat.ChatScreen
+import com.example.haven.ui.pages.chat.ChatViewModel
+import com.example.haven.ui.pages.codename.CodenamePage
+import com.example.haven.ui.pages.home.HomeScreen
+import com.example.haven.ui.pages.home.HomeViewModel
+import com.example.haven.ui.pages.landing.LandingPage
+import com.example.haven.ui.pages.password.PasswordPage
+import com.example.haven.ui.views.logviewer.LogPage
 import com.example.haven.xxdk.GeneratedIdentity
 import com.example.haven.xxdk.XXDK
 import com.example.haven.xxdk.XXDKStorage

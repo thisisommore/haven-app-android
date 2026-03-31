@@ -1,4 +1,4 @@
-package com.example.haven.data.db
+package com.example.haven.data.model
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

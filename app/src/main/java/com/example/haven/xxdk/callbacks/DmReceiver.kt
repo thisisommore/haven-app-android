@@ -4,9 +4,10 @@ import android.content.Context
 import android.util.Base64
 import android.util.Log
 import bindings.DMReceiver
-import com.example.haven.data.db.ChatEntity
-import com.example.haven.data.db.DatabaseModule
-import com.example.haven.data.db.MessageStatus
+import com.example.haven.data.model.ChatEntity
+import com.example.haven.data.DatabaseModule
+import com.example.haven.data.model.MessageStatus
+import com.example.haven.data.model.ChatMessageEntity
 import com.example.haven.xxdk.MessageDecoding
 import com.example.haven.xxdk.Parser
 import com.example.haven.xxdk.ReceiverHelpers
@@ -260,7 +261,7 @@ class DmReceiver(private val context: Context) : DMReceiver {
         color: Int,
         timestamp: Long,
         status: Long
-    ): com.example.haven.data.db.ChatMessageEntity {
+    ): com.example.haven.data.model.ChatMessageEntity {
 
         val name = codename.trim().takeIf { it.isNotEmpty() } ?: "Unknown"
 

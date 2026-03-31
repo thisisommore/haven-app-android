@@ -1,4 +1,4 @@
-package com.example.haven.ui.components
+package com.example.haven.ui.views
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -44,7 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.haven.data.db.ChatMessageEntity
+import com.example.haven.data.model.ChatMessageEntity
 import java.text.SimpleDateFormat
 import java.util.Locale
 

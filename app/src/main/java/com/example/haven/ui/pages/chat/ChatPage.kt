@@ -1,4 +1,4 @@
-package com.example.haven
+package com.example.haven.ui.pages.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,11 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.haven.data.db.ChatEntity
-import com.example.haven.data.db.ChatMessageEntity
-import com.example.haven.ui.components.MessageBubble
-import com.example.haven.ui.components.MessageInputBar
-import com.example.haven.ui.components.ReplyPreview
+import com.example.haven.data.model.ChatEntity
+import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.ui.views.MessageBubble
+import com.example.haven.ui.views.MessageInputBar
+import com.example.haven.ui.views.ReplyPreview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -175,7 +175,7 @@ internal fun ChatPage(
                         MaterialTheme.colorScheme.primaryContainer,
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    com.example.haven.ui.components.HtmlText(
+                    com.example.haven.ui.views.HtmlText(
                         html = msg.message,
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)
                     )

@@ -1,4 +1,4 @@
-package com.example.haven.data.db
+package com.example.haven.data
 
 import android.content.Context
 

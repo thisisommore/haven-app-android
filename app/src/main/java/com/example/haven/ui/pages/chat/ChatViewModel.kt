@@ -1,12 +1,12 @@
-package com.example.haven.ui
+package com.example.haven.ui.pages.chat
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.haven.data.db.ChatEntity
-import com.example.haven.data.db.ChatMessageEntity
-import com.example.haven.data.db.DatabaseRepository
+import com.example.haven.data.model.ChatEntity
+import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.data.DatabaseRepository
 import com.example.haven.xxdk.XXDK
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

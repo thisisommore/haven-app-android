@@ -1,4 +1,4 @@
-package com.example.haven.ui.components
+package com.example.haven.ui.views
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.haven.ui.ChatWithPreview
+import com.example.haven.ui.pages.home.ChatWithPreview
 import java.text.SimpleDateFormat
 import java.util.Locale
 

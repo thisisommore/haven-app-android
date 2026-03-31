@@ -1,11 +1,11 @@
 package com.example.haven.xxdk
 
 import android.content.Context
-import com.example.haven.data.db.ChatEntity
-import com.example.haven.data.db.ChatMessageEntity
-import com.example.haven.data.db.DatabaseModule
-import com.example.haven.data.db.MessageSenderEntity
-import com.example.haven.data.db.MessageStatus
+import com.example.haven.data.model.ChatEntity
+import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.data.DatabaseModule
+import com.example.haven.data.model.MessageSenderEntity
+import com.example.haven.data.model.MessageStatus
 import bindings.Bindings
 import java.util.Date
 import java.util.UUID

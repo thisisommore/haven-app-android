@@ -1,6 +1,15 @@
-package com.example.haven.data.db
+package com.example.haven.data
 
 import android.content.Context
+import com.example.haven.data.model.ChatEntity
+import com.example.haven.data.model.MessageSenderEntity
+import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.data.model.MessageReactionEntity
+import com.example.haven.data.model.Converters
+import com.example.haven.data.model.ChatDao
+import com.example.haven.data.model.MessageSenderDao
+import com.example.haven.data.model.ChatMessageDao
+import com.example.haven.data.model.MessageReactionDao
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
