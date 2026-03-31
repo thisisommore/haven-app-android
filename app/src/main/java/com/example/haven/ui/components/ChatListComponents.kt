@@ -47,17 +47,29 @@ fun ChatListItem(
             )
         },
         supportingContent = {
-            Text(
-                text = stripHtml(chat.preview),
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (chat.unreadCount > 0) {
-                    MaterialTheme.colorScheme.onSurface
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                // Sender name above message (like iOS)
+                chat.senderName?.let { sender ->
+                    Text(
+                        text = sender,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Text(
+                    text = stripHtml(chat.preview),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (chat.unreadCount > 0) {
+                        MaterialTheme.colorScheme.onSurface
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         },
         trailingContent = {
             Column(

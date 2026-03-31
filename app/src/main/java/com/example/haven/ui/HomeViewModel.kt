@@ -22,8 +22,10 @@ data class ChatWithPreview(
     val id: String,
     val title: String,
     val preview: String,
+    val senderName: String? = null,
     val unreadCount: Int,
-    val timestamp: Long = 0L
+    val timestamp: Long = 0L,
+    val isIncoming: Boolean? = null
 )
 
 /**
@@ -40,12 +42,28 @@ class HomeViewModel(
             val recentMessages = repository.getRecentMessages(chat.id, 1)
             val lastMessage = recentMessages.firstOrNull()
             
+            // Get sender name for the last message
+            val senderName = if (lastMessage != null) {
+                if (lastMessage.isIncoming) {
+                    lastMessage.senderId?.let { senderId ->
+                        repository.getSenderById(senderId)?.let { sender ->
+                            sender.nickname?.takeIf { it.isNotBlank() } 
+                                ?: sender.codename
+                        }
+                    } ?: "Unknown"
+                } else {
+                    "you"
+                }
+            } else null
+            
             ChatWithPreview(
                 id = chat.id,
                 title = chat.name,
                 preview = lastMessage?.message ?: "No messages yet",
+                senderName = senderName,
                 unreadCount = chat.unreadCount,
-                timestamp = lastMessage?.timestamp?.time ?: chat.joinedAt.time
+                timestamp = lastMessage?.timestamp?.time ?: chat.joinedAt.time,
+                isIncoming = lastMessage?.isIncoming
             )
         }.sortedByDescending { it.timestamp }
     }
