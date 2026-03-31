@@ -149,7 +149,7 @@ internal fun HomeScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = HavenHeaderStart,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onNewChat,
@@ -346,7 +346,7 @@ internal fun HomeScreen(
             // ── Chat list: white surface, rounded top corners ───────
             Surface(
                 color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp),
                 shadowElevation = 8.dp,
                 modifier = Modifier
                     .fillMaxWidth()
