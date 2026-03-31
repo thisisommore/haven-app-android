@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.haven.ui.theme.InterFontFamily
 
 private val InputBgColor = Color(0xFFFFEEE2) // Peach background
@@ -41,7 +42,8 @@ fun MessageInputBar(
                     placeholder,
                     color = InputTextColor,
                     fontFamily = InterFontFamily,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 22.sp
                 )
             },
             modifier = Modifier.fillMaxWidth(),
@@ -58,7 +60,8 @@ fun MessageInputBar(
             textStyle = MaterialTheme.typography.bodyLarge.copy(
                 fontFamily = InterFontFamily,
                 fontWeight = FontWeight.SemiBold,
-                color = InputTextColor
+                color = InputTextColor,
+                fontSize = 22.sp
             )
         )
     }
