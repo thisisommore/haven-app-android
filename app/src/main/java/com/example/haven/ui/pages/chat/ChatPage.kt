@@ -112,7 +112,7 @@ internal fun ChatScreen(
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                containerColor = ChatBgColor
             )
         )
 
