@@ -1,6 +1,7 @@
 package com.example.haven.ui.components
 
 import android.text.method.LinkMovementMethod
+import android.view.MotionEvent
 import android.widget.TextView
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,8 +26,10 @@ fun HtmlText(
         factory = { context ->
             TextView(context).apply {
                 this.maxLines = maxLines
-                // Enable link clicking
-                movementMethod = LinkMovementMethod.getInstance()
+                // Disable touch handling so parent can receive long-press
+                isClickable = false
+                isLongClickable = false
+                setOnTouchListener { _, _ -> false }
             }
         },
         update = { textView ->
