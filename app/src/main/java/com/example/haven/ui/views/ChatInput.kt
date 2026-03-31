@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Face
+import androidx.compose.material.icons.outlined.SentimentSatisfied
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +46,7 @@ fun MessageInputBar(
             modifier = Modifier.size(48.dp)
         ) {
             Icon(
-                imageVector = Icons.Outlined.Face,
+                imageVector = Icons.Outlined.SentimentSatisfied,
                 contentDescription = "Emoji",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(32.dp)
