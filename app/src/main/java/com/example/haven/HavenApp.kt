@@ -9,16 +9,10 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -26,7 +20,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
@@ -35,10 +28,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.haven.ui.pages.chat.ChatScreen
 import com.example.haven.ui.pages.chat.ChatViewModel
@@ -53,7 +44,6 @@ import com.example.haven.xxdk.XXDK
 import com.example.haven.xxdk.XXDKStorage
 import com.example.haven.xxdk.applyIdentity
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import android.util.Log
 
 @Composable
@@ -78,8 +68,7 @@ internal fun HavenApp() {
         )
     }
     // For new users: start directly at password setup
-    // For existing users: start directly at home (with loading indicator)
-    // Use remember (not rememberSaveable) to always check isSetupComplete on app start
+    // For existing users: start directly at home
     var route by remember { 
         mutableStateOf(if (appStorage.isSetupComplete) Route.home else Route.password) 
     }
@@ -94,8 +83,6 @@ internal fun HavenApp() {
                 val identity = xxdk.loadSavedPrivateIdentity()
                 xxdk.loadClients(identity)
             }.onFailure {
-                // If loading fails for existing user, don't reset isSetupComplete
-                // Just log the error - user stays on home page
                 Log.e("HavenApp", "Failed to load cmix for existing user: ${it.message}")
             }
         }
@@ -114,8 +101,6 @@ internal fun HavenApp() {
     var ndfDeferred by remember { mutableStateOf<Deferred<ByteArray>?>(null) }
     var codenameBusy by rememberSaveable { mutableStateOf(false) }
     var codenameError by rememberSaveable { mutableStateOf<String?>(null) }
-    val currentChatTitle by homeViewModel.filteredChats.collectAsState(initial = emptyList())
-    val currentChatName = currentChatTitle.firstOrNull { it.id == chatId }?.title ?: "Chat"
 
     // Handle back button navigation
     BackHandler(enabled = route != Route.home && route != Route.password) {
@@ -131,8 +116,6 @@ internal fun HavenApp() {
     AnimatedContent(
         targetState = route,
         transitionSpec = {
-            // Home to Chat: slide in from right, slide out to left
-            // Chat to Home: slide in from left, slide out to right
             val isForward = targetState == Route.chat && initialState == Route.home
             slideInHorizontally(
                 animationSpec = tween(300),
@@ -147,7 +130,6 @@ internal fun HavenApp() {
     ) { targetRoute ->
         when (targetRoute) {
             Route.landing -> {
-                // Start network follower when landing page is shown and setup is complete
                 LaunchedEffect(appStorage.isSetupComplete) {
                     if (appStorage.isSetupComplete && xxdk.cmix != null) {
                         runCatching {
@@ -170,18 +152,24 @@ internal fun HavenApp() {
                 )
             }
 
-            Route.password -> Page("Join the alpha", onBack = null) { p ->
-                // Start NDF download as soon as password page opens
+            Route.password -> {
+                // Automatically reset setup and start NDF download on page entry
                 LaunchedEffect(Unit) {
-                    if (ndfDeferred == null) {
+                    runCatching {
+                        appStorage.clearAll()
+                        password = ""
+                        confirm = ""
+                        passwordError = null
                         ndfDeferred = scope.async {
                             xxdk.downloadNdf()
                         }
+                    }.onFailure {
+                        Log.e("HavenApp", "Reset setup failed: ${it.message}")
                     }
                 }
                 
                 PasswordPage(
-                    modifier = Modifier.padding(p),
+                    modifier = Modifier.fillMaxSize(),
                     password = password,
                     confirm = confirm,
                     onPassword = { password = it },
@@ -193,7 +181,6 @@ internal fun HavenApp() {
                             runCatching {
                                 appStorage.password = password
                                 xxdk.setAppStorage(appStorage)
-                                // Wait for NDF download to complete
                                 val ndf = ndfDeferred?.await() ?: xxdk.downloadNdf()
                                 xxdk.newCmix(ndf)
                                 xxdk.loadCmix()
@@ -208,30 +195,11 @@ internal fun HavenApp() {
                         }
                     },
                     onImport = {
-                        passwordError = "Import needs a real encrypted identity file. File selection is not wired yet."
-                    },
-                    onClearAll = {
-                        scope.launch {
-                            runCatching {
-                                appStorage.clearAll()
-                                // Reset all state
-                                password = ""
-                                confirm = ""
-                                ndfDeferred = null
-                                passwordError = null
-                                // Re-trigger NDF download
-                                ndfDeferred = scope.async {
-                                    xxdk.downloadNdf()
-                                }
-                            }.onFailure {
-                                Log.e("HavenApp", "Clear all failed: ${it.message}")
-                            }
-                        }
+                        passwordError = "Import needs a real encrypted identity file."
                     },
                     status = xxdk.status,
                     isLoading = passwordBusy,
-                    error = passwordError,
-                    showClearAll = ndfDeferred != null
+                    error = passwordError
                 )
             }
 
@@ -256,14 +224,11 @@ internal fun HavenApp() {
                         }
                     },
                     onClaim = {
-                        // Apply identity immediately and go to landing
-                        // Setup clients will happen in background on landing page
                         scope.launch {
                             codenameBusy = true
                             runCatching {
                                 val identity = codenames.first { it.pubkey == selectedCodename }
                                 xxdk.applyIdentity(identity)
-                                // Don't wait for setupClients - do it in background on landing
                                 scope.launch {
                                     xxdk.setupClients(identity.privateIdentity) {
                                         appStorage.isSetupComplete = true
@@ -295,17 +260,8 @@ internal fun HavenApp() {
                     onLogout = {
                         scope.launch {
                             runCatching {
-                                // 1. Call xxdk logout (stops network, clears bindings, deletes state)
                                 xxdk.logout()
-                                
-                                // 2. Clear database (messages, reactions, senders, chats)
-                                // TODO: Clear database tables like iOS does
-                                // For now, we'll just clear the storage
-                                
-                                // 3. Clear app storage
                                 appStorage.clearAll()
-                                
-                                // 4. Reset navigation to password page
                                 route = Route.password
                             }.onFailure {
                                 Log.e("HavenApp", "Logout failed: ${it.message}")
