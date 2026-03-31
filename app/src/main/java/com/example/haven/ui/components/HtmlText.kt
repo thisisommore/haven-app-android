@@ -82,13 +82,21 @@ fun HtmlText(
                         pendingUrl = null
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                         context.startActivity(intent)
-                    }
+                    },
+                    colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
+                        contentColor = androidx.compose.material3.MaterialTheme.colorScheme.error
+                    )
                 ) {
                     Text("Open")
                 }
             },
             dismissButton = {
-                Button(onClick = { pendingUrl = null }) {
+                Button(
+                    onClick = { pendingUrl = null },
+                    colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
+                        contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                ) {
                     Text("Cancel")
                 }
             }
