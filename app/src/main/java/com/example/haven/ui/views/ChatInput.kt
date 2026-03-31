@@ -51,8 +51,8 @@ fun MessageInputBar(
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.Transparent,
                 unfocusedBorderColor = Color.Transparent,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
+                focusedContainerColor = InputBgColor,
+                unfocusedContainerColor = InputBgColor,
                 focusedTextColor = InputTextColor,
                 unfocusedTextColor = InputTextColor
             ),
