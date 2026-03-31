@@ -192,9 +192,28 @@ internal fun HavenApp() {
                     onImport = {
                         passwordError = "Import needs a real encrypted identity file. File selection is not wired yet."
                     },
+                    onClearAll = {
+                        scope.launch {
+                            runCatching {
+                                appStorage.clearAll()
+                                // Reset all state
+                                password = ""
+                                confirm = ""
+                                ndfDeferred = null
+                                passwordError = null
+                                // Re-trigger NDF download
+                                ndfDeferred = scope.async {
+                                    xxdk.downloadNdf()
+                                }
+                            }.onFailure {
+                                Log.e("HavenApp", "Clear all failed: ${it.message}")
+                            }
+                        }
+                    },
                     status = xxdk.status,
                     isLoading = passwordBusy,
-                    error = passwordError
+                    error = passwordError,
+                    showClearAll = ndfDeferred != null
                 )
             }
 

@@ -2,9 +2,12 @@ package com.example.haven
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -31,9 +34,11 @@ internal fun PasswordPage(
     onConfirm: (String) -> Unit,
     onContinue: () -> Unit,
     onImport: () -> Unit,
+    onClearAll: () -> Unit = {},
     status: String,
     isLoading: Boolean,
     error: String?,
+    showClearAll: Boolean = false,
 ) {
     val rules = listOf(
         "8+ chars" to (password.length >= 8),
@@ -91,5 +96,25 @@ internal fun PasswordPage(
             enabled = !isLoading && password.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         ) { Text("Import existing account") }
+        
+        // Clear All option for partial/half setup reset
+        if (showClearAll) {
+            Spacer(modifier = Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Having trouble? You can reset and start over.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            OutlinedButton(
+                onClick = onClearAll,
+                enabled = !isLoading,
+                modifier = Modifier.fillMaxWidth(),
+                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) { Text("Clear All & Start Over") }
+        }
     }
 }
