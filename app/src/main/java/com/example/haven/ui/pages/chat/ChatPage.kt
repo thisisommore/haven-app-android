@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.ChatMessageModel
@@ -83,71 +84,59 @@ internal fun ChatScreen(
             .imePadding()
     ) {
         CenterAlignedTopAppBar(
-            modifier = Modifier.padding(horizontal = 20.dp),
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
             title = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = when (chat?.name) {
-                            null -> "Chat"
-                            "<self>" -> "Notes"
-                            else -> chat.name
-                        },
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    if (chat?.pubKey != null) {
-                        Text(
-                            text = "Direct Message",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    } else if (chat?.channelId != null) {
-                        Text(
-                            text = "Channel",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
+                Text(
+                    text = when (chat?.name) {
+                        null -> "Chat"
+                        "<self>" -> "Notes"
+                        else -> chat.name
+                    },
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 22.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             },
             navigationIcon = {
                 Box(
                     modifier = Modifier
-                        .size(34.dp)
+                        .size(62.dp)
                         .background(
                             color = Color(0xFF5D4127),
                             shape = RoundedCornerShape(22.dp)
                         )
                         .clickable(onClick = onBackClick)
-                        .padding(2.dp),
+                        .padding(12.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White,
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             },
             actions = {
                 Box(
                     modifier = Modifier
-                        .size(34.dp)
+                        .size(62.dp)
                         .background(
                             color = Color(0xFF5D4127),
                             shape = RoundedCornerShape(22.dp)
                         )
                         .clickable(onClick = { /* TODO: Show info */ })
-                        .padding(2.dp),
+                        .padding(12.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Info,
                         contentDescription = "Info",
                         tint = Color.White,
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             },
