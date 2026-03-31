@@ -71,10 +71,10 @@ import com.example.haven.ui.views.ChatListItem
 import com.example.haven.ui.views.EmptyChatsState
 
 // ── Haven brand palette ──────────────────────────────────────────────
-private val HavenOrange = Color(0xFFE8860C)
-private val HavenOrangeDark = Color(0xFFD07808)
-private val HavenHeaderStart = Color(0xFFFFF8F0)   // top of gradient
-private val HavenHeaderEnd = Color(0xFFFFF1E0)     // bottom of gradient
+private val HavenPrimary = Color(0xFF87521B)
+private val HavenPrimaryDark = Color(0xFF6B4216)
+private val HavenHeaderStart = Color(0xFFFFEEE2)   // top of gradient
+private val HavenHeaderEnd = Color(0xFFFFEEE2)     // bottom of gradient
 private val SearchBg = Color(0xFFFFF9F3)
 private val SearchBorder = Color(0xFFE8D5BF)
 private val SubtitleGray = Color(0xFF8E8E93)
@@ -151,7 +151,7 @@ internal fun HomeScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onNewChat,
-                containerColor = HavenOrange,
+                containerColor = HavenPrimary,
                 contentColor = Color.White,
                 shape = CircleShape,
                 elevation = FloatingActionButtonDefaults.elevation(
@@ -211,7 +211,7 @@ internal fun HomeScreen(
                             if (isLoading) {
                                 LoadingIndicator(
                                     modifier = Modifier.size(20.dp),
-                                    color = HavenOrange
+                                    color = HavenPrimary
                                 )
                             }
                         }
@@ -279,8 +279,8 @@ internal fun HomeScreen(
                             .shadow(
                                 elevation = 2.dp,
                                 shape = RoundedCornerShape(14.dp),
-                                ambientColor = HavenOrange.copy(alpha = 0.08f),
-                                spotColor = HavenOrange.copy(alpha = 0.12f)
+                                ambientColor = HavenPrimary.copy(alpha = 0.08f),
+                                spotColor = HavenPrimary.copy(alpha = 0.12f)
                             )
                             .clip(RoundedCornerShape(14.dp)),
                         placeholder = {
@@ -297,7 +297,7 @@ internal fun HomeScreen(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
-                            cursorColor = HavenOrange
+                            cursorColor = HavenPrimary
                         ),
                         shape = RoundedCornerShape(14.dp)
                     )

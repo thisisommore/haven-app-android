@@ -2,14 +2,14 @@ package com.example.haven.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// iOS Haven color scheme - Primary Orange: #FF9300 (RGB: 255, 147, 0)
-val HavenOrangeLight = Color(0xFFFF9300)
-val HavenOrangeDark = Color(0xFFFF9F0A)
-val HavenOrangeHighContrast = Color(0xFFC93400)
+// Haven color scheme - Primary Brown: #87521B
+val HavenPrimary = Color(0xFF87521B)
+val HavenPrimaryDark = Color(0xFF6B4216)
+val HavenPrimaryLight = Color(0xFFA66B2E)
 
 // Secondary colors (orange tints)
-val SecondaryLight = Color(0xFFFFB347)
-val SecondaryDark = Color(0xFFFFB340)
+val SecondaryLight = Color(0xFFD4A574)
+val SecondaryDark = Color(0xFFB8936A)
 
 // Background colors (iOS style)
 val BackgroundLight = Color(0xFFFFFFFF)

@@ -37,6 +37,9 @@ fun ChatListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // For Notes (self chat) with no messages, don't show preview
+    val isNotesEmpty = chat.title == "<self>" && chat.preview == "No messages yet"
+    
     ListItem(
         leadingContent = if (chat.title == "<self>") {
             {
@@ -57,29 +60,31 @@ fun ChatListItem(
                 overflow = TextOverflow.Ellipsis
             )
         },
-        supportingContent = {
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                // Sender name above message (like iOS)
-                chat.senderName?.let { sender ->
+        supportingContent = if (isNotesEmpty) null else {
+            {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    // Sender name above message (like iOS)
+                    chat.senderName?.let { sender ->
+                        Text(
+                            text = sender,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                     Text(
-                        text = sender,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        text = stripHtml(chat.preview),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (chat.unreadCount > 0) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Text(
-                    text = stripHtml(chat.preview),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (chat.unreadCount > 0) {
-                        MaterialTheme.colorScheme.onSurface
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
             }
         },
         trailingContent = {
