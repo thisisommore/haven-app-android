@@ -8,7 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.haven.xxdk.GeneratedIdentity
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun CodenamePage(
     modifier: Modifier,
@@ -51,7 +53,7 @@ internal fun CodenamePage(
         }
         Button(onClick = onClaim, enabled = !isLoading && selected.isNotBlank(), modifier = Modifier.fillMaxWidth()) {
             if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.padding(end = 8.dp), strokeWidth = 2.dp)
+                CircularWavyProgressIndicator(modifier = Modifier.padding(end = 8.dp))
             }
             Text(if (isLoading) status else "Claim codename")
         }
