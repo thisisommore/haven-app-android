@@ -2,6 +2,8 @@ package com.example.haven.ui.components
 
 import android.text.SpannableStringBuilder
 import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.view.MotionEvent
 import android.widget.TextView
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
+import androidx.core.widget.TextViewCompat
 
 /**
  * Trim trailing whitespace/newlines from Spanned text
@@ -43,10 +46,10 @@ fun HtmlText(
         factory = { context ->
             TextView(context).apply {
                 this.maxLines = maxLines
-                // Disable touch handling so parent can receive long-press
-                isClickable = false
+                // Enable links to be clickable
+                movementMethod = LinkMovementMethod.getInstance()
+                // Links need clickable enabled, but we handle long-press at parent level
                 isLongClickable = false
-                setOnTouchListener { _, _ -> false }
             }
         },
         update = { textView ->
