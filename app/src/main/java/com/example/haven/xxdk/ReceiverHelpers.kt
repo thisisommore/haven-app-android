@@ -1,10 +1,10 @@
 package com.example.haven.xxdk
 
 import android.content.Context
-import com.example.haven.data.model.ChatEntity
-import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.data.model.ChatModel
+import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.data.DatabaseModule
-import com.example.haven.data.model.MessageSenderEntity
+import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.data.model.MessageStatus
 import bindings.Bindings
 import java.util.Date
@@ -88,7 +88,7 @@ class ReceiverHelpers private constructor(private val context: Context) {
         nickname: String? = null,
         dmToken: Int,
         color: Int
-    ): MessageSenderEntity {
+    ): MessageSenderModel {
         val existing = repository.getSenderByPubKey(pubKey)
 
         return if (existing != null) {
@@ -99,7 +99,7 @@ class ReceiverHelpers private constructor(private val context: Context) {
             repository.updateSender(updated)
             updated
         } else {
-            val sender = MessageSenderEntity(
+            val sender = MessageSenderModel(
                 pubkey = pubKey,
                 codename = codename,
                 nickname = nickname,
@@ -115,8 +115,8 @@ class ReceiverHelpers private constructor(private val context: Context) {
      * Insert a new text message
      */
     suspend fun insertMessage(
-        chat: ChatEntity,
-        sender: MessageSenderEntity?,
+        chat: ChatModel,
+        sender: MessageSenderModel?,
         text: String,
         messageId: String,
         id: Long,
@@ -124,11 +124,11 @@ class ReceiverHelpers private constructor(private val context: Context) {
         replyTo: String? = null,
         timestamp: Long? = null,
         status: Long
-    ): ChatMessageEntity {
+    ): ChatMessageModel {
         val isIncoming = !isSenderSelf(senderPubKey)
 
         val msg = if (timestamp != null) {
-            ChatMessageEntity(
+            ChatMessageModel(
                 id = id,
                 externalId = messageId,
                 message = text.trim(),
@@ -142,7 +142,7 @@ class ReceiverHelpers private constructor(private val context: Context) {
                 isPlain = !containsHTML(text)
             )
         } else {
-            ChatMessageEntity(
+            ChatMessageModel(
                 id = id,
                 externalId = messageId,
                 message = text,
@@ -171,7 +171,7 @@ class ReceiverHelpers private constructor(private val context: Context) {
      * Persist an incoming message: upserts sender and inserts message
      */
     suspend fun persistIncomingMessage(
-        chat: ChatEntity,
+        chat: ChatModel,
         text: String,
         messageId: String,
         senderPubKey: ByteArray?,
@@ -182,7 +182,7 @@ class ReceiverHelpers private constructor(private val context: Context) {
         replyTo: String? = null,
         timestamp: Long? = null,
         status: Long
-    ): ChatMessageEntity {
+    ): ChatMessageModel {
         val sender = senderCodename?.let { codename ->
             senderPubKey?.let { pubKey ->
                 upsertSender(

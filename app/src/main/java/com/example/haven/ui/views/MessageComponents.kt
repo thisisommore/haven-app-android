@@ -44,14 +44,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.data.model.ChatMessageModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MessageBubble(
-    message: ChatMessageEntity,
+    message: ChatMessageModel,
     onReplyClick: () -> Unit,
     onReactClick: () -> Unit = {},
     isReplyingTo: Boolean,
@@ -174,7 +174,7 @@ private fun copyToClipboard(context: Context, text: String) {
 
 @Composable
 private fun MessageFooter(
-    message: ChatMessageEntity,
+    message: ChatMessageModel,
     isMe: Boolean,
     contentColor: Color,
     modifier: Modifier = Modifier
@@ -215,7 +215,7 @@ fun ReplyIndicator(replyToId: String, isMe: Boolean, modifier: Modifier = Modifi
 
 @Composable
 fun ReplyPreview(
-    message: ChatMessageEntity,
+    message: ChatMessageModel,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {

@@ -11,31 +11,31 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ChatMessageDao {
     @Query("SELECT * FROM chatMessages WHERE chatId = :chatId ORDER BY timestamp ASC")
-    fun getByChatId(chatId: String): Flow<List<ChatMessageEntity>>
+    fun getByChatId(chatId: String): Flow<List<ChatMessageModel>>
 
     @Query("SELECT * FROM chatMessages WHERE chatId = :chatId ORDER BY timestamp DESC LIMIT :limit")
-    suspend fun getRecentByChatId(chatId: String, limit: Int): List<ChatMessageEntity>
+    suspend fun getRecentByChatId(chatId: String, limit: Int): List<ChatMessageModel>
 
     @Query("SELECT * FROM chatMessages WHERE id = :id")
-    suspend fun getById(id: Long): ChatMessageEntity?
+    suspend fun getById(id: Long): ChatMessageModel?
 
     @Query("SELECT * FROM chatMessages WHERE externalId = :externalId")
-    suspend fun getByExternalId(externalId: String): ChatMessageEntity?
+    suspend fun getByExternalId(externalId: String): ChatMessageModel?
 
     @Query("SELECT * FROM chatMessages WHERE senderId = :senderId ORDER BY timestamp DESC")
-    fun getBySenderId(senderId: String): Flow<List<ChatMessageEntity>>
+    fun getBySenderId(senderId: String): Flow<List<ChatMessageModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(message: ChatMessageEntity)
+    suspend fun insert(message: ChatMessageModel)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(messages: List<ChatMessageEntity>)
+    suspend fun insertAll(messages: List<ChatMessageModel>)
 
     @Update
-    suspend fun update(message: ChatMessageEntity)
+    suspend fun update(message: ChatMessageModel)
 
     @Delete
-    suspend fun delete(message: ChatMessageEntity)
+    suspend fun delete(message: ChatMessageModel)
 
     @Query("DELETE FROM chatMessages WHERE chatId = :chatId")
     suspend fun deleteByChatId(chatId: String)
@@ -56,5 +56,5 @@ interface ChatMessageDao {
     suspend fun getUnreadCount(chatId: String): Int
 
     @Query("SELECT * FROM chatMessages WHERE chatId = :chatId AND message LIKE '%' || :query || '%' ORDER BY timestamp ASC")
-    fun searchInChat(chatId: String, query: String): Flow<List<ChatMessageEntity>>
+    fun searchInChat(chatId: String, query: String): Flow<List<ChatMessageModel>>
 }

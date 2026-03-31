@@ -9,7 +9,7 @@ import java.util.UUID
  * Table: messageSenders
  */
 @Entity(tableName = "messageSenders")
-data class MessageSenderEntity(
+data class MessageSenderModel(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
     val pubkey: ByteArray,
@@ -24,7 +24,7 @@ data class MessageSenderEntity(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-        other as MessageSenderEntity
+        other as MessageSenderModel
         return id == other.id
     }
 
@@ -33,8 +33,8 @@ data class MessageSenderEntity(
     companion object {
         private val SELF_ID = UUID(0L, 0L).toString()
 
-        fun selfSender(pubkey: ByteArray): MessageSenderEntity {
-            return MessageSenderEntity(
+        fun selfSender(pubkey: ByteArray): MessageSenderModel {
+            return MessageSenderModel(
                 id = SELF_ID,
                 pubkey = pubkey,
                 codename = "",

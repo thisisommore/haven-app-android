@@ -30,8 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.haven.data.model.ChatEntity
-import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.data.model.ChatModel
+import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.ui.views.MessageBubble
 import com.example.haven.ui.views.MessageInputBar
 import com.example.haven.ui.views.ReplyPreview
@@ -39,14 +39,14 @@ import com.example.haven.ui.views.ReplyPreview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ChatScreen(
-    chat: ChatEntity?,
-    messages: List<ChatMessageEntity>,
+    chat: ChatModel?,
+    messages: List<ChatMessageModel>,
     inputText: String,
     onInputChange: (String) -> Unit,
     onSendClick: () -> Unit,
-    onReplyClick: (ChatMessageEntity) -> Unit,
+    onReplyClick: (ChatMessageModel) -> Unit,
     onBackClick: () -> Unit = {},
-    replyingTo: ChatMessageEntity? = null,
+    replyingTo: ChatMessageModel? = null,
     onCancelReply: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -156,7 +156,7 @@ internal fun ChatScreen(
 @Composable
 internal fun ChatPage(
     modifier: Modifier,
-    messages: List<ChatMessageEntity>
+    messages: List<ChatMessageModel>
 ) {
     androidx.compose.foundation.lazy.LazyColumn(
         modifier = modifier.fillMaxSize().padding(12.dp),

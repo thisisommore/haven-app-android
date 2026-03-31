@@ -5,11 +5,11 @@ import android.util.Base64
 import android.util.Log
 import bindings.EventModel
 import bindings.EventModelBuilder
-import com.example.haven.data.model.ChatEntity
-import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.data.model.ChatModel
+import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.data.DatabaseModule
-import com.example.haven.data.model.MessageReactionEntity
-import com.example.haven.data.model.MessageSenderEntity
+import com.example.haven.data.model.MessageReactionModel
+import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.data.model.MessageStatus
 import com.example.haven.xxdk.MessageDecoding
 import com.example.haven.xxdk.ReceiverHelpers
@@ -192,7 +192,7 @@ class ChannelEventModelBuilder(private val context: Context) : EventModel, Event
                 }
 
                 // De-duplicate by message target + emoji + sender
-                val newReaction = MessageReactionEntity(
+                val newReaction = MessageReactionModel(
                     externalId = reactionMessageId,
                     targetMessageId = targetMessageIdB64,
                     emoji = reaction,
@@ -327,7 +327,7 @@ class ChannelEventModelBuilder(private val context: Context) : EventModel, Event
                 "${channelID?.let { Base64.encodeToString(it, Base64.NO_WRAP) }}")
     }
 
-    private suspend fun fetchChannel(channelId: String): ChatEntity? {
+    private suspend fun fetchChannel(channelId: String): ChatModel? {
         return repository.getChatByChannelId(channelId)
     }
 

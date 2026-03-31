@@ -7,50 +7,53 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 /**
- * Equivalent to iOS MessageReactionModel
- * Table: messageReactions
+ * Equivalent to iOS ChatMessageModel
+ * Table: chatMessages
  */
 @Entity(
-    tableName = "messageReactions",
+    tableName = "chatMessages",
     foreignKeys = [
         ForeignKey(
-            entity = MessageSenderEntity::class,
+            entity = MessageSenderModel::class,
             parentColumns = ["id"],
             childColumns = ["senderId"],
+            onDelete = ForeignKey.SET_NULL
+        ),
+        ForeignKey(
+            entity = ChatModel::class,
+            parentColumns = ["id"],
+            childColumns = ["chatId"],
             onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [
         Index(value = ["externalId"], unique = true),
-        Index(value = ["senderId"]),
-        Index(value = ["targetMessageId"])
+        Index(value = ["chatId"]),
+        Index(value = ["senderId"])
     ]
 )
-data class MessageReactionEntity(
+data class ChatMessageModel(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val externalId: String,
-    val targetMessageId: String,
-    val emoji: String,
-    val timestamp: Date = Date(),
-    val senderId: String,
-    val status: Int = MessageStatus.UNSENT.value
+    val message: String,
+    val timestamp: Date,
+    val isIncoming: Boolean,
+    val isRead: Boolean = false,
+    val status: Int = MessageStatus.UNSENT.value,
+    val senderId: String? = null,
+    val chatId: String,
+    val replyTo: String? = null,
+    val isPlain: Boolean = false
 ) {
     fun getMessageStatus(): MessageStatus = MessageStatus.fromValue(status)
-
-    val isMe: Boolean
-        get() = senderId == SELF_ID
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-        other as MessageReactionEntity
+        other as ChatMessageModel
         return id == other.id
     }
 
     override fun hashCode(): Int = id.hashCode()
-
-    companion object {
-        private val SELF_ID = java.util.UUID(0L, 0L).toString()
-    }
 }

@@ -1,10 +1,10 @@
 package com.example.haven.data
 
 import android.content.Context
-import com.example.haven.data.model.ChatEntity
-import com.example.haven.data.model.MessageSenderEntity
-import com.example.haven.data.model.ChatMessageEntity
-import com.example.haven.data.model.MessageReactionEntity
+import com.example.haven.data.model.ChatModel
+import com.example.haven.data.model.MessageSenderModel
+import com.example.haven.data.model.ChatMessageModel
+import com.example.haven.data.model.MessageReactionModel
 import com.example.haven.data.model.Converters
 import com.example.haven.data.model.ChatDao
 import com.example.haven.data.model.MessageSenderDao
@@ -21,10 +21,10 @@ import androidx.room.TypeConverters
  */
 @Database(
     entities = [
-        ChatEntity::class,
-        MessageSenderEntity::class,
-        ChatMessageEntity::class,
-        MessageReactionEntity::class
+        ChatModel::class,
+        MessageSenderModel::class,
+        ChatMessageModel::class,
+        MessageReactionModel::class
     ],
     version = 1,
     exportSchema = true

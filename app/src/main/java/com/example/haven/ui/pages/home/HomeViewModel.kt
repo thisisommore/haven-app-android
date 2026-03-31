@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.haven.data.model.ChatEntity
-import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.data.model.ChatModel
+import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.data.DatabaseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

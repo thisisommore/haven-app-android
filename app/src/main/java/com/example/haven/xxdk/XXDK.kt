@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import bindings.Cmix
-import com.example.haven.data.model.ChatEntity
+import com.example.haven.data.model.ChatModel
 import com.example.haven.data.DatabaseModule
-import com.example.haven.data.model.MessageSenderEntity
+import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.xxdk.callbacks.ChannelEventModelBuilder
 import com.example.haven.xxdk.callbacks.ChannelUICallbacks
 import com.example.haven.xxdk.callbacks.DmEvents
@@ -249,13 +249,13 @@ open class XXDK(
             if (!currentCodename.isNullOrEmpty()) {
                 val existingSelfChat = repository.getChatByPubKey(selfPubKey)
                 if (existingSelfChat == null) {
-                    val selfChat = ChatEntity(
+                    val selfChat = ChatModel(
                         name = "<self>",
                         pubKey = selfPubKey,
                         dmToken = token,
                         color = 0xE97451
                     )
-                    val selfSender = MessageSenderEntity(
+                    val selfSender = MessageSenderModel(
                         id = java.util.UUID.nameUUIDFromBytes(selfPubKey).toString(),
                         pubkey = selfPubKey,
                         codename = currentCodename,
@@ -295,7 +295,7 @@ open class XXDK(
             // Create local chat entry if not exists
             val existingChannel = repository.getChatByChannelId(channelId)
             if (existingChannel == null) {
-                val channelChat = ChatEntity(
+                val channelChat = ChatModel(
                     name = channelInfo?.name ?: "xxGeneralChat",
                     channelId = channelId
                 )
@@ -308,7 +308,7 @@ open class XXDK(
             try {
                 val existingChannel = repository.getChatByChannelId("xxIOS")
                 if (existingChannel == null) {
-                    val channelChat = ChatEntity(
+                    val channelChat = ChatModel(
                         name = "xxGeneralChat",
                         channelId = "xxIOS"
                     )

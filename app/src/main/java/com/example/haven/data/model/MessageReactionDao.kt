@@ -11,28 +11,28 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MessageReactionDao {
     @Query("SELECT * FROM messageReactions WHERE targetMessageId = :targetMessageId ORDER BY timestamp ASC")
-    fun getByTargetMessageId(targetMessageId: String): Flow<List<MessageReactionEntity>>
+    fun getByTargetMessageId(targetMessageId: String): Flow<List<MessageReactionModel>>
 
     @Query("SELECT * FROM messageReactions WHERE id = :id")
-    suspend fun getById(id: Long): MessageReactionEntity?
+    suspend fun getById(id: Long): MessageReactionModel?
 
     @Query("SELECT * FROM messageReactions WHERE externalId = :externalId")
-    suspend fun getByExternalId(externalId: String): MessageReactionEntity?
+    suspend fun getByExternalId(externalId: String): MessageReactionModel?
 
     @Query("SELECT * FROM messageReactions WHERE senderId = :senderId ORDER BY timestamp DESC")
-    fun getBySenderId(senderId: String): Flow<List<MessageReactionEntity>>
+    fun getBySenderId(senderId: String): Flow<List<MessageReactionModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(reaction: MessageReactionEntity)
+    suspend fun insert(reaction: MessageReactionModel)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(reactions: List<MessageReactionEntity>)
+    suspend fun insertAll(reactions: List<MessageReactionModel>)
 
     @Update
-    suspend fun update(reaction: MessageReactionEntity)
+    suspend fun update(reaction: MessageReactionModel)
 
     @Delete
-    suspend fun delete(reaction: MessageReactionEntity)
+    suspend fun delete(reaction: MessageReactionModel)
 
     @Query("DELETE FROM messageReactions WHERE targetMessageId = :targetMessageId")
     suspend fun deleteByTargetMessageId(targetMessageId: String)

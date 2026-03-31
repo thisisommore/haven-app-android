@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.haven.data.model.ChatEntity
-import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.data.model.ChatModel
+import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.data.DatabaseRepository
 import com.example.haven.xxdk.XXDK
 import kotlinx.coroutines.flow.Flow
@@ -23,11 +23,11 @@ class ChatViewModel(
 ) : ViewModel() {
 
     // Current chat being viewed
-    private val _currentChat = MutableStateFlow<ChatEntity?>(null)
-    val currentChat: StateFlow<ChatEntity?> = _currentChat.asStateFlow()
+    private val _currentChat = MutableStateFlow<ChatModel?>(null)
+    val currentChat: StateFlow<ChatModel?> = _currentChat.asStateFlow()
 
     // Messages for current chat
-    var messages: Flow<List<ChatMessageEntity>> = MutableStateFlow(emptyList())
+    var messages: Flow<List<ChatMessageModel>> = MutableStateFlow(emptyList())
         private set
 
     // Input message text

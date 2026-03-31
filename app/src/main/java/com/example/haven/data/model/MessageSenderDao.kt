@@ -11,28 +11,28 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MessageSenderDao {
     @Query("SELECT * FROM messageSenders")
-    fun getAll(): Flow<List<MessageSenderEntity>>
+    fun getAll(): Flow<List<MessageSenderModel>>
 
     @Query("SELECT * FROM messageSenders WHERE id = :id")
-    suspend fun getById(id: String): MessageSenderEntity?
+    suspend fun getById(id: String): MessageSenderModel?
 
     @Query("SELECT * FROM messageSenders WHERE pubkey = :pubKey")
-    suspend fun getByPubKey(pubKey: ByteArray): MessageSenderEntity?
+    suspend fun getByPubKey(pubKey: ByteArray): MessageSenderModel?
 
     @Query("SELECT * FROM messageSenders WHERE codename = :codename")
-    suspend fun getByCodename(codename: String): MessageSenderEntity?
+    suspend fun getByCodename(codename: String): MessageSenderModel?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(sender: MessageSenderEntity)
+    suspend fun insert(sender: MessageSenderModel)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(senders: List<MessageSenderEntity>)
+    suspend fun insertAll(senders: List<MessageSenderModel>)
 
     @Update
-    suspend fun update(sender: MessageSenderEntity)
+    suspend fun update(sender: MessageSenderModel)
 
     @Delete
-    suspend fun delete(sender: MessageSenderEntity)
+    suspend fun delete(sender: MessageSenderModel)
 
     @Query("DELETE FROM messageSenders")
     suspend fun deleteAll()

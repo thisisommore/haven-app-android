@@ -11,28 +11,28 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ChatDao {
     @Query("SELECT * FROM chats ORDER BY joinedAt DESC")
-    fun getAll(): Flow<List<ChatEntity>>
+    fun getAll(): Flow<List<ChatModel>>
 
     @Query("SELECT * FROM chats WHERE id = :id")
-    suspend fun getById(id: String): ChatEntity?
+    suspend fun getById(id: String): ChatModel?
 
     @Query("SELECT * FROM chats WHERE channelId = :channelId")
-    suspend fun getByChannelId(channelId: String): ChatEntity?
+    suspend fun getByChannelId(channelId: String): ChatModel?
 
     @Query("SELECT * FROM chats WHERE pubKey = :pubKey")
-    suspend fun getByPubKey(pubKey: ByteArray): ChatEntity?
+    suspend fun getByPubKey(pubKey: ByteArray): ChatModel?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(chat: ChatEntity)
+    suspend fun insert(chat: ChatModel)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(chats: List<ChatEntity>)
+    suspend fun insertAll(chats: List<ChatModel>)
 
     @Update
-    suspend fun update(chat: ChatEntity)
+    suspend fun update(chat: ChatModel)
 
     @Delete
-    suspend fun delete(chat: ChatEntity)
+    suspend fun delete(chat: ChatModel)
 
     @Query("DELETE FROM chats")
     suspend fun deleteAll()
@@ -44,5 +44,5 @@ interface ChatDao {
     suspend fun clearUnreadCount(chatId: String)
 
     @Query("SELECT * FROM chats WHERE name LIKE '%' || :query || '%' ORDER BY name ASC")
-    fun searchByName(query: String): Flow<List<ChatEntity>>
+    fun searchByName(query: String): Flow<List<ChatModel>>
 }

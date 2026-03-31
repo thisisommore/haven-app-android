@@ -4,10 +4,10 @@ import android.content.Context
 import android.util.Base64
 import android.util.Log
 import bindings.DMReceiver
-import com.example.haven.data.model.ChatEntity
+import com.example.haven.data.model.ChatModel
 import com.example.haven.data.DatabaseModule
 import com.example.haven.data.model.MessageStatus
-import com.example.haven.data.model.ChatMessageEntity
+import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.xxdk.MessageDecoding
 import com.example.haven.xxdk.Parser
 import com.example.haven.xxdk.ReceiverHelpers
@@ -261,7 +261,7 @@ class DmReceiver(private val context: Context) : DMReceiver {
         color: Int,
         timestamp: Long,
         status: Long
-    ): com.example.haven.data.model.ChatMessageEntity {
+    ): com.example.haven.data.model.ChatMessageModel {
 
         val name = codename.trim().takeIf { it.isNotEmpty() } ?: "Unknown"
 
@@ -290,7 +290,7 @@ class DmReceiver(private val context: Context) : DMReceiver {
         pubKey: ByteArray?,
         dmToken: Int?,
         color: Int
-    ): ChatEntity {
+    ): ChatModel {
         if (pubKey != null) {
             val existingByKey = repository.getChatByPubKey(pubKey)
             if (existingByKey != null) {
@@ -299,7 +299,7 @@ class DmReceiver(private val context: Context) : DMReceiver {
                 if (dmToken == null) {
                     throw IllegalStateException("dmToken required")
                 }
-                val newChat = ChatEntity(
+                val newChat = ChatModel(
                     pubKey = pubKey,
                     name = codename,
                     dmToken = dmToken,
@@ -310,7 +310,7 @@ class DmReceiver(private val context: Context) : DMReceiver {
             }
         } else {
             // Fallback to codename-based lookup (may collide)
-            val allChats = mutableListOf<ChatEntity>()
+            val allChats = mutableListOf<ChatModel>()
             repository.getAllChats().collect { chats ->
                 allChats.addAll(chats)
             }
