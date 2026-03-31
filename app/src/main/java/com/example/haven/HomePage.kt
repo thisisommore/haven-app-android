@@ -103,9 +103,7 @@ internal fun HomeScreen(
                 },
                 expanded = expanded,
                 onExpandedChange = { expanded = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 // Search suggestions can be added here
             }
