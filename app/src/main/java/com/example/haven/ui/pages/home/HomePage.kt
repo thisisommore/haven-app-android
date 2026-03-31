@@ -25,7 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -57,10 +57,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.foundation.Canvas
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.rotate
+
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -159,11 +161,31 @@ internal fun HomeScreen(
                     pressedElevation = 10.dp
                 )
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "New chat",
-                    modifier = Modifier.size(26.dp)
-                )
+                // Custom thin plus icon for FAB
+                Canvas(modifier = Modifier.size(26.dp)) {
+                    val strokeWidth = 1.5.dp.toPx()
+                    val color = Color.White
+                    val centerX = size.width / 2
+                    val centerY = size.height / 2
+                    val lineLength = size.minDimension * 0.35f
+                    
+                    // Horizontal line
+                    drawLine(
+                        color = color,
+                        start = androidx.compose.ui.geometry.Offset(centerX - lineLength, centerY),
+                        end = androidx.compose.ui.geometry.Offset(centerX + lineLength, centerY),
+                        strokeWidth = strokeWidth,
+                        cap = androidx.compose.ui.graphics.StrokeCap.Round
+                    )
+                    // Vertical line
+                    drawLine(
+                        color = color,
+                        start = androidx.compose.ui.geometry.Offset(centerX, centerY - lineLength),
+                        end = androidx.compose.ui.geometry.Offset(centerX, centerY + lineLength),
+                        strokeWidth = strokeWidth,
+                        cap = androidx.compose.ui.graphics.StrokeCap.Round
+                    )
+                }
             }
         }
     ) { paddingValues ->
@@ -219,12 +241,31 @@ internal fun HomeScreen(
                         // Overflow / menu icon
                         Box {
                             IconButton(onClick = { showMenu = true }) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Menu",
-                                    modifier = Modifier.size(50.dp),
-                                    tint = HavenPrimary
-                                )
+                                // Custom thin plus icon
+                                Canvas(modifier = Modifier.size(50.dp)) {
+                                    val strokeWidth = 1.5.dp.toPx()
+                                    val color = HavenPrimary
+                                    val centerX = size.width / 2
+                                    val centerY = size.height / 2
+                                    val lineLength = size.minDimension * 0.35f
+                                    
+                                    // Horizontal line
+                                    drawLine(
+                                        color = color,
+                                        start = androidx.compose.ui.geometry.Offset(centerX - lineLength, centerY),
+                                        end = androidx.compose.ui.geometry.Offset(centerX + lineLength, centerY),
+                                        strokeWidth = strokeWidth,
+                                        cap = androidx.compose.ui.graphics.StrokeCap.Round
+                                    )
+                                    // Vertical line
+                                    drawLine(
+                                        color = color,
+                                        start = androidx.compose.ui.geometry.Offset(centerX, centerY - lineLength),
+                                        end = androidx.compose.ui.geometry.Offset(centerX, centerY + lineLength),
+                                        strokeWidth = strokeWidth,
+                                        cap = androidx.compose.ui.graphics.StrokeCap.Round
+                                    )
+                                }
                             }
                             DropdownMenu(
                                 expanded = showMenu,
