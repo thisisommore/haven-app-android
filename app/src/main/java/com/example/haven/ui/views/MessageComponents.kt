@@ -64,13 +64,17 @@ fun MessageBubble(
         RoundedCornerShape(topStart = 4.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
     }
 
+    // Message bubble colors
+    val SentMessageBg = Color(0xFF5A6238)      // Dark olive green
+    val ReceivedMessageBg = Color(0xFFFFDCC0)   // Light peach
+    
     val backgroundColor = when {
         isReplyingTo -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
-        isMe -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.surfaceContainerHighest
+        isMe -> SentMessageBg
+        else -> ReceivedMessageBg
     }
 
-    val contentColor = if (isMe) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+    val contentColor = if (isMe) Color.White else Color.Black
 
     var showMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -160,7 +164,7 @@ fun MessageBubble(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
 
-                MessageFooter(message = message, isMe = isMe, contentColor = contentColor)
+                MessageFooter(message = message, isMe = isMe, contentColor = contentColor.copy(alpha = 0.8f))
             }
         }
     }
@@ -186,8 +190,11 @@ private fun MessageFooter(
     ) {
         Text(
             text = formatTime(message.timestamp),
-            style = MaterialTheme.typography.labelSmall,
-            color = contentColor.copy(alpha = 0.7f)
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontFamily = com.example.haven.ui.theme.InterFontFamily,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Normal
+            ),
+            color = contentColor.copy(alpha = 0.8f)
         )
     }
 }
@@ -195,7 +202,7 @@ private fun MessageFooter(
 @Composable
 fun ReplyIndicator(replyToId: String, isMe: Boolean, modifier: Modifier = Modifier) {
     Surface(
-        color = if (isMe) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+        color = if (isMe) Color.White.copy(alpha = 0.2f) else Color(0xFF5A6238).copy(alpha = 0.15f),
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
     ) {
@@ -206,8 +213,11 @@ fun ReplyIndicator(replyToId: String, isMe: Boolean, modifier: Modifier = Modifi
             // Reply icon removed
             Text(
                 text = "Reply to message",
-                style = MaterialTheme.typography.labelSmall,
-                color = if (isMe) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f) else MaterialTheme.colorScheme.primary
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontFamily = com.example.haven.ui.theme.InterFontFamily,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Normal
+                ),
+                color = if (isMe) Color.White.copy(alpha = 0.9f) else Color(0xFF5A6238)
             )
         }
     }
@@ -233,12 +243,18 @@ fun ReplyPreview(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "Replying to",
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontFamily = com.example.haven.ui.theme.InterFontFamily,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Normal
+                    ),
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = stripHtmlTags(message.message),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontFamily = com.example.haven.ui.theme.InterFontFamily,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Normal
+                    ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurfaceVariant

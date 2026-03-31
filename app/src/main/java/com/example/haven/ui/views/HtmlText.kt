@@ -22,6 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import android.graphics.Typeface
+import androidx.core.content.res.ResourcesCompat
+import com.example.haven.R
 import androidx.core.text.HtmlCompat
 import androidx.core.text.getSpans
 
@@ -112,6 +115,8 @@ fun HtmlText(
                 movementMethod = LinkMovementMethod.getInstance()
                 // Links need clickable enabled, but we handle long-press at parent level
                 isLongClickable = false
+                // Set Inter font from resources
+                typeface = ResourcesCompat.getFont(context, R.font.inter_regular)
             }
         },
         update = { textView ->
