@@ -16,10 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.ui.unit.sp
+import com.example.haven.ui.theme.InterFontFamily
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -58,6 +59,7 @@ fun MessageBubble(
     onReplyClick: () -> Unit,
     onReactClick: () -> Unit = {},
     isReplyingTo: Boolean,
+    senderName: String? = null,
     modifier: Modifier = Modifier
 ) {
     val isMe = !message.isIncoming
@@ -154,6 +156,21 @@ fun MessageBubble(
                                 modifier = Modifier.size(20.dp)
                             )
                         }
+                    )
+                }
+
+                // Sender name for incoming messages
+                if (!isMe && senderName != null) {
+                    Text(
+                        text = senderName,
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontFamily = InterFontFamily,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp)
                     )
                 }
 

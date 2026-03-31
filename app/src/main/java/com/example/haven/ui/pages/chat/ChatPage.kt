@@ -59,6 +59,7 @@ internal fun ChatScreen(
     onBackClick: () -> Unit = {},
     replyingTo: ChatMessageModel? = null,
     onCancelReply: () -> Unit = {},
+    getSenderName: (String?) -> String = { "" },
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -161,7 +162,8 @@ internal fun ChatScreen(
                 MessageBubble(
                     message = message,
                     onReplyClick = { onReplyClick(message) },
-                    isReplyingTo = replyingTo?.id == message.id
+                    isReplyingTo = replyingTo?.id == message.id,
+                    senderName = getSenderName(message.senderId)
                 )
             }
         }

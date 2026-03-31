@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * ViewModel for Chat screen with real database integration and XXDK sending
@@ -116,6 +117,19 @@ class ChatViewModel(
             
             _inputText.value = ""
         }
+    }
+
+    /**
+     * Get sender name from senderId (similar to iOS getName(from:))
+     * senderId is the MessageSenderModel UUID (not pubkey)
+     */
+    fun getSenderName(senderId: String?): String {
+        if (senderId == null) return ""
+        
+        val sender = runBlocking { repository.getSenderById(senderId) }
+        return sender?.let {
+            if (!it.nickname.isNullOrBlank()) it.nickname else it.codename
+        } ?: "Unknown"
     }
 
     /**

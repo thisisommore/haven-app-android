@@ -327,6 +327,7 @@ internal fun HavenApp() {
                     onSendClick = { chatViewModel.sendMessage() },
                     onReplyClick = { /* TODO: implement reply */ },
                     onBackClick = { route = Route.home },
+                    getSenderName = { senderId -> chatViewModel.getSenderName(senderId) },
                     modifier = Modifier.fillMaxSize()
                 )
             }
