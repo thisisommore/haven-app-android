@@ -146,7 +146,6 @@ internal fun ChatScreen(
             value = inputText,
             onValueChange = onInputChange,
             onSend = onSendClick,
-            placeholder = "Message...",
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
     }
