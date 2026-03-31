@@ -16,8 +16,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// iOS Haven color scheme - Primary Orange #FF9300
-// Burnt sienna tints for secondary variants
+// iOS Haven color scheme - Primary Brown #87521B
+// Header background color
+val HeaderBackground = Color(0xFFFFEEE2)
 private val DarkColorScheme = darkColorScheme(
     primary = HavenPrimaryDark,
     onPrimary = Color.White,
@@ -110,7 +111,7 @@ fun HavenTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
+            window.statusBarColor = HeaderBackground.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }

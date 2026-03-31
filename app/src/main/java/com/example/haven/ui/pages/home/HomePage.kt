@@ -202,7 +202,7 @@ internal fun HomeScreen(
                             Text(
                                 text = "Chat",
                                 style = MaterialTheme.typography.headlineLarge.copy(
-                                    fontSize = 30.sp,
+                                    fontSize = 38.sp,
                                     letterSpacing = (-0.5).sp
                                 ),
                                 fontWeight = FontWeight.Normal,
@@ -222,7 +222,7 @@ internal fun HomeScreen(
                                 Icon(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = "Menu",
-                                    modifier = Modifier.size(28.dp),
+                                    modifier = Modifier.size(50.dp),
                                     tint = HavenPrimary
                                 )
                             }

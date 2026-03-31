@@ -28,8 +28,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.haven.ui.pages.home.ChatWithPreview
+import androidx.compose.ui.graphics.Color
 import java.text.SimpleDateFormat
 import java.util.Locale
+
+// Chat list colors
+private val ChatNameColor = Color(0xFF735943)
+private val SecondaryTextColor = Color(0xFFB9B9B9)
 
 @Composable
 fun ChatListItem(
@@ -56,6 +61,7 @@ fun ChatListItem(
                 text = if (chat.title == "<self>") "Notes" else chat.title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = if (chat.unreadCount > 0) FontWeight.SemiBold else FontWeight.Medium,
+                color = ChatNameColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -68,7 +74,7 @@ fun ChatListItem(
                         Text(
                             text = sender,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = SecondaryTextColor,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -76,11 +82,7 @@ fun ChatListItem(
                     Text(
                         text = stripHtml(chat.preview),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (chat.unreadCount > 0) {
-                            MaterialTheme.colorScheme.onSurface
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
+                        color = SecondaryTextColor,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -99,7 +101,7 @@ fun ChatListItem(
                         color = if (chat.unreadCount > 0) {
                             MaterialTheme.colorScheme.primary
                         } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
+                            SecondaryTextColor
                         }
                     )
                 }
