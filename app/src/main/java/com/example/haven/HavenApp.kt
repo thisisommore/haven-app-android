@@ -67,13 +67,15 @@ internal fun HavenApp() {
             "INFO Chat page with DB messages",
         )
     }
-    // Start with landing if setup complete (will auto-route to home when ready)
-    // Start with password if setup not complete
-    var route by rememberSaveable { mutableStateOf(if (appStorage.isSetupComplete) Route.landing else Route.password) }
+    // For new users: start with landing page
+    // For existing users: start directly at home (with loading indicator)
+    var route by rememberSaveable { 
+        mutableStateOf(if (appStorage.isSetupComplete) Route.home else Route.landing) 
+    }
     
-    // For returning users: auto-load cmix when landing page is shown
+    // For returning users: auto-load cmix when home page is shown
     LaunchedEffect(route) {
-        if (route == Route.landing && appStorage.isSetupComplete && xxdk.cmix == null) {
+        if (route == Route.home && appStorage.isSetupComplete && xxdk.cmix == null) {
             runCatching {
                 xxdk.setAppStorage(appStorage)
                 xxdk.loadCmix()
@@ -85,13 +87,6 @@ internal fun HavenApp() {
                 appStorage.isSetupComplete = false
                 route = Route.password
             }
-        }
-    }
-    
-    // Auto-route from landing to home when setup is complete and status is ready
-    LaunchedEffect(appStorage.isSetupComplete, xxdk.statusPercentage) {
-        if (route == Route.landing && appStorage.isSetupComplete && xxdk.statusPercentage == 100) {
-            route = Route.home
         }
     }
     var chatId by rememberSaveable { mutableStateOf("") }
@@ -214,6 +209,7 @@ internal fun HavenApp() {
             }
 
             Route.home -> {
+                val isLoading = appStorage.isSetupComplete && xxdk.cmix == null
                 HomeScreen(
                     viewModel = homeViewModel,
                     onOpenChat = { id -> 
@@ -222,6 +218,9 @@ internal fun HavenApp() {
                         route = Route.chat 
                     },
                     onNewChat = { /* TODO: implement new chat */ },
+                    isLoading = isLoading,
+                    status = xxdk.status,
+                    statusPercentage = xxdk.statusPercentage,
                     modifier = Modifier.fillMaxSize()
                 )
             }
