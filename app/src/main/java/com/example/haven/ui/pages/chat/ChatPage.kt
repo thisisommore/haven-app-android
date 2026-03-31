@@ -37,7 +37,7 @@ import com.example.haven.ui.views.MessageBubble
 import com.example.haven.ui.views.MessageInputBar
 import com.example.haven.ui.views.ReplyPreview
 
-private val ChatBgColor = Color(0xFFFFEEE2) // Peach background
+private val ChatBgColor = Color(0xFFFFF8F5) // Light peach/off-white background
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
