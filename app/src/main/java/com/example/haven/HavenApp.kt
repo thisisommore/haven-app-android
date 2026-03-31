@@ -254,6 +254,18 @@ internal fun HavenApp() {
                         route = Route.chat 
                     },
                     onNewChat = { /* TODO: implement new chat */ },
+                    onLogout = {
+                        scope.launch {
+                            runCatching {
+                                // Clear all data
+                                appStorage.clearAll()
+                                // Reset route to password
+                                route = Route.password
+                            }.onFailure {
+                                Log.e("HavenApp", "Logout failed: ${it.message}")
+                            }
+                        }
+                    },
                     statusPercentage = xxdk.statusPercentage,
                     modifier = Modifier.fillMaxSize()
                 )

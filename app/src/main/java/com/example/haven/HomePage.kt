@@ -14,13 +14,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LoadingIndicator
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -50,6 +57,7 @@ internal fun HomeScreen(
     viewModel: HomeViewModel,
     onOpenChat: (String) -> Unit,
     onNewChat: () -> Unit = {},
+    onLogout: () -> Unit = {},
     statusPercentage: Int = 0,
     modifier: Modifier = Modifier
 ) {
@@ -57,6 +65,46 @@ internal fun HomeScreen(
     val chats by viewModel.filteredChats.collectAsState(initial = emptyList())
     var expanded by remember { mutableStateOf(false) }
     val isLoading = statusPercentage != 100
+    
+    // User menu state
+    var showMenu by remember { mutableStateOf(false) }
+    var showLogoutConfirm by remember { mutableStateOf(false) }
+    
+    // Logout confirmation dialog
+    if (showLogoutConfirm) {
+        AlertDialog(
+            onDismissRequest = { showLogoutConfirm = false },
+            title = { Text("Logout") },
+            text = {
+                Text(
+                    "If you haven't backed up your identity, you will lose access to it permanently. Are you sure you want to logout?"
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showLogoutConfirm = false
+                        onLogout()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Logout")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showLogoutConfirm = false },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
     
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -76,6 +124,44 @@ internal fun HomeScreen(
                             LoadingIndicator(
                                 modifier = Modifier.size(24.dp),
                                 color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    // User menu button
+                    Box {
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Menu"
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Export") },
+                                onClick = { 
+                                    showMenu = false
+                                    // TODO: Implement export
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("QR Code") },
+                                onClick = { 
+                                    showMenu = false
+                                    // TODO: Implement QR code
+                                }
+                            )
+                            HorizontalDivider()
+                            DropdownMenuItem(
+                                text = { Text("Logout") },
+                                onClick = { 
+                                    showMenu = false
+                                    showLogoutConfirm = true
+                                }
                             )
                         }
                     }
