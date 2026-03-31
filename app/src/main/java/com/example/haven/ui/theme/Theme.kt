@@ -17,50 +17,83 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 // iOS Haven color scheme - Primary Orange #FF9300
+// Burnt sienna tints for secondary variants
 private val DarkColorScheme = darkColorScheme(
     primary = HavenOrangeDark,
     onPrimary = Color.White,
-    primaryContainer = HavenOrangeDark.copy(alpha = 0.2f),
-    onPrimaryContainer = Color.White,
+    primaryContainer = Color(0xFF4A3B2A),
+    onPrimaryContainer = Color(0xFFFFD9B3),
     secondary = HavenOrangeDark,
     onSecondary = Color.White,
-    secondaryContainer = HavenOrangeDark.copy(alpha = 0.15f),
-    onSecondaryContainer = Color.White,
+    secondaryContainer = Color(0xFF3D3225),
+    onSecondaryContainer = Color(0xFFF5DBC8),
     tertiary = HavenOrangeDark,
     onTertiary = Color.White,
+    tertiaryContainer = Color(0xFF3D3225),
+    onTertiaryContainer = Color(0xFFF5DBC8),
     background = BackgroundDark,
     onBackground = LabelPrimaryDark,
     surface = SurfaceDark,
     onSurface = LabelPrimaryDark,
-    surfaceVariant = SurfaceDark.copy(alpha = 0.8f),
+    surfaceVariant = Color(0xFF2C2C2E),
     onSurfaceVariant = LabelSecondaryDark,
-    outline = LabelSecondaryDark
+    surfaceTint = HavenOrangeDark.copy(alpha = 0.1f),
+    inverseSurface = Color(0xFFE5E5EA),
+    inverseOnSurface = Color(0xFF1C1C1E),
+    inversePrimary = Color(0xFFFF9500),
+    outline = Color(0x55EBEBF5),
+    outlineVariant = Color(0x33EBEBF5),
+    surfaceContainer = Color(0xFF1C1C1E),
+    surfaceContainerHigh = Color(0xFF2C2C2E),
+    surfaceContainerHighest = Color(0xFF3A3A3C),
+    surfaceContainerLow = Color(0xFF1C1C1E),
+    surfaceContainerLowest = Color(0xFF000000),
+    error = Color(0xFFFF453A),
+    onError = Color.White,
+    errorContainer = Color(0xFF5C1008),
+    onErrorContainer = Color(0xFFFFDAD6)
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = HavenOrangeLight,
     onPrimary = Color.White,
-    primaryContainer = HavenOrangeLight.copy(alpha = 0.12f),
+    primaryContainer = Color(0xFFFFE4D6),
     onPrimaryContainer = HavenOrangeHighContrast,
     secondary = HavenOrangeLight,
     onSecondary = Color.White,
-    secondaryContainer = HavenOrangeLight.copy(alpha = 0.10f),
+    secondaryContainer = Color(0xFFFFF0E8),
     onSecondaryContainer = HavenOrangeHighContrast,
     tertiary = HavenOrangeLight,
     onTertiary = Color.White,
+    tertiaryContainer = Color(0xFFFFF0E8),
+    onTertiaryContainer = HavenOrangeHighContrast,
     background = BackgroundLight,
     onBackground = LabelPrimaryLight,
     surface = BackgroundLight,
     onSurface = LabelPrimaryLight,
-    surfaceVariant = SurfaceLight,
+    surfaceVariant = Color(0xFFF2F2F7),
     onSurfaceVariant = LabelSecondaryLight,
-    outline = LabelSecondaryLight
+    surfaceTint = HavenOrangeLight.copy(alpha = 0.05f),
+    inverseSurface = Color(0xFF1C1C1E),
+    inverseOnSurface = Color(0xFFFFFFFF),
+    inversePrimary = Color(0xFFFF9500),
+    outline = Color(0x993C3C43),
+    outlineVariant = Color(0x553C3C43),
+    surfaceContainer = Color(0xFFFFFFFF),
+    surfaceContainerHigh = Color(0xFFF2F2F7),
+    surfaceContainerHighest = Color(0xFFE5E5EA),
+    surfaceContainerLow = Color(0xFFFFFFFF),
+    surfaceContainerLowest = Color(0xFFFFFFFF),
+    error = Color(0xFFFF3B30),
+    onError = Color.White,
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF5C1008)
 )
 
 @Composable
 fun HavenTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color disabled by default to use Haven brand colors (iOS ultramarine)
+    // Dynamic color disabled by default to use Haven brand colors
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
