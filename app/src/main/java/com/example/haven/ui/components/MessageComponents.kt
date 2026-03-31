@@ -1,9 +1,13 @@
 package com.example.haven.ui.components
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.compose.animation.animateContentSize
-
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,37 +17,43 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
-
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-
-
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-
-
+import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.haven.data.db.ChatMessageEntity
-
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MessageBubble(
     message: ChatMessageEntity,
     onReplyClick: () -> Unit,
+    onReactClick: () -> Unit = {},
     isReplyingTo: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -62,6 +72,9 @@ fun MessageBubble(
 
     val contentColor = if (isMe) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
 
+    var showMenu by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -76,7 +89,67 @@ fun MessageBubble(
                 .wrapContentWidth()
                 .animateContentSize()
         ) {
-            Column(modifier = Modifier.padding(12.dp).wrapContentWidth()) {
+            Column(
+                modifier = Modifier
+                    .padding(12.dp)
+                    .wrapContentWidth()
+                    .combinedClickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = { },
+                        onLongClick = { showMenu = true }
+                    )
+            ) {
+                // Context Menu
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false },
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Reply") },
+                        onClick = {
+                            onReplyClick()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("React") },
+                        onClick = {
+                            onReactClick()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.ThumbUp,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Copy") },
+                        onClick = {
+                            copyToClipboard(context, message.message)
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.MailOutline,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    )
+                }
+
                 if (message.replyTo != null) {
                     ReplyIndicator(replyToId = message.replyTo, isMe = isMe, modifier = Modifier.padding(bottom = 8.dp))
                 }
@@ -90,9 +163,13 @@ fun MessageBubble(
                 MessageFooter(message = message, isMe = isMe, contentColor = contentColor)
             }
         }
-
-
     }
+}
+
+private fun copyToClipboard(context: Context, text: String) {
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText("Message", text)
+    clipboard.setPrimaryClip(clip)
 }
 
 @Composable
@@ -112,8 +189,6 @@ private fun MessageFooter(
             style = MaterialTheme.typography.labelSmall,
             color = contentColor.copy(alpha = 0.7f)
         )
-
-
     }
 }
 
@@ -129,7 +204,6 @@ fun ReplyIndicator(replyToId: String, isMe: Boolean, modifier: Modifier = Modifi
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Reply icon removed
-            
             Text(
                 text = "Reply to message",
                 style = MaterialTheme.typography.labelSmall,
