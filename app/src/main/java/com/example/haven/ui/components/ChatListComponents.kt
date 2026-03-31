@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -37,6 +38,16 @@ fun ChatListItem(
     modifier: Modifier = Modifier
 ) {
     ListItem(
+        leadingContent = if (chat.title == "<self>") {
+            {
+                Icon(
+                    imageVector = Icons.Outlined.BookmarkBorder,
+                    contentDescription = "Notes",
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        } else null,
         headlineContent = {
             Text(
                 text = if (chat.title == "<self>") "Notes" else chat.title,

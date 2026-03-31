@@ -104,6 +104,8 @@ internal fun HavenApp() {
     var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
     // NDF download state - starts when password page opens
     var ndfDeferred by remember { mutableStateOf<Deferred<ByteArray>?>(null) }
+    // Track if we're in initial setup flow (password → landing → codename)
+    var isInitialSetup by rememberSaveable { mutableStateOf(false) }
     var codenameBusy by rememberSaveable { mutableStateOf(false) }
     var codenameError by rememberSaveable { mutableStateOf<String?>(null) }
     val currentChatTitle by homeViewModel.filteredChats.collectAsState(initial = emptyList())
@@ -127,13 +129,35 @@ internal fun HavenApp() {
         modifier = Modifier.fillMaxSize()
     ) { targetRoute ->
         when (targetRoute) {
-            Route.landing -> LandingPage(
-                modifier = Modifier.fillMaxSize(),
-                status = xxdk.status,
-                statusPercentage = xxdk.statusPercentage,
-                isSetupComplete = appStorage.isSetupComplete,
-                onLoadingComplete = { route = Route.home }
-            )
+            Route.landing -> {
+                // Handle setup work on landing page for new users
+                LaunchedEffect(isInitialSetup) {
+                    if (isInitialSetup && ndfDeferred != null) {
+                        runCatching {
+                            // Wait for NDF and complete setup
+                            val ndf = ndfDeferred?.await() ?: return@LaunchedEffect
+                            xxdk.newCmix(ndf)
+                            xxdk.loadCmix()
+                            codenames = xxdk.generateIdentities(10)
+                            require(codenames.isNotEmpty()) { "No identities generated" }
+                            selectedCodename = ""
+                            isInitialSetup = false
+                            route = Route.codenameGenerator
+                        }.onFailure {
+                            passwordError = it.message ?: "Setup failed"
+                            route = Route.password
+                        }
+                    }
+                }
+                
+                LandingPage(
+                    modifier = Modifier.fillMaxSize(),
+                    status = xxdk.status,
+                    statusPercentage = xxdk.statusPercentage,
+                    isSetupComplete = appStorage.isSetupComplete,
+                    onLoadingComplete = { route = Route.home }
+                )
+            }
 
             Route.password -> Page("Join the alpha", onBack = null) { p ->
                 // Start NDF download as soon as password page opens
@@ -152,25 +176,11 @@ internal fun HavenApp() {
                     onPassword = { password = it },
                     onConfirm = { confirm = it },
                     onContinue = {
-                        scope.launch {
-                            passwordBusy = true
-                            passwordError = null
-                            runCatching {
-                                appStorage.password = password
-                                xxdk.setAppStorage(appStorage)
-                                // Wait for NDF download to complete if still in progress
-                                val ndf = ndfDeferred?.await() ?: xxdk.downloadNdf()
-                                xxdk.newCmix(ndf)
-                                xxdk.loadCmix()
-                                codenames = xxdk.generateIdentities(10)
-                                require(codenames.isNotEmpty()) { "No identities generated" }
-                                selectedCodename = ""
-                                route = Route.codenameGenerator
-                            }.onFailure {
-                                passwordError = it.message ?: "Password setup failed"
-                            }
-                            passwordBusy = false
-                        }
+                        // Save password and go to landing page immediately
+                        appStorage.password = password
+                        xxdk.setAppStorage(appStorage)
+                        isInitialSetup = true
+                        route = Route.landing
                     },
                     onImport = {
                         passwordError = "Import needs a real encrypted identity file. File selection is not wired yet."
