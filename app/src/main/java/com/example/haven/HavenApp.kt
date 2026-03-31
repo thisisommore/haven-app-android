@@ -273,6 +273,7 @@ internal fun HavenApp() {
                         route = Route.chat 
                     },
                     onNewChat = { /* TODO: implement new chat */ },
+                    isSetupComplete = appStorage.isSetupComplete,
                     onLogout = {
                         scope.launch {
                             runCatching {

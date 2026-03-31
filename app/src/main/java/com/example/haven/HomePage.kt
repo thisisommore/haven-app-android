@@ -59,12 +59,15 @@ internal fun HomeScreen(
     onNewChat: () -> Unit = {},
     onLogout: () -> Unit = {},
     statusPercentage: Int = 0,
+    isSetupComplete: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val search by viewModel.searchQuery.collectAsState()
     val chats by viewModel.filteredChats.collectAsState(initial = emptyList())
     var expanded by remember { mutableStateOf(false) }
-    val isLoading = statusPercentage != 100
+    // Only show loading if setup is not complete AND status is not 100
+    // This handles new users who just completed setup
+    val isLoading = !isSetupComplete && statusPercentage != 100
     
     // User menu state
     var showMenu by remember { mutableStateOf(false) }
