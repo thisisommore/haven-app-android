@@ -362,7 +362,7 @@ internal fun HomeScreen(
                                     viewModel.clearUnreadCount(chat.id)
                                     onOpenChat(chat.id)
                                 },
-                                modifier = Modifier.padding(horizontal = 16.dp)
+                                modifier = Modifier.padding(horizontal = 12.dp)
                             )
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 20.dp),
