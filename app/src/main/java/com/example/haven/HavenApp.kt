@@ -276,9 +276,17 @@ internal fun HavenApp() {
                     onLogout = {
                         scope.launch {
                             runCatching {
-                                // Clear all data
+                                // 1. Call xxdk logout (stops network, clears bindings, deletes state)
+                                xxdk.logout()
+                                
+                                // 2. Clear database (messages, reactions, senders, chats)
+                                // TODO: Clear database tables like iOS does
+                                // For now, we'll just clear the storage
+                                
+                                // 3. Clear app storage
                                 appStorage.clearAll()
-                                // Reset route to password
+                                
+                                // 4. Reset navigation to password page
                                 route = Route.password
                             }.onFailure {
                                 Log.e("HavenApp", "Logout failed: ${it.message}")

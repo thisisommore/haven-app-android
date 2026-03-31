@@ -16,6 +16,7 @@ import com.example.haven.xxdk.callbacks.DmEvents
 import com.example.haven.xxdk.callbacks.DmReceiver
 import com.example.haven.xxdk.callbacks.DmReceiverBuilder
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -364,23 +365,63 @@ open class XXDK(
     }
 
     override suspend fun logout() = withContext(Dispatchers.IO) {
-        codename = null
-        codeset = 0
-        status = XXDKProgress.Idle.label
-        statusPercentage = XXDKProgress.Idle.percent
+        progress(XXDKProgress.Idle)
+        
+        // 1. Stop network follower
+        runCatching {
+            cmix?.stopNetworkFollower()
+        }.onFailure {
+            Log.w(TAG, "Failed to stop network follower: ${it.message}")
+        }
+        
+        // 2. Wait for running processes (with timeout)
+        var retryCount = 0
+        while (retryCount < 30) { // 3 seconds timeout
+            try {
+                if (cmix?.hasRunningProcessies() != true) break
+            } catch (e: Exception) {
+                break
+            }
+            delay(100)
+            retryCount++
+        }
+        if (retryCount >= 30) {
+            Log.w(TAG, "Force stopping processes after timeout")
+        }
+        
+        // 3. Remove cmix from Go-side tracker to release references
+        cmix?.let {
+            try {
+                bindings.Bindings.deleteCmixInstance(it.getID())
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to delete cmix instance: ${e.message}")
+            }
+        }
+        
+        // 4. Reset binding objects
+        channel = Channel()
+        dm = DirectMessage()
         cmix = null
         remoteKV = null
         notifications = null
         storageTagListener = null
         savedPrivateIdentity = byteArrayOf()
+        
+        // 5. Clear caches
+        ReceiverHelpers.clearInstance()
+        
+        // 6. Delete stateDir and recreate it
         val stateFile = File(stateDir)
         if (stateFile.exists()) {
             stateFile.deleteRecursively()
         }
         stateFile.mkdirs()
         
-        // Clear receiver helpers cache
-        ReceiverHelpers.clearInstance()
+        // Reset status
+        codename = null
+        codeset = 0
+        status = XXDKProgress.Idle.label
+        statusPercentage = XXDKProgress.Idle.percent
     }
 
     override fun storeApnsToken(token: String) {
