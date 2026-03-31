@@ -2,6 +2,7 @@ package com.example.haven.ui.pages.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -104,10 +105,18 @@ internal fun ChatScreen(
                 }
             },
             navigationIcon = {
-                IconButton(onClick = onBackClick) {
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier
+                        .background(
+                            color = Color(0xFF5D4127),
+                            shape = RoundedCornerShape(22.dp)
+                        )
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = "Back"
+                        contentDescription = "Back",
+                        tint = Color.White
                     )
                 }
             },
