@@ -203,9 +203,9 @@ internal fun HavenApp() {
                 )
             }
 
-            Route.codenameGenerator -> Page("Codename", { route = Route.password }) { p ->
+            Route.codenameGenerator -> {
                 CodenamePage(
-                    modifier = Modifier.padding(p),
+                    modifier = Modifier.fillMaxSize(),
                     codenames = codenames,
                     selected = selectedCodename,
                     onSelect = { selectedCodename = it },
