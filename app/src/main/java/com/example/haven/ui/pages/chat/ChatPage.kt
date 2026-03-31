@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 
@@ -122,6 +123,26 @@ internal fun ChatScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
                         contentDescription = "Back",
+                        tint = Color.White,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            },
+            actions = {
+                Box(
+                    modifier = Modifier
+                        .size(22.dp)
+                        .background(
+                            color = Color(0xFF5D4127),
+                            shape = RoundedCornerShape(22.dp)
+                        )
+                        .clickable(onClick = { /* TODO: Show info */ })
+                        .padding(2.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Info,
+                        contentDescription = "Info",
                         tint = Color.White,
                         modifier = Modifier.fillMaxSize()
                     )
