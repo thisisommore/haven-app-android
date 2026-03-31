@@ -13,9 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.haven.ui.theme.InterFontFamily
 
-private val InputBgColor = Color(0xFFFFF8F5) // Light peach/off-white background
+private val InputBgColor = Color(0xFFFFEEE2) // Peach background
+private val InputTextColor = Color(0xFF87521B) // Brown text
 
 @Composable
 fun MessageInputBar(
@@ -35,17 +38,30 @@ fun MessageInputBar(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text(placeholder) },
+            placeholder = {
+                Text(
+                    placeholder,
+                    color = InputTextColor,
+                    fontFamily = InterFontFamily,
+                    fontWeight = FontWeight.SemiBold
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.Transparent,
                 unfocusedBorderColor = Color.Transparent,
                 focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
+                unfocusedContainerColor = Color.White,
+                focusedTextColor = InputTextColor,
+                unfocusedTextColor = InputTextColor
             ),
             maxLines = 5,
-            textStyle = MaterialTheme.typography.bodyLarge
+            textStyle = MaterialTheme.typography.bodyLarge.copy(
+                fontFamily = InterFontFamily,
+                fontWeight = FontWeight.SemiBold,
+                color = InputTextColor
+            )
         )
     }
 }
