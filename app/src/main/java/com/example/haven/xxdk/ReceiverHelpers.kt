@@ -132,7 +132,7 @@ class ReceiverHelpers private constructor(private val context: Context) {
                 id = id,
                 externalId = messageId,
                 message = text,
-                timestamp = Date(timestamp / 1000), // Convert microseconds to milliseconds
+                timestamp = Date(timestamp / 1_000_000), // Convert nanoseconds to milliseconds
                 isIncoming = isIncoming,
                 isRead = !isIncoming,
                 status = MessageStatus.fromValue(status.toInt()).value,

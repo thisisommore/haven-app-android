@@ -21,10 +21,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.example.haven.xxdk.XXDKStorage
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -44,7 +46,11 @@ internal fun LandingPage(
     statusPercentage: Int,
     isSetupComplete: Boolean,
     onLoadingComplete: () -> Unit = {},
+    appStorage: XXDKStorage? = null,
 ) {
+    // Observe isSetupComplete changes for new users
+    val setupComplete by appStorage?.isSetupCompleteFlow?.collectAsState(initial = isSetupComplete) 
+        ?: remember { mutableStateOf(isSetupComplete) }
     var showProgress by remember { mutableStateOf(false) }
     var isLoadingDone by remember { mutableStateOf(false) }
     var moveUp by remember { mutableStateOf(false) }
@@ -65,16 +71,16 @@ internal fun LandingPage(
     }
 
     // Mark loading done when complete and navigate to home
-    LaunchedEffect(showProgress, statusPercentage, isSetupComplete) {
-        if (showProgress && statusPercentage == 100 && isSetupComplete && !isLoadingDone) {
+    LaunchedEffect(showProgress, statusPercentage, setupComplete) {
+        if (showProgress && statusPercentage == 100 && setupComplete && !isLoadingDone) {
             isLoadingDone = true
             delay(500) // Small delay to show completion
             onLoadingComplete()
         }
     }
 
-    LaunchedEffect(isSetupComplete) {
-        if (isSetupComplete && !isLoadingDone) {
+    LaunchedEffect(setupComplete) {
+        if (setupComplete && !isLoadingDone) {
             isLoadingDone = true
             delay(500)
             onLoadingComplete()
