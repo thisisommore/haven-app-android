@@ -229,7 +229,7 @@ internal fun HomeScreen(
                             DropdownMenu(
                                 expanded = showMenu,
                                 onDismissRequest = { showMenu = false },
-                                shape = RoundedCornerShape(14.dp)
+                                shape = RoundedCornerShape(4.dp)
                             ) {
                                 DropdownMenuItem(
                                     text = { Text("Export") },
@@ -269,11 +269,11 @@ internal fun HomeScreen(
                             .fillMaxWidth()
                             .shadow(
                                 elevation = 2.dp,
-                                shape = RoundedCornerShape(14.dp),
+                                shape = RoundedCornerShape(4.dp),
                                 ambientColor = HavenPrimary.copy(alpha = 0.08f),
                                 spotColor = HavenPrimary.copy(alpha = 0.12f)
                             )
-                            .clip(RoundedCornerShape(14.dp)),
+                            .clip(RoundedCornerShape(4.dp)),
                         placeholder = {
                             Text(
                                 "Search",
@@ -295,7 +295,7 @@ internal fun HomeScreen(
                             focusedPlaceholderColor = HavenPrimary,
                             unfocusedPlaceholderColor = HavenPrimary
                         ),
-                        shape = RoundedCornerShape(14.dp)
+                        shape = RoundedCornerShape(4.dp)
                     )
 
                     Spacer(modifier = Modifier.height(18.dp))
