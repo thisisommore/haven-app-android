@@ -308,12 +308,6 @@ internal fun HomeScreen(
                         onValueChange = { viewModel.onSearchChange(it) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .shadow(
-                                elevation = 2.dp,
-                                shape = RoundedCornerShape(4.dp),
-                                ambientColor = HavenPrimary.copy(alpha = 0.08f),
-                                spotColor = HavenPrimary.copy(alpha = 0.12f)
-                            )
                             .clip(RoundedCornerShape(4.dp)),
                         placeholder = {
                             Text(
@@ -347,7 +341,7 @@ internal fun HomeScreen(
             Surface(
                 color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp),
-                shadowElevation = 8.dp,
+
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -367,13 +361,11 @@ internal fun HomeScreen(
                                 onClick = {
                                     viewModel.clearUnreadCount(chat.id)
                                     onOpenChat(chat.id)
-                                }
+                                },
+                                modifier = Modifier.padding(horizontal = 16.dp)
                             )
                             HorizontalDivider(
-                                modifier = Modifier.padding(
-                                    start = 76.dp,  // inset past the avatar
-                                    end = 20.dp
-                                ),
+                                modifier = Modifier.padding(horizontal = 20.dp),
                                 color = DividerColor,
                                 thickness = 0.5.dp
                             )
