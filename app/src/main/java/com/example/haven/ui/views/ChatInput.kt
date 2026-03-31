@@ -1,9 +1,16 @@
 package com.example.haven.ui.views
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Face
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -34,6 +41,20 @@ fun MessageInputBar(
             .padding(horizontal = 8.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        IconButton(
+            onClick = { /* TODO: Open emoji picker */ },
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Face,
+                contentDescription = "Emoji",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(32.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
@@ -46,7 +67,7 @@ fun MessageInputBar(
                     fontSize = 22.sp
                 )
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.weight(1f),
             shape = RoundedCornerShape(28.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.Transparent,
