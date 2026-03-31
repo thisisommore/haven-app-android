@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -170,7 +171,7 @@ fun MessageBubble(
                     message = message,
                     isMe = isMe,
                     contentColor = contentColor.copy(alpha = 0.8f),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
                 )
             }
         }
@@ -201,7 +202,9 @@ private fun MessageFooter(
                 fontFamily = com.example.haven.ui.theme.InterFontFamily,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Normal
             ),
-            color = contentColor.copy(alpha = 0.8f)
+            color = contentColor.copy(alpha = 0.8f),
+            maxLines = 1,
+            overflow = TextOverflow.Clip
         )
     }
 }
