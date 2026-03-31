@@ -292,7 +292,9 @@ internal fun HomeScreen(
                             disabledIndicatorColor = Color.Transparent,
                             cursorColor = HavenPrimary,
                             focusedTextColor = HavenPrimary,
-                            unfocusedTextColor = HavenPrimary
+                            unfocusedTextColor = HavenPrimary,
+                            focusedPlaceholderColor = HavenPrimary,
+                            unfocusedPlaceholderColor = HavenPrimary
                         ),
                         shape = RoundedCornerShape(14.dp)
                     )
