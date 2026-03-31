@@ -410,7 +410,16 @@ open class XXDK(
         // 5. Clear caches
         ReceiverHelpers.clearInstance()
         
-        // 6. Delete stateDir and recreate it
+        // 6. Clear database (messages, reactions, senders, chats)
+        try {
+            val repository = DatabaseModule.provideRepository(context)
+            repository.clearAllData()
+            Log.d(TAG, "Database cleared successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to clear database: ${e.message}")
+        }
+        
+        // 7. Delete stateDir and recreate it
         val stateFile = File(stateDir)
         if (stateFile.exists()) {
             stateFile.deleteRecursively()
