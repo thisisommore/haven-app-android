@@ -205,7 +205,7 @@ internal fun HomeScreen(
                                     fontSize = 30.sp,
                                     letterSpacing = (-0.5).sp
                                 ),
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.Normal,
                                 color = HavenPrimary
                             )
                             if (isLoading) {
@@ -278,7 +278,9 @@ internal fun HomeScreen(
                             Text(
                                 "Search",
                                 color = SubtitleGray,
-                                style = MaterialTheme.typography.bodyLarge
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontSize = 22.sp
+                                )
                             )
                         },
                         singleLine = true,
