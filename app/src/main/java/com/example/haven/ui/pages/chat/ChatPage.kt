@@ -124,7 +124,7 @@ internal fun ChatScreen(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             },
@@ -144,7 +144,7 @@ internal fun ChatScreen(
                         imageVector = Icons.Outlined.Info,
                         contentDescription = "Info",
                         tint = Color.White,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             },
