@@ -219,21 +219,12 @@ internal fun HomeScreen(
                         // Overflow / menu icon
                         Box {
                             IconButton(onClick = { showMenu = true }) {
-                                Canvas(modifier = Modifier.size(20.dp)) {
-                                    val dotRadius = 2.8.dp.toPx()
-                                    val color = Color(0xFF1C1C1E).copy(alpha = 0.55f)
-                                    val spacing = size.width / 3f
-                                    for (i in 0..2) {
-                                        drawCircle(
-                                            color = color,
-                                            radius = dotRadius,
-                                            center = Offset(
-                                                x = spacing * i + spacing / 2f,
-                                                y = center.y
-                                            )
-                                        )
-                                    }
-                                }
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Menu",
+                                    modifier = Modifier.size(28.dp),
+                                    tint = HavenPrimary
+                                )
                             }
                             DropdownMenu(
                                 expanded = showMenu,
