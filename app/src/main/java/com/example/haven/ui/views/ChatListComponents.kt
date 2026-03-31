@@ -3,6 +3,7 @@ package com.example.haven.ui.views
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,8 +45,37 @@ fun ChatListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // For Notes (self chat) with no messages, don't show preview
+    // For Notes (self chat) with no messages, use custom layout for tighter spacing
     val isNotesEmpty = chat.title == "<self>" && chat.preview == "No messages yet"
+    
+    // Custom layout for Notes with minimal spacing between icon and text
+    if (isNotesEmpty) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Bookmark,
+                contentDescription = "Notes",
+                modifier = Modifier.size(44.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(4.dp)) // Minimal space between icon and text
+            Text(
+                text = "Notes",
+                style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+                fontWeight = if (chat.unreadCount > 0) FontWeight.SemiBold else FontWeight.Medium,
+                color = ChatNameColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        return
+    }
     
     ListItem(
         leadingContent = if (chat.title == "<self>") {
@@ -53,7 +83,7 @@ fun ChatListItem(
                 Icon(
                     imageVector = Icons.Filled.Bookmark,
                     contentDescription = "Notes",
-                    modifier = Modifier.size(44.dp).offset(x = (-8).dp),
+                    modifier = Modifier.size(44.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
