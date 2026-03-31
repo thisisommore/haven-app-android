@@ -54,7 +54,7 @@ internal fun HomeScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Messages",
+                        text = "Chat",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
