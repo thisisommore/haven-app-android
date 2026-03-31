@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -108,6 +109,7 @@ internal fun ChatScreen(
                 IconButton(
                     onClick = onBackClick,
                     modifier = Modifier
+                        .size(86.dp)
                         .background(
                             color = Color(0xFF5D4127),
                             shape = RoundedCornerShape(22.dp)
@@ -116,7 +118,8 @@ internal fun ChatScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White
+                        tint = Color.White,
+                        modifier = Modifier.size(32.dp)
                     )
                 }
             },
