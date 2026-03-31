@@ -1,9 +1,14 @@
 package com.example.haven
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,13 +26,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 /**
  * Landing page showing app branding and loading progress.
- * Similar to iOS LandingPage - shows progress but doesn't handle navigation.
+ * Matches iOS LandingPage design.
  */
 @Composable
 internal fun LandingPage(
@@ -38,58 +45,88 @@ internal fun LandingPage(
 ) {
     var showProgress by remember { mutableStateOf(false) }
     var isLoadingDone by remember { mutableStateOf(false) }
+    var moveUp by remember { mutableStateOf(false) }
 
-    // Delay before showing progress (matches iOS: 1s delay)
+    // Animation: move content up
+    val offsetY by animateFloatAsState(
+        targetValue = if (moveUp) -40f else 0f,
+        animationSpec = tween(durationMillis = 2000),
+        label = "moveUp"
+    )
+
+    // 1) Delay before showing progress
     LaunchedEffect(Unit) {
         delay(1000)
+        moveUp = true
+        delay(300)
         showProgress = true
     }
 
-    // Mark loading done when complete (matches iOS behavior)
+    // Mark loading done when complete
     LaunchedEffect(showProgress, statusPercentage, isSetupComplete) {
         if (showProgress && statusPercentage == 100 && isSetupComplete && !isLoadingDone) {
             isLoadingDone = true
         }
     }
 
-    // Also mark done when setup becomes complete
     LaunchedEffect(isSetupComplete) {
         if (isSetupComplete && !isLoadingDone) {
             isLoadingDone = true
         }
     }
 
-    Column(
-        modifier = modifier.padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Text("XXNetwork", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text("Haven App.", style = MaterialTheme.typography.bodyMedium)
-
-        AnimatedVisibility(
-            visible = showProgress,
-            enter = slideInVertically { -it } + fadeIn()
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .padding(bottom = offsetY.dp)
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(Modifier.height(24.dp))
-                // Material 3 wavy indeterminate progress when loading
-                if (statusPercentage < 100) {
-                    LinearProgressIndicator(
-                        modifier = Modifier.width(200.dp),
+            // Title section - left aligned like iOS
+            Column(horizontalAlignment = Alignment.Start) {
+                Text(
+                    text = "XXNetwork",
+                    fontFamily = FontFamily.Serif,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp
+                )
+                Text(
+                    text = "Haven App.",
+                    fontFamily = FontFamily.Serif,
+                    fontSize = 12.sp
+                )
+            }
+
+            // Progress section
+            AnimatedVisibility(
+                visible = showProgress && !isLoadingDone,
+                enter = slideInVertically(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
                     )
-                } else {
+                ) { -it } + fadeIn(animationSpec = tween(500))
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
                     LinearProgressIndicator(
-                        progress = { 1f },
-                        modifier = Modifier.width(200.dp),
+                        progress = { statusPercentage / 100f },
+                        modifier = Modifier.width(120.dp),
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                    Text(
+                        text = status,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Text(
-                    status, 
-                    Modifier.padding(top = 12.dp), 
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
         }
     }
