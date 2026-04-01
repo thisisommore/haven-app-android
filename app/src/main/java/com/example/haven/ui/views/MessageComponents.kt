@@ -60,55 +60,13 @@ fun MessageBubble(
     isReplyingTo: Boolean,
     senderName: String? = null,
     showSenderName: Boolean = true,
-    isFirstInCluster: Boolean = true,
-    isLastInCluster: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val isMe = !message.isIncoming
-    
-    // Corner radius logic matching iOS Haven
-    // Small radius (6dp) for "sharp" corners, large (12dp) for round corners
-    val smallRadius = 6.dp
-    val largeRadius = 12.dp
-    
-    val bubbleShape = if (senderName == null) {
-        // DM chat (no sender name) - sharp corners on one side based on direction
-        if (isMe) {
-            // Outgoing: sharp right corners
-            RoundedCornerShape(
-                topStart = largeRadius,
-                topEnd = smallRadius,
-                bottomStart = largeRadius,
-                bottomEnd = smallRadius
-            )
-        } else {
-            // Incoming: sharp left corners
-            RoundedCornerShape(
-                topStart = smallRadius,
-                topEnd = largeRadius,
-                bottomStart = smallRadius,
-                bottomEnd = largeRadius
-            )
-        }
+    val bubbleShape = if (isMe) {
+        RoundedCornerShape(topStart = 20.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
     } else {
-        // Group chat - always round top corners, sharp bottom corner based on direction
-        if (isMe) {
-            // Outgoing: sharp bottom-right
-            RoundedCornerShape(
-                topStart = largeRadius,
-                topEnd = largeRadius,
-                bottomStart = largeRadius,
-                bottomEnd = smallRadius
-            )
-        } else {
-            // Incoming: sharp bottom-left
-            RoundedCornerShape(
-                topStart = largeRadius,
-                topEnd = largeRadius,
-                bottomStart = smallRadius,
-                bottomEnd = largeRadius
-            )
-        }
+        RoundedCornerShape(topStart = 4.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
     }
 
     val backgroundColor = when {
