@@ -40,14 +40,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.Color
 import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.ui.views.MessageBubble
 import com.example.haven.ui.views.MessageInputBar
 import com.example.haven.ui.views.ReplyPreview
-
-private val ChatBgColor = Color(0xFFFFF8F5) // Light peach background
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
@@ -82,7 +79,7 @@ internal fun ChatScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(ChatBgColor)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         CenterAlignedTopAppBar(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
@@ -106,7 +103,7 @@ internal fun ChatScreen(
                     modifier = Modifier
                         .size(62.dp)
                         .background(
-                            color = Color(0xFF5D4127),
+                            color = MaterialTheme.colorScheme.primary,
                             shape = RoundedCornerShape(22.dp)
                         )
                         .clickable(onClick = onBackClick)
@@ -116,7 +113,7 @@ internal fun ChatScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -126,7 +123,7 @@ internal fun ChatScreen(
                     modifier = Modifier
                         .size(62.dp)
                         .background(
-                            color = Color(0xFF5D4127),
+                            color = MaterialTheme.colorScheme.primary,
                             shape = RoundedCornerShape(22.dp)
                         )
                         .clickable(onClick = { /* TODO: Show info */ })
@@ -136,13 +133,13 @@ internal fun ChatScreen(
                     Icon(
                         imageVector = Icons.Outlined.Info,
                         contentDescription = "Info",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = ChatBgColor
+                containerColor = MaterialTheme.colorScheme.background
             )
         )
 

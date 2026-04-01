@@ -60,7 +60,7 @@ internal fun CodenamePage(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFFDF7F2))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .statusBarsPadding()
     ) {
         // Top Action Bar
@@ -77,12 +77,12 @@ internal fun CodenamePage(
                 enabled = !isLoading,
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(0xFFF9DED3), CircleShape)
+                    .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape)
             ) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
                     contentDescription = "Generate more",
-                    tint = Color(0xFF4E2A00),
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -92,7 +92,7 @@ internal fun CodenamePage(
                 modifier = Modifier
                     .size(80.dp, 40.dp)
                     .background(
-                        color = if (selected.isNotBlank() && !isLoading) Color(0xFF4E2A00) else Color(0xFF4E2A00).copy(alpha = 0.3f),
+                        color = if (selected.isNotBlank() && !isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
                         shape = RoundedCornerShape(20.dp)
                     )
                     .clip(RoundedCornerShape(20.dp))
@@ -105,7 +105,7 @@ internal fun CodenamePage(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Claim codename",
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -120,21 +120,21 @@ internal fun CodenamePage(
                 style = MaterialTheme.typography.displaySmall.copy(
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color(0xFF4E2A00)
+                    color = MaterialTheme.colorScheme.primary
                 )
             )
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 imageVector = Icons.Default.Info,
                 contentDescription = null,
-                tint = Color(0xFF4E2A00).copy(alpha = 0.4f),
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
                 modifier = Modifier.size(20.dp)
             )
         }
 
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
         ) {
             Column(
@@ -149,7 +149,7 @@ internal fun CodenamePage(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularWavyProgressIndicator()
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(status, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                            Text(status, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -187,7 +187,7 @@ private fun CodenameItem(
     isSelected: Boolean,
     onSelect: () -> Unit
 ) {
-    val borderColor = if (isSelected) Color(0xFFC2185B) else Color.Transparent
+    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
     val stripColor = when {
         codename.length % 5 == 0 -> Color.Blue
         codename.length % 4 == 0 -> Color.Green
@@ -199,7 +199,7 @@ private fun CodenameItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFF2F2F7).copy(alpha = 0.5f))
+            .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.5f))
             .then(
                 if (isSelected) Modifier.border(1.dp, borderColor, RoundedCornerShape(12.dp))
                 else Modifier
@@ -225,14 +225,14 @@ private fun CodenameItem(
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.Black.copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                 ),
                 modifier = Modifier.weight(1f)
             )
             Icon(
                 imageVector = if (isSelected) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
                 contentDescription = if (isSelected) "Selected" else "Not selected",
-                tint = if (isSelected) Color(0xFFC2185B) else Color.Gray.copy(alpha = 0.5f),
+                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 modifier = Modifier.size(24.dp)
             )
         }

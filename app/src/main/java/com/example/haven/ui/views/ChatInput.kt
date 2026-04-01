@@ -18,14 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.haven.ui.theme.InterFontFamily
-
-private val InputBgColor = Color(0xFFFFEEE2) // Peach background
-private val InputTextColor = Color(0xFF87521B) // Brown text
 
 @Composable
 fun MessageInputBar(
@@ -61,7 +57,7 @@ fun MessageInputBar(
             placeholder = {
                 Text(
                     placeholder,
-                    color = InputTextColor,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontFamily = InterFontFamily,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 22.sp
@@ -70,18 +66,18 @@ fun MessageInputBar(
             modifier = Modifier.weight(1f),
             shape = RoundedCornerShape(28.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent,
-                focusedContainerColor = InputBgColor,
-                unfocusedContainerColor = InputBgColor,
-                focusedTextColor = InputTextColor,
-                unfocusedTextColor = InputTextColor
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
             ),
             maxLines = 5,
             textStyle = MaterialTheme.typography.bodyLarge.copy(
                 fontFamily = InterFontFamily,
                 fontWeight = FontWeight.SemiBold,
-                color = InputTextColor,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 22.sp
             )
         )

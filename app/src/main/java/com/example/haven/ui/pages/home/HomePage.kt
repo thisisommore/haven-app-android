@@ -68,16 +68,6 @@ import com.example.haven.ui.pages.home.HomeViewModel
 import com.example.haven.ui.views.ChatListItem
 import com.example.haven.ui.views.EmptyChatsState
 
-// ── Haven brand palette ──────────────────────────────────────────────
-private val HavenPrimary = Color(0xFF87521B)
-private val HavenPrimaryDark = Color(0xFF6B4216)
-private val HavenHeaderStart = Color(0xFFFFEEE2)   // top of gradient
-private val HavenHeaderEnd = Color(0xFFFFEEE2)     // bottom of gradient
-private val SearchBg = Color(0xFFFFF9F3)
-private val SearchBorder = Color(0xFFE8D5BF)
-private val SubtitleGray = Color(0xFF8E8E93)
-private val DividerColor = Color(0xFFF2F2F7)
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun HomeScreen(
@@ -145,7 +135,7 @@ internal fun HomeScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = HavenHeaderStart
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -158,7 +148,10 @@ internal fun HomeScreen(
                     .fillMaxWidth()
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(HavenHeaderStart, HavenHeaderEnd)
+                            colors = listOf(
+                                MaterialTheme.colorScheme.surfaceContainer,
+                                MaterialTheme.colorScheme.surfaceContainer
+                            )
                         )
                     )
             ) {
@@ -186,30 +179,30 @@ internal fun HomeScreen(
                                     letterSpacing = (-0.5).sp
                                 ),
                                 fontWeight = FontWeight.Normal,
-                                color = HavenPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                             if (isLoading) {
                                 LoadingIndicator(
                                     modifier = Modifier.size(20.dp),
-                                    color = HavenPrimary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
 
                         // Overflow / menu icon
+                        val primaryColor = MaterialTheme.colorScheme.primary
                         Box {
                             IconButton(onClick = { showMenu = true }) {
                                 // Custom thin plus icon
                                 Canvas(modifier = Modifier.size(50.dp)) {
                                     val strokeWidth = 1.5.dp.toPx()
-                                    val color = HavenPrimary
                                     val centerX = size.width / 2
                                     val centerY = size.height / 2
                                     val lineLength = size.minDimension * 0.35f
                                     
                                     // Horizontal line
                                     drawLine(
-                                        color = color,
+                                        color = primaryColor,
                                         start = androidx.compose.ui.geometry.Offset(centerX - lineLength, centerY),
                                         end = androidx.compose.ui.geometry.Offset(centerX + lineLength, centerY),
                                         strokeWidth = strokeWidth,
@@ -217,7 +210,7 @@ internal fun HomeScreen(
                                     )
                                     // Vertical line
                                     drawLine(
-                                        color = color,
+                                        color = primaryColor,
                                         start = androidx.compose.ui.geometry.Offset(centerX, centerY - lineLength),
                                         end = androidx.compose.ui.geometry.Offset(centerX, centerY + lineLength),
                                         strokeWidth = strokeWidth,
@@ -240,7 +233,7 @@ internal fun HomeScreen(
                                 )
                                 HorizontalDivider(
                                     modifier = Modifier.padding(horizontal = 12.dp),
-                                    color = DividerColor
+                                    color = MaterialTheme.colorScheme.outlineVariant
                                 )
                                 DropdownMenuItem(
                                     text = {
@@ -277,16 +270,16 @@ internal fun HomeScreen(
                         },
                         singleLine = true,
                         colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White,
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
-                            cursorColor = HavenPrimary,
-                            focusedTextColor = HavenPrimary,
-                            unfocusedTextColor = HavenPrimary,
-                            focusedPlaceholderColor = HavenPrimary,
-                            unfocusedPlaceholderColor = HavenPrimary
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         shape = RoundedCornerShape(4.dp)
                     )
@@ -324,7 +317,7 @@ internal fun HomeScreen(
                             )
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 20.dp),
-                                color = DividerColor,
+                                color = MaterialTheme.colorScheme.outlineVariant,
                                 thickness = 0.5.dp
                             )
                         }

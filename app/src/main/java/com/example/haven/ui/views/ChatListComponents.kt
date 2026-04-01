@@ -24,20 +24,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.haven.ui.pages.home.ChatWithPreview
-import androidx.compose.ui.graphics.Color
 import java.text.SimpleDateFormat
 import java.util.Locale
-
-// Chat list colors
-private val ChatNameColor = Color(0xFF735943)
-private val SecondaryTextColor = Color(0xFFB9B9B9)
 
 @Composable
 fun ChatListItem(
@@ -45,10 +39,8 @@ fun ChatListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // For Notes (self chat) with no messages, use custom layout for tighter spacing
     val isNotesEmpty = chat.title == "<self>" && chat.preview == "No messages yet"
     
-    // Custom layout for Notes with minimal spacing between icon and text
     if (isNotesEmpty) {
         Row(
             modifier = modifier
@@ -64,12 +56,12 @@ fun ChatListItem(
                 modifier = Modifier.size(44.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
-            Spacer(modifier = Modifier.width(4.dp)) // Minimal space between icon and text
+            Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = "Notes",
                 style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp),
                 fontWeight = if (chat.unreadCount > 0) FontWeight.SemiBold else FontWeight.Medium,
-                color = ChatNameColor,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -93,7 +85,7 @@ fun ChatListItem(
                 text = if (chat.title == "<self>") "Notes" else chat.title,
                 style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
                 fontWeight = if (chat.unreadCount > 0) FontWeight.SemiBold else FontWeight.Medium,
-                color = ChatNameColor,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -101,21 +93,20 @@ fun ChatListItem(
         supportingContent = if (isNotesEmpty) null else {
             {
                 Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
-                    // Sender name above message (like iOS)
                     chat.senderName?.let { sender ->
                         Text(
                             text = sender,
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                            color = SecondaryTextColor,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
                     Text(
-                        text = stripHtml(chat.preview),
+                        text = stripHtmlTags(chat.preview),
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                        color = SecondaryTextColor,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -134,7 +125,7 @@ fun ChatListItem(
                         color = if (chat.unreadCount > 0) {
                             MaterialTheme.colorScheme.primary
                         } else {
-                            SecondaryTextColor
+                            MaterialTheme.colorScheme.onSurfaceVariant
                         }
                     )
                 }
@@ -225,4 +216,8 @@ private fun formatChatTime(timestamp: Long): String {
         diff < 7 * dayInMillis -> SimpleDateFormat("EEE", Locale.getDefault()).format(date)
         else -> SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(date)
     }
+}
+
+private fun stripHtmlTags(html: String): String {
+    return html.replace(Regex("<[^>]*>"), "")
 }

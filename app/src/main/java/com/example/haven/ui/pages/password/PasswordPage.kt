@@ -67,15 +67,13 @@ internal fun PasswordPage(
         "Contains a symbol (!@#$...)" to password.any { !it.isLetterOrDigit() },
     )
 
-    // Requirement: passwords must match AND be non-empty
-    // (Relaxed from digit requirement based on user feedback)
     val matches = password.isNotBlank() && password == confirm
     val canContinue = matches && !isLoading
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFFDF7F2))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .statusBarsPadding()
     ) {
         // Custom Top Bar
@@ -89,8 +87,8 @@ internal fun PasswordPage(
             Button(
                 onClick = onImport,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9DED3),
-                    contentColor = Color(0xFF4E2A00)
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 ),
                 shape = RoundedCornerShape(20.dp),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
@@ -105,7 +103,7 @@ internal fun PasswordPage(
                 modifier = Modifier
                     .size(40.dp)
                     .background(
-                        color = if (canContinue) Color(0xFF4E2A00) else Color(0xFF4E2A00).copy(alpha = 0.3f),
+                        color = if (canContinue) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
                         shape = CircleShape
                     )
                     .clip(CircleShape)
@@ -118,7 +116,7 @@ internal fun PasswordPage(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Continue",
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -129,14 +127,14 @@ internal fun PasswordPage(
             style = MaterialTheme.typography.displaySmall.copy(
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Normal,
-                color = Color(0xFF4E2A00)
+                color = MaterialTheme.colorScheme.primary
             ),
             modifier = Modifier.padding(start = 24.dp, bottom = 24.dp)
         )
 
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
         ) {
             Column(
@@ -151,7 +149,7 @@ internal fun PasswordPage(
                 Text(
                     text = "Enter a password to secure your Haven identity",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF5D4037).copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                 )
 
                 PasswordInputField(
@@ -171,7 +169,7 @@ internal fun PasswordPage(
                 Text(
                     text = "Password recommendation",
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF5D4037),
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(top = 8.dp)
                 )
 
@@ -195,7 +193,7 @@ internal fun PasswordPage(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularWavyProgressIndicator()
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(status, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                            Text(status, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -217,7 +215,7 @@ private fun PasswordInputField(
         Text(
             text = label,
             style = MaterialTheme.typography.labelLarge,
-            color = Color(0xFF5D4037)
+            color = MaterialTheme.colorScheme.onSurface
         )
         TextField(
             value = value,
@@ -227,15 +225,15 @@ private fun PasswordInputField(
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFF2F2F7),
-                unfocusedContainerColor = Color(0xFFF2F2F7),
-                disabledContainerColor = Color(0xFFF2F2F7),
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
             ),
             shape = RoundedCornerShape(12.dp),
-            placeholder = { Text("-", color = Color.Gray) }
+            placeholder = { Text("-", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         )
     }
 }
@@ -249,13 +247,13 @@ private fun RuleItem(label: String, isMet: Boolean) {
         Icon(
             imageVector = if (isMet) Icons.Default.Check else Icons.Default.HighlightOff,
             contentDescription = null,
-            tint = if (isMet) Color(0xFF4E2A00) else Color(0xFF5D4037).copy(alpha = 0.5f),
+            tint = if (isMet) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             modifier = Modifier.size(18.dp)
         )
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            color = if (isMet) Color(0xFF4E2A00) else Color(0xFF5D4037).copy(alpha = 0.8f)
+            color = if (isMet) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
         )
     }
 }

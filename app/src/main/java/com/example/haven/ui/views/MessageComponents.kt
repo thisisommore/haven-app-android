@@ -24,7 +24,6 @@ import com.example.haven.ui.theme.InterFontFamily
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.outlined.Face
@@ -69,17 +68,13 @@ fun MessageBubble(
         RoundedCornerShape(topStart = 4.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
     }
 
-    // Message bubble colors
-    val SentMessageBg = Color(0xFF5A6238)      // Dark olive green
-    val ReceivedMessageBg = Color(0xFFFFDCC0)   // Light peach
-    
     val backgroundColor = when {
         isReplyingTo -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
-        isMe -> SentMessageBg
-        else -> ReceivedMessageBg
+        isMe -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.secondaryContainer
     }
 
-    val contentColor = if (isMe) Color.White else Color.Black
+    val contentColor = if (isMe) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondaryContainer
 
     var showMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -229,7 +224,7 @@ private fun MessageFooter(
 @Composable
 fun ReplyIndicator(replyToId: String, isMe: Boolean, modifier: Modifier = Modifier) {
     Surface(
-        color = if (isMe) Color.White.copy(alpha = 0.2f) else Color(0xFF5A6238).copy(alpha = 0.15f),
+        color = if (isMe) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.15f),
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
     ) {
@@ -237,14 +232,13 @@ fun ReplyIndicator(replyToId: String, isMe: Boolean, modifier: Modifier = Modifi
             modifier = Modifier.padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Reply icon removed
             Text(
                 text = "Reply to message",
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontFamily = com.example.haven.ui.theme.InterFontFamily,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Normal
                 ),
-                color = if (isMe) Color.White.copy(alpha = 0.9f) else Color(0xFF5A6238)
+                color = if (isMe) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f) else MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
     }
@@ -265,7 +259,6 @@ fun ReplyPreview(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Reply icon removed
             Spacer(modifier = Modifier.width(8.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
