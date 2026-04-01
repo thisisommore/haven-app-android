@@ -70,7 +70,7 @@ private val ButtonFontSize    = 22.sp
 
 // Theme-aware colors using MaterialTheme.colorScheme
 @Composable
-private fun sheetBackgroundColor(): Color = MaterialTheme.colorScheme.surfaceVariant
+private fun sheetBackgroundColor(): Color = MaterialTheme.colorScheme.surfaceContainer
 
 @Composable
 private fun cardBackgroundColor(): Color = MaterialTheme.colorScheme.surface
