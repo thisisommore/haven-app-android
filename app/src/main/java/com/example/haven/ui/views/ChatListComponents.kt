@@ -46,7 +46,7 @@ fun ChatListItem(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .heightIn(min = 86.dp)
+                .heightIn(min = 88.dp)
                 .clickable(onClick = onClick)
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -102,7 +102,7 @@ fun ChatListItem(
                             Text(
                                 text = sender,
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f),
                                 modifier = Modifier.padding(top = 4.dp),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -112,7 +112,7 @@ fun ChatListItem(
                     Text(
                         text = stripHtmlTags(chat.preview),
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -131,7 +131,7 @@ fun ChatListItem(
                         color = if (chat.unreadCount > 0) {
                             MaterialTheme.colorScheme.primary
                         } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
+                            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)
                         }
                     )
                 }
@@ -145,7 +145,7 @@ fun ChatListItem(
         ),
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 86.dp)
+            .heightIn(min = 88.dp)
             .clickable(onClick = onClick)
     )
 }
@@ -219,7 +219,7 @@ private fun formatChatTime(timestamp: Long): String {
     
     return when {
         diff < dayInMillis && date.day == now.day -> {
-            SimpleDateFormat("h:mm a", Locale.getDefault()).format(date)
+            SimpleDateFormat("h:mma", Locale.getDefault()).format(date).lowercase()
         }
         diff < 2 * dayInMillis -> "Yesterday"
         diff < 7 * dayInMillis -> SimpleDateFormat("EEE", Locale.getDefault()).format(date)
