@@ -191,7 +191,8 @@ internal fun ChatScreen(
                     senderName = getSenderName(message.senderId),
                     showSenderName = isFirstInCluster,
                     isFirstInCluster = isFirstInCluster,
-                    isLastInCluster = isLastInCluster
+                    isLastInCluster = isLastInCluster,
+                    isNewSender = isFirstInCluster
                 )
             }
         }
