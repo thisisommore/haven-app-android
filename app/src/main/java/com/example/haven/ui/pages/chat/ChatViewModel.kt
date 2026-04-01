@@ -28,8 +28,11 @@ class ChatViewModel(
     val currentChat: StateFlow<ChatModel?> = _currentChat.asStateFlow()
 
     // Messages for current chat
-    var messages: Flow<List<ChatMessageModel>> = MutableStateFlow(emptyList())
-        private set
+    private val _messages = MutableStateFlow<List<ChatMessageModel>>(emptyList())
+    val messages: StateFlow<List<ChatMessageModel>> = _messages.asStateFlow()
+    
+    // Job for collecting messages
+    private var messagesCollectionJob: kotlinx.coroutines.Job? = null
 
     // Input message text
     private val _inputText = MutableStateFlow("")
@@ -48,7 +51,14 @@ class ChatViewModel(
             val chat = repository.getChatById(chatId)
             _currentChat.value = chat
             if (chat != null) {
-                messages = repository.getMessagesByChatId(chatId)
+                // Cancel previous collection
+                messagesCollectionJob?.cancel()
+                // Start collecting messages from the new chat
+                messagesCollectionJob = viewModelScope.launch {
+                    repository.getMessagesByChatId(chatId).collect { messageList ->
+                        _messages.value = messageList
+                    }
+                }
                 // Mark all messages as read when opening chat
                 repository.markAllMessagesAsRead(chatId)
             }
@@ -152,9 +162,3 @@ class ChatViewModel(
     }
 }
 
-/**
- * Extension for collecting Flow in Compose
- */
-fun <T> Flow<T>.asMutableStateFlow(): MutableStateFlow<T> {
-    return this as? MutableStateFlow<T> ?: MutableStateFlow<T?>(null) as MutableStateFlow<T>
-}

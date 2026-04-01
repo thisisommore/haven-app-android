@@ -60,7 +60,7 @@ internal fun HavenApp() {
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory(context))
     
     // Observe real messages from database
-    val chatMessages by chatViewModel.messages.collectAsState(initial = emptyList())
+    val chatMessages by chatViewModel.messages.collectAsState()
     val inputText by chatViewModel.inputText.collectAsState()
     
     val allLogs = remember {
