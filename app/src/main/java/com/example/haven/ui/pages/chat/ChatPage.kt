@@ -168,7 +168,7 @@ internal fun ChatScreen(
                 .fillMaxWidth()
                 .weight(1f),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Bottom),
+            verticalArrangement = Arrangement.Bottom,
             reverseLayout = true
         ) {
             items(
