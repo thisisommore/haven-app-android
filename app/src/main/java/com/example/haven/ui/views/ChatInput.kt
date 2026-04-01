@@ -1,7 +1,8 @@
 package com.example.haven.ui.views
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -23,6 +24,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -38,11 +40,17 @@ fun MessageInputBar(
     placeholder: String = "Aa",
     modifier: Modifier = Modifier
 ) {
+    val hasText = value.isNotBlank()
+    val weight by animateFloatAsState(
+        targetValue = if (hasText) 0.85f else 1f,
+        animationSpec = tween(200),
+        label = "weight"
+    )
+    
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-            .animateContentSize(),
+            .padding(horizontal = 8.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
@@ -71,7 +79,7 @@ fun MessageInputBar(
                     fontSize = 22.sp
                 )
             },
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(weight),
             shape = RoundedCornerShape(28.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
