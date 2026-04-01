@@ -1,5 +1,10 @@
 package com.example.haven.ui.views
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -83,8 +88,12 @@ fun MessageInputBar(
             )
         )
 
-        // Show send button when there's input
-        if (value.isNotBlank()) {
+        // Show send button when there's input with smooth animation
+        AnimatedVisibility(
+            visible = value.isNotBlank(),
+            enter = slideInHorizontally(initialOffsetX = { it / 2 }) + fadeIn(),
+            exit = slideOutHorizontally(targetOffsetX = { it / 2 }) + fadeOut()
+        ) {
             Spacer(modifier = Modifier.width(8.dp))
             IconButton(
                 onClick = onSend,
