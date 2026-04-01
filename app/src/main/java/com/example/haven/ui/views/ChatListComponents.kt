@@ -48,14 +48,14 @@ fun ChatListItem(
                 .fillMaxWidth()
                 .heightIn(min = 86.dp)
                 .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
             Icon(
                 imageVector = Icons.Filled.Bookmark,
                 contentDescription = "Notes",
-                modifier = Modifier.size(44.dp),
+                modifier = Modifier.size(38.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -77,7 +77,7 @@ fun ChatListItem(
                 Icon(
                     imageVector = Icons.Filled.Bookmark,
                     contentDescription = "Notes",
-                    modifier = Modifier.size(44.dp),
+                    modifier = Modifier.size(38.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
