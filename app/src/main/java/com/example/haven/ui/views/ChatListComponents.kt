@@ -83,9 +83,10 @@ fun ChatListItem(
             }
         } else null,
         headlineContent = {
+            val isNotes = chat.title == "<self>"
             Text(
-                text = if (chat.title == "<self>") "Notes" else chat.title,
-                style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+                text = if (isNotes) "Notes" else chat.title,
+                style = MaterialTheme.typography.titleMedium.copy(fontSize = if (isNotes) 20.sp else 22.sp),
                 fontWeight = if (chat.unreadCount > 0) FontWeight.SemiBold else FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
