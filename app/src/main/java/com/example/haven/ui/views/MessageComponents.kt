@@ -66,27 +66,49 @@ fun MessageBubble(
 ) {
     val isMe = !message.isIncoming
     
-    // Calculate corner radius based on cluster position (like iOS Signal)
-    // Sharp corners (4.dp) when clustered, round corners (20.dp) when standalone
-    val sharpRadius = 4.dp
-    val wideRadius = 20.dp
+    // Corner radius logic matching iOS Haven
+    // Small radius (6dp) for "sharp" corners, large (12dp) for round corners
+    val smallRadius = 6.dp
+    val largeRadius = 12.dp
     
-    val bubbleShape = if (isMe) {
-        // Outgoing messages (right side)
-        RoundedCornerShape(
-            topStart = wideRadius,
-            topEnd = if (isFirstInCluster) wideRadius else sharpRadius,
-            bottomStart = wideRadius,
-            bottomEnd = if (isLastInCluster) wideRadius else sharpRadius
-        )
+    val bubbleShape = if (senderName == null) {
+        // DM chat (no sender name) - sharp corners on one side based on direction
+        if (isMe) {
+            // Outgoing: sharp right corners
+            RoundedCornerShape(
+                topStart = largeRadius,
+                topEnd = smallRadius,
+                bottomStart = largeRadius,
+                bottomEnd = smallRadius
+            )
+        } else {
+            // Incoming: sharp left corners
+            RoundedCornerShape(
+                topStart = smallRadius,
+                topEnd = largeRadius,
+                bottomStart = smallRadius,
+                bottomEnd = largeRadius
+            )
+        }
     } else {
-        // Incoming messages (left side)
-        RoundedCornerShape(
-            topStart = if (isFirstInCluster) wideRadius else sharpRadius,
-            topEnd = wideRadius,
-            bottomStart = if (isLastInCluster) wideRadius else sharpRadius,
-            bottomEnd = wideRadius
-        )
+        // Group chat - always round top corners, sharp bottom corner based on direction
+        if (isMe) {
+            // Outgoing: sharp bottom-right
+            RoundedCornerShape(
+                topStart = largeRadius,
+                topEnd = largeRadius,
+                bottomStart = largeRadius,
+                bottomEnd = smallRadius
+            )
+        } else {
+            // Incoming: sharp bottom-left
+            RoundedCornerShape(
+                topStart = largeRadius,
+                topEnd = largeRadius,
+                bottomStart = smallRadius,
+                bottomEnd = largeRadius
+            )
+        }
     }
 
     val backgroundColor = when {
