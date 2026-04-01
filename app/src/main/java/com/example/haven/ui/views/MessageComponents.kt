@@ -60,13 +60,46 @@ fun MessageBubble(
     isReplyingTo: Boolean,
     senderName: String? = null,
     showSenderName: Boolean = true,
+    isFirstInCluster: Boolean = true,
+    isLastInCluster: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val isMe = !message.isIncoming
-    val bubbleShape = if (isMe) {
-        RoundedCornerShape(topStart = 20.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
-    } else {
-        RoundedCornerShape(topStart = 4.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
+    
+    // Corner radius based on position in message cluster
+    val bubbleShape = when {
+        // First message in cluster: round top (20), medium bottom (12)
+        isFirstInCluster && !isLastInCluster -> {
+            RoundedCornerShape(20.dp)
+        }
+        // Middle message: all corners medium (12)
+        !isFirstInCluster && !isLastInCluster -> {
+            RoundedCornerShape(12.dp)
+        }
+        // Last message: medium top (12), bottom depends on direction
+        else -> {
+            val topRadius = 12.dp
+            val bottomOuterRadius = 20.dp  // side away from sender
+            val bottomInnerRadius = 0.dp   // side toward sender (sharp)
+            
+            if (isMe) {
+                // Outgoing: sharp bottom-right
+                RoundedCornerShape(
+                    topStart = topRadius,
+                    topEnd = topRadius,
+                    bottomStart = bottomOuterRadius,
+                    bottomEnd = bottomInnerRadius
+                )
+            } else {
+                // Incoming: sharp bottom-left
+                RoundedCornerShape(
+                    topStart = topRadius,
+                    topEnd = topRadius,
+                    bottomStart = bottomInnerRadius,
+                    bottomEnd = bottomOuterRadius
+                )
+            }
+        }
     }
 
     val backgroundColor = when {
