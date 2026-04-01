@@ -100,6 +100,7 @@ open class XXDK(
             progress(XXDKProgress.StartingNetworkFollower)
             cmix?.startNetworkFollower(5_000)
             cmix?.waitForNetwork(30_000)
+            progress(XXDKProgress.NetworkFollowerComplete)
         }
     }
 
@@ -113,6 +114,8 @@ open class XXDK(
         codeset = publicIdentity.codesetVersion
         savePrivateIdentity(privateIdentity)
         
+        progress(XXDKProgress.CreatingIdentity)
+        
         // Load notifications
         val notifs = try {
             bindings.Bindings.loadNotifications(liveCmix.id)
@@ -122,9 +125,24 @@ open class XXDK(
         }
         this@XXDK.notifications = notifs
         
-        progress(XXDKProgress.CreatingIdentity)
+        progress(XXDKProgress.SyncingNotifications)
+        progress(XXDKProgress.ConnectingToNodes)
+        progress(XXDKProgress.SettingUpRemoteKV)
+        
+        // Set up remoteKV
+        try {
+            val kv = liveCmix.remoteKV
+            remoteKV = kv
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to set up remote KV: ${e.message}")
+        }
+        
+        progress(XXDKProgress.WaitingForNetwork)
+        progress(XXDKProgress.PreparingChannelsManager)
         
         // Create Channels Manager for returning users
+        // NOTE: iOS uses loadChannelsManager with storageTag from RemoteKV
+        // Android uses newChannelsManager until RemoteKVKeyChangeListener is fully implemented
         try {
             val extensionJSON = "[]".toByteArray()
             val channelsManager = bindings.Bindings.newChannelsManager(
@@ -139,25 +157,6 @@ open class XXDK(
             Log.d(TAG, "ChannelsManager created for returning user")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to create channels manager: ${e.message}", e)
-        }
-        
-        // Create DM client for returning users
-        try {
-            val dmReceiverBuilder = DmReceiverBuilder(context)
-            val dmCallbacks = object : bindings.DmCallbacks {
-                override fun eventUpdate(p0: Long, p1: ByteArray?) {}
-            }
-            val dmClient = bindings.DMClient(
-                liveCmix.id,
-                notifs?.id ?: 0,
-                privateIdentity,
-                dmReceiverBuilder,
-                dmCallbacks
-            )
-            dm = DirectMessage(dmClient)
-            Log.d(TAG, "DMClient created for returning user")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to setup DM client: ${e.message}", e)
         }
         
         progress(XXDKProgress.ReadyExistingUser)
@@ -431,7 +430,7 @@ open class XXDK(
         codename = null
         codeset = 0
         status = XXDKProgress.Idle.label
-        statusPercentage = XXDKProgress.Idle.percent
+        statusPercentage = 0
     }
 
     override fun storeApnsToken(token: String) {
