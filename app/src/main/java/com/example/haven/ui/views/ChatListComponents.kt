@@ -96,15 +96,18 @@ fun ChatListItem(
         supportingContent = if (isNotesEmpty) null else {
             {
                 Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
-                    chat.senderName?.let { sender ->
-                        Text(
-                            text = sender,
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                    // Don't show sender name for Notes
+                    if (chat.title != "<self>") {
+                        chat.senderName?.let { sender ->
+                            Text(
+                                text = sender,
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 4.dp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                     Text(
                         text = stripHtmlTags(chat.preview),
