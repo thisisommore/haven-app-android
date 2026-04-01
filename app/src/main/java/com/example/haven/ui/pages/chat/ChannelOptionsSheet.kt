@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -52,6 +53,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.haven.data.model.ChatModel
@@ -94,6 +96,9 @@ fun ChannelOptionsSheet(
         viewModel.loadChannelOptions(chat)
     }
 
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
@@ -101,6 +106,7 @@ fun ChannelOptionsSheet(
         tonalElevation = 0.dp,
         scrimColor = Color.Black.copy(alpha = 0.32f),
         shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp),
+        modifier = modifier.heightIn(min = screenHeight * 0.94f),
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -110,8 +116,7 @@ fun ChannelOptionsSheet(
                     .clip(RoundedCornerShape(2.dp))
                     .background(PrimaryPurple.copy(alpha = 0.4f))
             )
-        },
-        modifier = modifier
+        }
     ) {
         ChannelOptionsContent(
             chat = chat,
@@ -172,7 +177,7 @@ private fun ChannelOptionsContent(
                 color = PrimaryPurple,
                 fontSize = TitleFontSize
             ),
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 4.dp)
+            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 60.dp)
         )
 
         if (isLoading) {
