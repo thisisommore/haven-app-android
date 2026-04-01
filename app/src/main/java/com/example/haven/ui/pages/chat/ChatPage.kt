@@ -70,6 +70,12 @@ internal fun ChatScreen(
     replyingTo: ChatMessageModel? = null,
     onCancelReply: () -> Unit = {},
     getSenderName: (String?) -> String = { "" },
+    showOptionsSheet: Boolean = false,
+    onOptionsDismiss: () -> Unit = {},
+    onLeaveChannel: () -> Unit = {},
+    onDeleteChat: () -> Unit = {},
+    onInfoClick: () -> Unit = {},
+    optionsViewModel: ChannelOptionsViewModel? = null,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -146,7 +152,10 @@ internal fun ChatScreen(
                             color = MaterialTheme.colorScheme.primary,
                             shape = RoundedCornerShape(22.dp)
                         )
-                        .clickable(onClick = { /* TODO: Show info */ })
+                        .clickable(
+                            enabled = chat != null,
+                            onClick = onInfoClick
+                        )
                         .padding(12.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -277,6 +286,17 @@ internal fun ChatScreen(
                 },
                 recentEmojis = recentEmojis,
                 modifier = Modifier.navigationBarsPadding()
+            )
+        }
+
+        // Channel Options Sheet
+        if (showOptionsSheet && chat != null && optionsViewModel != null) {
+            ChannelOptionsSheet(
+                chat = chat,
+                viewModel = optionsViewModel,
+                onDismiss = onOptionsDismiss,
+                onLeaveChannel = onLeaveChannel,
+                onDeleteChat = onDeleteChat
             )
         }
     }

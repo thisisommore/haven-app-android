@@ -7,6 +7,14 @@ import bindings.ChannelsManager
 import org.json.JSONObject
 
 /**
+ * Data class for share URL information
+ */
+data class ShareUrlData(
+    val url: String,
+    val password: String? = null
+)
+
+/**
  * Channel implementation using XXDK bindings
  */
 class Channel(
@@ -16,6 +24,7 @@ class Channel(
     
     companion object {
         private const val TAG = "Channel"
+        const val SHARE_URL_HOST = "https://xxnetwork.com/join"
         // Notification levels (from iOS)
         const val CHANNEL_NOTIFY_NONE = 0L
         const val CHANNEL_NOTIFY_MENTIONS = 1L
@@ -33,11 +42,128 @@ class Channel(
     override fun isMuted(channelId: String): Boolean = channelId in mutedChannelIds
 
     override fun muteUser(channelId: String, pubKey: ByteArray, mute: Boolean) {
-        if (mute) mutedChannelIds += channelId else mutedChannelIds -= channelId
+        val cm = channelsManager ?: run {
+            Log.e(TAG, "Channels manager not available")
+            return
+        }
+        
+        try {
+            val channelIdBytes = Base64.decode(channelId, Base64.NO_WRAP)
+            // Use reflection to call muteUser
+            val method = cm.javaClass.getMethod("muteUser", ByteArray::class.java, ByteArray::class.java, Boolean::class.java)
+            method.invoke(cm, channelIdBytes, pubKey, mute)
+            if (mute) mutedChannelIds += channelId else mutedChannelIds -= channelId
+            Log.d(TAG, "User ${if (mute) "muted" else "unmuted"} in channel: $channelId")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to mute/unmute user: ${e.message}", e)
+            // Don't throw - just log error for now
+        }
     }
 
     fun leaveChannel(channelId: String) {
         mutedChannelIds -= channelId
+    }
+    
+    /**
+     * Check if DMs are enabled for a channel
+     */
+    fun areDMsEnabled(channelId: String): Boolean {
+        val cm = channelsManager ?: return false
+        
+        return try {
+            val channelIdBytes = Base64.decode(channelId, Base64.NO_WRAP)
+            // Try to call via reflection
+            val method = cm.javaClass.getMethod("areDMsEnabled", ByteArray::class.java)
+            method.invoke(cm, channelIdBytes) as? Boolean ?: false
+        } catch (e: Exception) {
+            Log.d(TAG, "areDMsEnabled not available: ${e.message}")
+            false
+        }
+    }
+    
+    /**
+     * Enable direct messages for a channel
+     */
+    fun enableDirectMessages(channelId: String) {
+        val cm = channelsManager ?: return
+        
+        try {
+            val channelIdBytes = Base64.decode(channelId, Base64.NO_WRAP)
+            val method = cm.javaClass.getMethod("enableDirectMessages", ByteArray::class.java)
+            method.invoke(cm, channelIdBytes)
+            Log.d(TAG, "DMs enabled for channel: $channelId")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to enable DMs: ${e.message}", e)
+            // Don't throw
+        }
+    }
+    
+    /**
+     * Disable direct messages for a channel
+     */
+    fun disableDirectMessages(channelId: String) {
+        val cm = channelsManager ?: return
+        
+        try {
+            val channelIdBytes = Base64.decode(channelId, Base64.NO_WRAP)
+            val method = cm.javaClass.getMethod("disableDirectMessages", ByteArray::class.java)
+            method.invoke(cm, channelIdBytes)
+            Log.d(TAG, "DMs disabled for channel: $channelId")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to disable DMs: ${e.message}", e)
+            // Don't throw
+        }
+    }
+    
+    /**
+     * Get share URL for a channel
+     */
+    fun getShareUrl(channelId: String): ShareUrlData? {
+        // Stub implementation - actual API may differ
+        Log.d(TAG, "getShareUrl called for channel: $channelId")
+        return null
+    }
+    
+    /**
+     * Get muted users for a channel
+     */
+    fun getMutedUsers(channelId: String): List<ByteArray> {
+        // Stub implementation - actual API may differ
+        Log.d(TAG, "getMutedUsers called for channel: $channelId")
+        return emptyList()
+    }
+    
+    /**
+     * Get channel nickname
+     */
+    fun getChannelNickname(channelId: String): String {
+        // Stub implementation
+        return ""
+    }
+    
+    /**
+     * Set channel nickname
+     */
+    fun setChannelNickname(channelId: String, nickname: String) {
+        // Stub implementation
+        Log.d(TAG, "setChannelNickname called for channel: $channelId")
+    }
+    
+    /**
+     * Export channel admin key
+     */
+    fun exportChannelAdminKey(channelId: String, encryptionPassword: String): String {
+        // Stub implementation
+        Log.d(TAG, "exportChannelAdminKey called for channel: $channelId")
+        return "stub-key-content"
+    }
+    
+    /**
+     * Import channel admin key
+     */
+    fun importChannelAdminKey(channelId: String, encryptionPassword: String, privateKey: String) {
+        // Stub implementation
+        Log.d(TAG, "importChannelAdminKey called for channel: $channelId")
     }
     
     /**
@@ -59,7 +185,6 @@ class Channel(
     
     /**
      * Join a channel from a URL (public share link)
-     * Mirrors iOS joinChannelFromURL
      */
     fun joinChannelFromURL(url: String): ChannelInfo? {
         val cm = channelsManager ?: run {
@@ -68,10 +193,7 @@ class Channel(
         }
         
         return try {
-            // Decode the URL to get pretty print format
             val prettyPrint = bindings.Bindings.decodePublicURL(url)
-            
-            // Join the channel using pretty print
             val resultBytes = cm.joinChannel(prettyPrint)
             val channelInfo = parseChannelInfo(resultBytes)
             Log.d(TAG, "Joined channel: ${channelInfo?.name}")

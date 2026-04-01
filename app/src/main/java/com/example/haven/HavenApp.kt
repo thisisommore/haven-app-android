@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.haven.ui.pages.chat.ChatScreen
 import com.example.haven.ui.pages.chat.ChatViewModel
+import com.example.haven.ui.pages.chat.ChannelOptionsViewModel
 import com.example.haven.ui.pages.codename.CodenamePage
 import com.example.haven.ui.pages.home.HomeScreen
 import com.example.haven.ui.pages.home.HomeViewModel
@@ -320,6 +321,11 @@ internal fun HavenApp() {
 
             Route.chat -> {
                 val currentChat by chatViewModel.currentChat.collectAsState()
+                val channelOptionsViewModel: ChannelOptionsViewModel = viewModel(
+                    factory = ChannelOptionsViewModel.createFactory(context, xxdk)
+                )
+                var showOptionsSheet by remember { mutableStateOf(false) }
+                
                 ChatScreen(
                     chat = currentChat,
                     messages = chatMessages,
@@ -329,6 +335,17 @@ internal fun HavenApp() {
                     onReplyClick = { /* TODO: implement reply */ },
                     onBackClick = { route = Route.home },
                     getSenderName = { senderId -> chatViewModel.getSenderName(senderId) },
+                    showOptionsSheet = showOptionsSheet,
+                    onOptionsDismiss = { showOptionsSheet = false },
+                    onLeaveChannel = { route = Route.home },
+                    onDeleteChat = { route = Route.home },
+                    onInfoClick = { 
+                        currentChat?.let { chat ->
+                            channelOptionsViewModel.loadChannelOptions(chat)
+                            showOptionsSheet = true
+                        }
+                    },
+                    optionsViewModel = channelOptionsViewModel,
                     modifier = Modifier.fillMaxSize()
                 )
             }
