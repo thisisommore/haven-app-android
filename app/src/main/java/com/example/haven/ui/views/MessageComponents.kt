@@ -94,9 +94,15 @@ fun MessageBubble(
                 .wrapContentWidth()
                 .animateContentSize()
         ) {
+            val showSender = !isMe && senderName != null && showSenderName
             Column(
                 modifier = Modifier
-                    .padding(12.dp)
+                    .padding(
+                        start = 12.dp,
+                        end = 12.dp,
+                        top = if (showSender) 12.dp else 8.dp,
+                        bottom = 12.dp
+                    )
                     .width(IntrinsicSize.Min)
                     .combinedClickable(
                         interactionSource = remember { MutableInteractionSource() },
@@ -156,7 +162,7 @@ fun MessageBubble(
                 }
 
                 // Sender name for incoming messages (only show for first message in group)
-                if (!isMe && senderName != null && showSenderName) {
+                if (showSender) {
                     Text(
                         text = senderName,
                         style = MaterialTheme.typography.labelSmall.copy(
