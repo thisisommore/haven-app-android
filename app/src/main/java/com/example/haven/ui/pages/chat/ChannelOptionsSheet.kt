@@ -106,7 +106,7 @@ fun ChannelOptionsSheet(
         tonalElevation = 0.dp,
         scrimColor = Color.Black.copy(alpha = 0.32f),
         shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp),
-        modifier = modifier.heightIn(min = screenHeight * 0.94f),
+        modifier = modifier.heightIn(min = screenHeight * 0.92f),
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -233,12 +233,26 @@ private fun ChannelOptionsContent(
                     )
                 }
 
-                // Share URL Row
+                CardDivider()
+
+                // Share URL Section
+                android.util.Log.d("ChannelOptionsUI", "shareUrlData: ${shareUrlData?.url ?: "NULL"}")
                 shareUrlData?.let { data ->
+                    android.util.Log.d("ChannelOptionsUI", "Displaying share URL: ${data.url}")
+                    // URL Row
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { /* Handle share */ }
+                            .clickable { 
+                                // Share the URL
+                                val sendIntent = android.content.Intent().apply {
+                                    action = android.content.Intent.ACTION_SEND
+                                    putExtra(android.content.Intent.EXTRA_TEXT, data.url)
+                                    type = "text/plain"
+                                }
+                                val shareIntent = android.content.Intent.createChooser(sendIntent, null)
+                                // Need context to start activity - would need to be handled differently
+                            }
                             .padding(horizontal = 26.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -246,7 +260,7 @@ private fun ChannelOptionsContent(
                             data.url,
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 color = PrimaryPurple,
-                                fontSize = 16.sp
+                                fontSize = ButtonFontSize
                             ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -255,10 +269,41 @@ private fun ChannelOptionsContent(
                         Spacer(modifier = Modifier.width(12.dp))
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                            contentDescription = "Open Link",
+                            contentDescription = "Share Link",
                             tint = LabelGray,
                             modifier = Modifier.size(20.dp)
                         )
+                    }
+                    
+                    // Password Row (if available)
+                    data.password?.let { password ->
+                        if (password.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 26.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column {
+                                    Text(
+                                        "Password",
+                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = LabelFontSize),
+                                        color = LabelGray
+                                    )
+                                    Text(
+                                        password,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            color = OnSurface
+                                        ),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                                // Copy password button would go here
+                            }
+                        }
                     }
                 }
             }

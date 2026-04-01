@@ -117,11 +117,28 @@ class Channel(
     
     /**
      * Get share URL for a channel
+     * Mirrors iOS getShareURL implementation
+     * Signature: getShareURL(cmixId, host, maxUses, channelIdBytes)
+     * Returns JSON with "url" and "password" fields
      */
     fun getShareUrl(channelId: String): ShareUrlData? {
-        // Stub implementation - actual API may differ
-        Log.d(TAG, "getShareUrl called for channel: $channelId")
-        return null
+        val cm = channelsManager ?: run {
+            Log.e(TAG, "Channels manager not available")
+            return null
+        }
+        
+        return try {
+            val channelIdBytes = Base64.decode(channelId, Base64.NO_WRAP)
+            
+            // Direct API call matching iOS signature: (cmixId, host, maxUses, channelIdBytes)
+            val shareUrlJsonBytes = cm.getShareURL(cmixId, SHARE_URL_HOST, 0, channelIdBytes)
+            
+            // Parse JSON like iOS does
+            Parser.decodeShareURL(shareUrlJsonBytes)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get share URL: ${e.message}", e)
+            null
+        }
     }
     
     /**

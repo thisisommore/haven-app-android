@@ -37,4 +37,12 @@ object Parser {
             howLong = json.optDouble("HowLong")
         )
     }
+    
+    fun decodeShareURL(raw: ByteArray): ShareUrlData {
+        val json = JSONObject(raw.decodeToString())
+        return ShareUrlData(
+            url = json.optString("url"),
+            password = json.optString("password").takeIf { it.isNotEmpty() }
+        )
+    }
 }

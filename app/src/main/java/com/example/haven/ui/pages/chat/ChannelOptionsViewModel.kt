@@ -97,12 +97,15 @@ class ChannelOptionsViewModel(
             _isAdmin.value = chat.isAdmin
 
             val channelId = chat.channelId
+            android.util.Log.d("ChannelOptionsVM", "Loading channel options for chat: ${chat.id}, channelId: $channelId")
             if (channelId != null) {
                 // Load DM enabled status
                 _isDMEnabled.value = xxdk.channel.areDMsEnabled(channelId)
 
                 // Load share URL
+                android.util.Log.d("ChannelOptionsVM", "Loading share URL for channel: $channelId")
                 val shareData = xxdk.channel.getShareUrl(channelId)
+                android.util.Log.d("ChannelOptionsVM", "Share URL result: ${shareData?.url ?: "NULL"}")
                 _shareUrlData.value = shareData
 
                 // Load muted users
@@ -110,6 +113,8 @@ class ChannelOptionsViewModel(
 
                 // Load channel nickname
                 _channelNickname.value = xxdk.channel.getChannelNickname(channelId)
+            } else {
+                android.util.Log.d("ChannelOptionsVM", "No channelId - this is a DM chat")
             }
 
             _isLoading.value = false
