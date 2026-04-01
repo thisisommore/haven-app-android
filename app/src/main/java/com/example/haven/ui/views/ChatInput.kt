@@ -40,6 +40,7 @@ fun MessageInputBar(
     value: String,
     onValueChange: (String) -> Unit,
     onSend: () -> Unit,
+    onEmojiClick: () -> Unit,
     placeholder: String = "Aa",
     modifier: Modifier = Modifier
 ) {
@@ -66,7 +67,7 @@ fun MessageInputBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = { /* TODO: Open emoji picker */ },
+                onClick = onEmojiClick,
                 modifier = Modifier.size(emojiButtonWidth)
             ) {
                 Icon(

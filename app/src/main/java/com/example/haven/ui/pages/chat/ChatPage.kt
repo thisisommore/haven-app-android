@@ -15,6 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.ChatMessageModel
+import com.example.haven.ui.views.EmojiPicker
 import com.example.haven.ui.views.MessageBubble
 import com.example.haven.ui.views.MessageInputBar
 import com.example.haven.ui.views.ReplyPreview
@@ -76,6 +82,10 @@ internal fun ChatScreen(
         }
     }
 
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val showEmojiPicker = remember { mutableStateOf(false) }
+    
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -179,11 +189,29 @@ internal fun ChatScreen(
             value = inputText,
             onValueChange = onInputChange,
             onSend = onSendClick,
+            onEmojiClick = {
+                if (showEmojiPicker.value) {
+                    showEmojiPicker.value = false
+                    keyboardController?.show()
+                } else {
+                    showEmojiPicker.value = true
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                }
+            },
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                .then(if (!isImeVisible) Modifier.navigationBarsPadding() else Modifier)
+                .then(if (!isImeVisible && !showEmojiPicker.value) Modifier.navigationBarsPadding() else Modifier)
                 .imePadding()
         )
+        
+        if (showEmojiPicker.value) {
+            EmojiPicker(
+                onEmojiSelected = { emoji ->
+                    onInputChange(inputText + emoji)
+                }
+            )
+        }
     }
 }
 
