@@ -25,7 +25,8 @@ data class ChatWithPreview(
     val senderName: String? = null,
     val unreadCount: Int,
     val timestamp: Long = 0L,
-    val isIncoming: Boolean? = null
+    val isIncoming: Boolean? = null,
+    val isNotes: Boolean = false
 )
 
 /**
@@ -63,9 +64,13 @@ class HomeViewModel(
                 senderName = senderName,
                 unreadCount = chat.unreadCount,
                 timestamp = lastMessage?.timestamp?.time ?: chat.joinedAt.time,
-                isIncoming = lastMessage?.isIncoming
+                isIncoming = lastMessage?.isIncoming,
+                isNotes = chat.name == "<self>"
             )
-        }.sortedByDescending { it.timestamp }
+        }.sortedWith(
+            compareByDescending<ChatWithPreview> { it.isNotes }
+                .thenByDescending { it.timestamp }
+        )
     }
 
     // Search query
