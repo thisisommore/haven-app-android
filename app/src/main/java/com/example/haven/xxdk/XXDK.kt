@@ -143,9 +143,10 @@ open class XXDK(
         // Create Channels Manager for returning users
         // NOTE: iOS uses loadChannelsManager with storageTag from RemoteKV
         // Android uses newChannelsManager until RemoteKVKeyChangeListener is fully implemented
+        var channelsManager: bindings.ChannelsManager? = null
         try {
             val extensionJSON = "[]".toByteArray()
-            val channelsManager = bindings.Bindings.newChannelsManager(
+            channelsManager = bindings.Bindings.newChannelsManager(
                 liveCmix.id,
                 privateIdentity,
                 eventModelBuilder!!,
@@ -153,10 +154,40 @@ open class XXDK(
                 notifs?.id ?: 0,
                 channelUICallbacks!!
             )
-            channel = Channel(channelsManager, liveCmix.id)
             Log.d(TAG, "ChannelsManager created for returning user")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to create channels manager: ${e.message}", e)
+        }
+        
+        // Create DM client for returning users
+        var dmClient: bindings.DMClient? = null
+        try {
+            val dmReceiverBuilder = DmReceiverBuilder(context)
+            val dmCallbacks = object : bindings.DmCallbacks {
+                override fun eventUpdate(p0: Long, p1: ByteArray?) {
+                    // Handle DM callbacks
+                }
+            }
+            dmClient = bindings.DMClient(
+                liveCmix.id,
+                notifs?.id ?: 0,
+                privateIdentity,
+                dmReceiverBuilder,
+                dmCallbacks
+            )
+            Log.d(TAG, "DMClient created for returning user")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create DM client for returning user: ${e.message}", e)
+        }
+        
+        // Initialize messaging classes with bindings if available
+        channelsManager?.let {
+            channel = Channel(it, liveCmix.id)
+            Log.d(TAG, "Channel messaging initialized for returning user")
+        }
+        dmClient?.let {
+            dm = DirectMessage(it)
+            Log.d(TAG, "DM messaging initialized for returning user")
         }
         
         progress(XXDKProgress.ReadyExistingUser)
