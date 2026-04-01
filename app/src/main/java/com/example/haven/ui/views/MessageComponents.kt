@@ -113,7 +113,7 @@ fun MessageBubble(
         else -> MaterialTheme.colorScheme.secondaryContainer
     }
 
-    val contentColor = MaterialTheme.colorScheme.onSurface
+    val contentColor = if (isMe) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondaryContainer
 
     var showMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
