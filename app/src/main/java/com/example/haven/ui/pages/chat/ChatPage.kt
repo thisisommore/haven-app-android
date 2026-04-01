@@ -163,53 +163,75 @@ internal fun ChatScreen(
             )
         )
 
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.Bottom,
-            reverseLayout = true
-        ) {
-            itemsIndexed(
-                items = reversedMessages,
-                key = { _, it -> it.id }
-            ) { index, message ->
-                val previousMessage = if (index > 0) reversedMessages[index - 1] else null
-                val nextMessage = if (index < reversedMessages.size - 1) reversedMessages[index + 1] else null
-                
-                // nextMessage is physically ABOVE (chronologically older)
-                // previousMessage is physically BELOW (chronologically newer)
-                
-                val isSameAsAbove = nextMessage != null && 
-                                    nextMessage.isIncoming == message.isIncoming && 
-                                    nextMessage.senderId == message.senderId
-                                    
-                val isSameAsBelow = previousMessage != null && 
-                                    previousMessage.isIncoming == message.isIncoming && 
-                                    previousMessage.senderId == message.senderId
+        if (messages.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No messages yet",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceContainer,
+                            shape = RoundedCornerShape(50)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                )
+            }
+        } else {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.Bottom,
+                reverseLayout = true
+            ) {
+                itemsIndexed(
+                    items = reversedMessages,
+                    key = { _, it -> it.id }
+                ) { index, message ->
+                    val previousMessage = if (index > 0) reversedMessages[index - 1] else null
+                    val nextMessage = if (index < reversedMessages.size - 1) reversedMessages[index + 1] else null
+                    
+                    // nextMessage is physically ABOVE (chronologically older)
+                    // previousMessage is physically BELOW (chronologically newer)
+                    
+                    val isSameAsAbove = nextMessage != null && 
+                                        nextMessage.isIncoming == message.isIncoming && 
+                                        nextMessage.senderId == message.senderId
+                                        
+                    val isSameAsBelow = previousMessage != null && 
+                                        previousMessage.isIncoming == message.isIncoming && 
+                                        previousMessage.senderId == message.senderId
 
-                val isFirstInCluster = !isSameAsAbove
-                val isLastInCluster = !isSameAsBelow
-                
-                // Gap between this message and the one ABOVE it (nextMessage)
-                val paddingTop = if (nextMessage != null) {
-                    if (isSameAsAbove) 4.dp else 12.dp
-                } else {
-                    0.dp
-                }
-                
-                Box(modifier = Modifier.padding(top = paddingTop)) {
-                    MessageBubble(
-                        message = message,
-                        onReplyClick = { onReplyClick(message) },
-                        isReplyingTo = replyingTo?.id == message.id,
-                        senderName = getSenderName(message.senderId),
-                        showSenderName = isFirstInCluster,
-                        isFirstInCluster = isFirstInCluster,
-                        isLastInCluster = isLastInCluster
-                    )
+                    val isFirstInCluster = !isSameAsAbove
+                    val isLastInCluster = !isSameAsBelow
+                    
+                    // Gap between this message and the one ABOVE it (nextMessage)
+                    val paddingTop = if (nextMessage != null) {
+                        if (isSameAsAbove) 4.dp else 12.dp
+                    } else {
+                        0.dp
+                    }
+                    
+                    Box(modifier = Modifier.padding(top = paddingTop)) {
+                        MessageBubble(
+                            message = message,
+                            onReplyClick = { onReplyClick(message) },
+                            isReplyingTo = replyingTo?.id == message.id,
+                            senderName = getSenderName(message.senderId),
+                            showSenderName = isFirstInCluster,
+                            isFirstInCluster = isFirstInCluster,
+                            isLastInCluster = isLastInCluster
+                        )
+                    }
                 }
             }
         }
