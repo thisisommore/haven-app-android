@@ -37,17 +37,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.haven.data.DatabaseModule
 import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.ui.views.EmojiPicker
+import kotlinx.coroutines.launch
+import androidx.compose.ui.platform.LocalContext
 import com.example.haven.ui.views.MessageBubble
 import com.example.haven.ui.views.MessageInputBar
 import com.example.haven.ui.views.ReplyPreview
@@ -82,9 +87,13 @@ internal fun ChatScreen(
         }
     }
 
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val showEmojiPicker = remember { mutableStateOf(false) }
+    val recentEmojiStore = remember { DatabaseModule.provideRecentEmojiStore(context) }
+    val recentEmojis by recentEmojiStore.recentEmojis.collectAsState(initial = emptyList())
+    val coroutineScope = rememberCoroutineScope()
     
     Column(
         modifier = modifier
@@ -209,7 +218,11 @@ internal fun ChatScreen(
             EmojiPicker(
                 onEmojiSelected = { emoji ->
                     onInputChange(inputText + emoji)
-                }
+                    coroutineScope.launch {
+                        recentEmojiStore.addRecentEmoji(emoji)
+                    }
+                },
+                recentEmojis = recentEmojis
             )
         }
     }
