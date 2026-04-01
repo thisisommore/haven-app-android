@@ -176,6 +176,7 @@ fun MessageBubble(
                 HtmlText(
                     html = message.message,
                     color = contentColor,
+                    textSize = 20f,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
 

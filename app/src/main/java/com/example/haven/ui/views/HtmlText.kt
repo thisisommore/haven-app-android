@@ -54,7 +54,8 @@ fun HtmlText(
     html: String,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
-    maxLines: Int = Int.MAX_VALUE
+    maxLines: Int = Int.MAX_VALUE,
+    textSize: Float = 16f
 ) {
     val context = LocalContext.current
     var pendingUrl by remember { mutableStateOf<String?>(null) }
@@ -111,6 +112,7 @@ fun HtmlText(
         factory = { ctx ->
             TextView(ctx).apply {
                 this.maxLines = maxLines
+                this.textSize = textSize
                 // Enable links to be clickable
                 movementMethod = LinkMovementMethod.getInstance()
                 // Links need clickable enabled, but we handle long-press at parent level
