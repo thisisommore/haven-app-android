@@ -44,6 +44,9 @@ import com.example.haven.xxdk.XXDK
 import com.example.haven.xxdk.XXDKStorage
 import com.example.haven.xxdk.applyIdentity
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.Dispatchers
 import android.util.Log
 
 @Composable
@@ -51,7 +54,8 @@ internal fun HavenApp() {
     val context = LocalContext.current.applicationContext
     val appStorage = remember { XXDKStorage.getInstance(context) }
     val xxdk = remember { XXDK(context).apply { setAppStorage(appStorage) } }
-    val scope = rememberCoroutineScope()
+    // Use application-scoped coroutines that survive config changes
+    val scope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
     val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModel.Factory(context, xxdk))
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory(context))
     
@@ -260,10 +264,8 @@ internal fun HavenApp() {
                             runCatching {
                                 val identity = codenames.first { it.pubkey == selectedCodename }
                                 xxdk.applyIdentity(identity)
-                                scope.launch {
-                                    xxdk.setupClients(identity.privateIdentity) {
-                                        appStorage.isSetupComplete = true
-                                    }
+                                xxdk.setupClients(identity.privateIdentity) {
+                                    appStorage.isSetupComplete = true
                                 }
                                 route = Route.landing
                             }.onFailure {
