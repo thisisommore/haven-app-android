@@ -68,7 +68,7 @@ private val DarkPurple        = Color(0xFF5D5387)
 private val OnSurface         = Color(0xFF1D1B20)
 private val LabelGray         = Color(0xFF79747E)
 private val PlaceholderGray   = Color(0xFFCAC4D0)
-private val DividerColor      = Color(0xFFE8E0F0)  // Purple-tinted divider matching the design
+private val DividerColor      = Color(0xFFEFEFEF)
 
 private val TitleFontSize     = 22.sp
 private val ValueFontSize     = 22.sp
@@ -391,7 +391,7 @@ private fun ChannelOptionsContent(
 @Composable
 private fun CardDivider() {
     HorizontalDivider(
-        modifier = Modifier.padding(horizontal = 30.dp, vertical = 16.dp),
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
         thickness = 1.dp,
         color = DividerColor
     )
