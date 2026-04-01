@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -45,8 +46,9 @@ fun ChatListItem(
         Row(
             modifier = modifier
                 .fillMaxWidth()
+                .height(120.dp)
                 .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
@@ -137,7 +139,10 @@ fun ChatListItem(
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        modifier = modifier.fillMaxWidth().clickable(onClick = onClick)
+        modifier = modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .clickable(onClick = onClick)
     )
 }
 
