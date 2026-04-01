@@ -165,7 +165,7 @@ fun MessageBubble(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 4.dp)
+                            .padding(bottom = 2.dp)
                     )
                 }
 
