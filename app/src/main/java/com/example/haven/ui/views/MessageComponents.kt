@@ -36,6 +36,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,7 +75,8 @@ fun MessageBubble(
         else -> MaterialTheme.colorScheme.secondaryContainer
     }
 
-    val contentColor = if (isMe) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondaryContainer
+    val isDarkTheme = isSystemInDarkTheme()
+    val contentColor = if (isDarkTheme) Color.White else Color.Black
 
     var showMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -161,7 +163,7 @@ fun MessageBubble(
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontFamily = InterFontFamily,
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.primary
+                            color = contentColor.copy(alpha = 0.7f)
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
