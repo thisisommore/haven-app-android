@@ -229,8 +229,11 @@ internal fun HavenApp() {
 
             Route.codenameGenerator -> {
                 // Regenerate identities if restored from config change with empty private data
+                // Only regenerate if cmix is ready and we have empty private identities
                 LaunchedEffect(codenames) {
-                    if (codenames.isNotEmpty() && codenames.first().privateIdentity.isEmpty()) {
+                    if (codenames.isNotEmpty() && 
+                        codenames.first().privateIdentity.isEmpty() &&
+                        xxdk.cmix != null) {
                         codenameBusy = true
                         runCatching {
                             codenames = xxdk.generateIdentities(10)

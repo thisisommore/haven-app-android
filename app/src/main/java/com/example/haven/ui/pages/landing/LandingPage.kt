@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.example.haven.xxdk.XXDKStorage
 import androidx.compose.ui.Alignment
@@ -54,9 +55,9 @@ internal fun LandingPage(
     // Observe isSetupComplete changes for new users
     val setupComplete by appStorage?.isSetupCompleteFlow?.collectAsState(initial = isSetupComplete) 
         ?: remember { mutableStateOf(isSetupComplete) }
-    var showProgress by remember { mutableStateOf(false) }
-    var isLoadingDone by remember { mutableStateOf(false) }
-    var moveUp by remember { mutableStateOf(false) }
+    var showProgress by rememberSaveable { mutableStateOf(false) }
+    var isLoadingDone by rememberSaveable { mutableStateOf(false) }
+    var moveUp by rememberSaveable { mutableStateOf(false) }
 
     // Animation: move content up
     val offsetY by animateFloatAsState(
