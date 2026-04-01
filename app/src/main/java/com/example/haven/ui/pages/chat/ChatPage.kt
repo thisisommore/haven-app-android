@@ -170,8 +170,9 @@ internal fun ChatScreen(
                     .weight(1f),
                 contentAlignment = Alignment.Center
             ) {
+                val isNotes = chat?.name == "<self>"
                 Text(
-                    text = "No messages yet",
+                    text = if (isNotes) "Drop your notes here" else "No messages yet",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
