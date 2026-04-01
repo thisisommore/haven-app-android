@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -40,7 +41,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,6 +73,7 @@ internal fun ChatScreen(
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
+    val reversedMessages = remember(messages) { messages.asReversed() }
     
     val isAtBottom by remember {
         derivedStateOf {
@@ -171,25 +172,35 @@ internal fun ChatScreen(
             verticalArrangement = Arrangement.Bottom,
             reverseLayout = true
         ) {
-            items(
-                items = messages.asReversed(),
-                key = { it.id }
-            ) { message ->
-                val reversedMessages = messages.asReversed()
-                val index = reversedMessages.indexOf(message)
+            itemsIndexed(
+                items = reversedMessages,
+                key = { _, it -> it.id }
+            ) { index, message ->
                 val previousMessage = if (index > 0) reversedMessages[index - 1] else null
                 val nextMessage = if (index < reversedMessages.size - 1) reversedMessages[index + 1] else null
                 
-                // Cluster logic: consecutive messages from same sender
-                val isFirstInCluster = previousMessage?.senderId != message.senderId
-                val isLastInCluster = nextMessage?.senderId != message.senderId
+                // nextMessage is physically ABOVE (chronologically older)
+                // previousMessage is physically BELOW (chronologically newer)
                 
-                // Calculate spacing: more space between different senders
-                // With reverseLayout=true, items are laid out bottom-to-top
-                // Space should be at bottom of item that ends a cluster (next sender is different)
-                val padding = if (nextMessage?.senderId != message.senderId) 40.dp else 1.dp
+                val isSameAsAbove = nextMessage != null && 
+                                    nextMessage.isIncoming == message.isIncoming && 
+                                    nextMessage.senderId == message.senderId
+                                    
+                val isSameAsBelow = previousMessage != null && 
+                                    previousMessage.isIncoming == message.isIncoming && 
+                                    previousMessage.senderId == message.senderId
+
+                val isFirstInCluster = !isSameAsAbove
+                val isLastInCluster = !isSameAsBelow
                 
-                Box(modifier = Modifier.padding(bottom = padding)) {
+                // Gap between this message and the one ABOVE it (nextMessage)
+                val paddingTop = if (nextMessage != null) {
+                    if (isSameAsAbove) 4.dp else 12.dp
+                } else {
+                    0.dp
+                }
+                
+                Box(modifier = Modifier.padding(top = paddingTop)) {
                     MessageBubble(
                         message = message,
                         onReplyClick = { onReplyClick(message) },
