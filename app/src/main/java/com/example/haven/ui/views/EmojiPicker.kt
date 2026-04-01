@@ -1,6 +1,5 @@
 package com.example.haven.ui.views
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,14 +23,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
-import androidx.compose.material.icons.outlined.Flag
-import androidx.compose.material.icons.outlined.Lightbulb
-import androidx.compose.material.icons.outlined.LocalActivity
-import androidx.compose.material.icons.outlined.LocalPizza
-import androidx.compose.material.icons.outlined.Pets
-import androidx.compose.material.icons.outlined.Public
-import androidx.compose.material.icons.outlined.SentimentSatisfied
-import androidx.compose.material.icons.outlined.SportsSoccer
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,173 +42,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-
-data class EmojiCategory(
-    val name: String,
-    val icon: ImageVector,
-    val emojis: List<String>
-)
-
-private val EMOJI_CATEGORIES = listOf(
-    EmojiCategory(
-        name = "Smileys",
-        icon = Icons.Outlined.SentimentSatisfied,
-        emojis = listOf(
-            "😀", "😃", "😄", "😁", "😅", "😂", "🤣", "😊",
-            "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘",
-            "😗", "😙", "😚", "😋", "😛", "😝", "😜", "🤪",
-            "🤨", "🧐", "🤓", "😎", "🥸", "🤩", "🥳", "😏",
-            "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣",
-            "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠",
-            "😡", "🤬", "🤯", "😳", "🥵", "🥶", "😱", "😨",
-            "😰", "😥", "😓", "🤗", "🤔", "🤭", "🤫", "🤥",
-            "😶", "😐", "😑", "😬", "🙄", "😯", "😦", "😧",
-            "😮", "😲", "🥱", "😴", "🤤", "😪", "😵", "🤐",
-            "🥴", "🤢", "🤮", "🤧", "😷", "🤒", "🤕", "🤑",
-            "🤠", "😈", "👿", "👹", "👺", "🤡", "💩", "👻",
-            "💀", "☠️", "👽", "👾", "🤖", "🎃", "😺", "😸",
-            "😹", "😻", "😼", "😽", "🙀", "😿", "😾"
-        )
-    ),
-    EmojiCategory(
-        name = "Animals",
-        icon = Icons.Outlined.Pets,
-        emojis = listOf(
-            "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼",
-            "🐨", "🐯", "🦁", "🐮", "🐷", "🐽", "🐸", "🐵",
-            "🙈", "🙉", "🙊", "🐒", "🦍", "🦧", "🐔", "🐧",
-            "🐦", "🐤", "🐣", "🐥", "🦆", "🦅", "🦉", "🦇",
-            "🐺", "🐗", "🐴", "🦄", "🐝", "🐛", "🦋", "🐌",
-            "🐞", "🐜", "🦟", "🦗", "🕷", "🕸", "🦂", "🐢",
-            "🐍", "🦎", "🦖", "🦕", "🐙", "🦑", "🦐", "🦞",
-            "🦀", "🐡", "🐠", "🐟", "🐬", "🐳", "🐋", "🦈",
-            "🐊", "🐅", "🐆", "🦓", "🦍", "🦧", "🐘", "🦛",
-            "🦏", "🐪", "🐫", "🦒", "🦘", "🐃", "🐂", "🐄",
-            "🐎", "🐖", "🐏", "🐑", "🦙", "🐐", "🦌", "🐕",
-            "🐩", "🦮", "🐕‍🦺", "🐈", "🐈‍⬛", "🐓", "🦃", "🦚",
-            "🦜", "🦢", "🦩", "🕊", "🐇", "🦝", "🦨", "🦡",
-            "🦦", "🦥", "🐁", "🐀", "🐿", "🦔"
-        )
-    ),
-    EmojiCategory(
-        name = "Food",
-        icon = Icons.Outlined.LocalPizza,
-        emojis = listOf(
-            "🍎", "🍐", "🍊", "🍋", "🍌", "🍉", "🍇", "🍓",
-            "🫐", "🍈", "🍒", "🍑", "🍍", "🥝", "🍅", "🍆",
-            "🥑", "🥦", "🥬", "🥒", "🌶", "🫑", "🌽", "🥕",
-            "🫒", "🧄", "🧅", "🥔", "🍠", "🥐", "🥯", "🍞",
-            "🥖", "🥨", "🧀", "🥚", "🍳", "🧈", "🥞", "🧇",
-            "🥓", "🥩", "🍗", "🍖", "🦴", "🌭", "🍔", "🍟",
-            "🍕", "🫓", "🥪", "🥙", "🧆", "🌮", "🌯", "🫔",
-            "🥗", "🥘", "🫕", "🥫", "🍝", "🍜", "🍲", "🍛",
-            "🍣", "🍱", "🥟", "🦪", "🍤", "🍙", "🍚", "🍘",
-            "🍥", "🥠", "🥮", "🍢", "🍡", "🍧", "🍨", "🍦",
-            "🥧", "🧁", "🍰", "🎂", "🍮", "🍭", "🍬", "🍫",
-            "🍿", "🍩", "🍪", "🌰", "🥜", "🍯", "🥛", "🍼",
-            "🫖", "☕", "🍵", "🧃", "🥤", "🧋", "🍶", "🍺",
-            "🍻", "🥂", "🍷", "🥃", "🍸", "🍹", "🧉", "🍾"
-        )
-    ),
-    EmojiCategory(
-        name = "Activities",
-        icon = Icons.Outlined.LocalActivity,
-        emojis = listOf(
-            "⚽", "🏀", "🏈", "⚾", "🥎", "🎾", "🏐", "🏉",
-            "🥏", "🎱", "🪀", "🏓", "🏸", "🏒", "🏑", "🥍",
-            "🏏", "🥅", "⛳", "🪁", "🏹", "🎣", "🤿", "🥊",
-            "🥋", "🎽", "🛹", "🛼", "🛷", "⛸", "🥌", "🎿",
-            "⛷", "🏂", "🪂", "🏋️", "🤼", "🤸", "⛹️", "🤺",
-            "🤾", "🏌️", "🏇", "🧘", "🏄", "🏊", "🤽", "🚣",
-            "🧗", "🚵", "🚴", "🏆", "🥇", "🥈", "🥉", "🏅",
-            "🎖", "🏵", "🎗", "🎫", "🎟", "🎪", "🤹", "🎭",
-            "🩰", "🎨", "🎬", "🎤", "🎧", "🎼", "🎹", "🥁",
-            "🪘", "🎷", "🎺", "🪗", "🎸", "🪕", "🎻", "🎲",
-            "♟", "🎯", "🎳", "🎮", "🎰", "🧩"
-        )
-    ),
-    EmojiCategory(
-        name = "Travel",
-        icon = Icons.Outlined.Public,
-        emojis = listOf(
-            "🚗", "🚕", "🚙", "🚌", "🚎", "🏎", "🚓", "🚑",
-            "🚒", "🚐", "🛻", "🚚", "🚛", "🚜", "🦯", "🦽",
-            "🦼", "🛴", "🚲", "🛵", "🏍", "🛺", "🚨", "🚔",
-            "🚍", "🚘", "🚖", "🚡", "🚠", "🚟", "🚃", "🚋",
-            "🚞", "🚝", "🚄", "🚅", "🚈", "🚂", "🚆", "🚇",
-            "🚊", "🚉", "✈️", "🛫", "🛬", "🛩", "💺", "🛰",
-            "🚀", "🛸", "🚁", "🛶", "⛵", "🚤", "🛥", "🛳",
-            "⛴", "🚢", "⚓", "⛽", "🚧", "🚦", "🚥", "🚏",
-            "🗺", "🗿", "🗽", "🗼", "🏰", "🏯", "🏟", "🎡",
-            "🎢", "🎠", "⛲", "⛱", "🏖", "🏝", "🏜", "🌋",
-            "⛰", "🏔", "🗻", "🏕", "⛺", "🏠", "🏡", "🏘",
-            "🏚", "🏗", "🏭", "🏢", "🏬", "🏣", "🏤", "🏥",
-            "🏦", "🏨", "🏪", "🏫", "🏩", "💒", "🏛", "⛪",
-            "🕌", "🕍", "🛕", "🕋", "⛩", "🛤", "🛣", "🗾"
-        )
-    ),
-    EmojiCategory(
-        name = "Objects",
-        icon = Icons.Outlined.SportsSoccer,
-        emojis = listOf(
-            "💌", "🕳", "💣", "🛀", "🛌", "🔪", "🏺", "🗺",
-            "🧭", "🧱", "💈", "🦽", "🦼", "🛢", "🛎", "🧳",
-            "⌛", "⏳", "⌚", "⏰", "⏱", "⏲", "🕰", "🌡",
-            "⛱", "🧨", "🎈", "🎉", "🎊", "🎎", "🎏", "🎐",
-            "🧧", "🎀", "🎁", "🤿", "🪀", "🪁", "🔮", "🧿",
-            "🕹", "🧸", "🪆", "🖼", "🧵", "🪡", "🧶", "🪢",
-            "👓", "🕶", "🥽", "🥼", "🦺", "👔", "👕", "👖",
-            "🧣", "🧤", "🧥", "🧦", "👗", "👘", "🥻", "🩱",
-            "🩲", "🩳", "👙", "👚", "👛", "👜", "👝", "🛍",
-            "🎒", "🩴", "👞", "👟", "🥾", "🥿", "👠", "👡",
-            "🩰", "👢", "👑", "👒", "🎩", "🎓", "🧢", "🪖",
-            "⛑", "📿", "💄", "💍", "💎", "🔇", "🔈", "🔉",
-            "🔊", "📢", "📣", "📯", "🔔", "🔕", "🎼", "🎵",
-            "🎶", "🎙", "🎚", "🎛", "🎤", "🎧", "📻", "🎷"
-        )
-    ),
-    EmojiCategory(
-        name = "Symbols",
-        icon = Icons.Outlined.Lightbulb,
-        emojis = listOf(
-            "💘", "💝", "💖", "💗", "💓", "💞", "💕", "💟",
-            "❣", "💔", "❤️", "🧡", "💛", "💚", "💙", "💜",
-            "🤎", "🖤", "🤍", "💯", "💢", "💥", "💫", "💦",
-            "💨", "🕳", "💣", "💬", "👁️‍🗨️", "🗨", "🗯", "💭",
-            "💤", "👋", "🤚", "🖐", "✋", "🖖", "👌", "🤌",
-            "🤏", "✌", "🤞", "🫰", "🤟", "🤘", "🤙", "👈",
-            "👉", "👆", "🖕", "👇", "☝", "👍", "👎", "✊",
-            "👊", "🤛", "🤜", "👏", "🙌", "🫶", "👐", "🤲",
-            "🤝", "🙏", "✍", "💅", "🤳", "💪", "🦾", "🦿",
-            "🦵", "🦶", "👂", "🦻", "👃", "🧠", "🫀", "🫁",
-            "🦷", "🦴", "👀", "👁", "👅", "👄", "🫦", "👶",
-            "🧒", "👦", "👧", "🧑", "👱", "👨", "🧔", "👩",
-            "🧓", "👴", "👵", "🙍", "🙎", "🙅", "🙆", "💁",
-            "🙋", "🧏", "🙇", "🤦", "🤷", "👮", "🕵", "💂"
-        )
-    ),
-    EmojiCategory(
-        name = "Flags",
-        icon = Icons.Outlined.Flag,
-        emojis = listOf(
-            "🏳️", "🏴", "🏴‍☠️", "🏁", "🚩", "🏳️‍🌈", "🏳️‍⚧️", "🇺🇳",
-            "🇦🇫", "🇦🇽", "🇦🇱", "🇩🇿", "🇦🇸", "🇦🇩", "🇦🇴", "🇦🇮",
-            "🇦🇶", "🇦🇬", "🇦🇷", "🇦🇲", "🇦🇼", "🇦🇺", "🇦🇹", "🇦🇿",
-            "🇧🇸", "🇧🇭", "🇧🇩", "🇧🇧", "🇧🇾", "🇧🇪", "🇧🇿", "🇧🇯",
-            "🇧🇲", "🇧🇹", "🇧🇴", "🇧🇦", "🇧🇼", "🇧🇷", "🇮🇴", "🇻🇬",
-            "🇧🇳", "🇧🇬", "🇧🇫", "🇧🇮", "🇨🇻", "🇰🇭", "🇨🇲", "🇨🇦",
-            "🇮🇨", "🇰🇾", "🇨🇫", "🇹🇩", "🇨🇱", "🇨🇳", "🇨🇴", "🇰🇲",
-            "🇨🇬", "🇨🇩", "🇨🇰", "🇨🇷", "🇨🇮", "🇭🇷", "🇨🇺", "🇨🇼",
-            "🇨🇾", "🇨🇿", "🇩🇰", "🇩🇯", "🇩🇲", "🇩🇴", "🇪🇨", "🇪🇬",
-            "🇸🇻", "🇬🇶", "🇪🇷", "🇪🇪", "🇸🇿", "🇪🇹", "🇪🇺", "🇫🇰",
-            "🇫🇴", "🇫🇯", "🇫🇮", "🇫🇷", "🇬🇫", "🇵🇫", "🇹🇫", "🇬🇦",
-            "🇬🇲", "🇬🇪", "🇩🇪", "🇬🇭", "🇬🇮", "🇬🇷", "🇬🇱", "🇬🇩",
-            "🇬🇵", "🇬🇺", "🇬🇹", "🇬🇬", "🇬🇳", "🇬🇼", "🇬🇾", "🇭🇹",
-            "🇭🇳", "🇭🇰", "🇭🇺", "🇮🇸", "🇮🇳", "🇮🇩", "🇮🇷", "🇮🇶",
-            "🇮🇪", "🇮🇲", "🇮🇱", "🇮🇹", "🇯🇲", "🇯🇵", "🇯🇪", "🇯🇴"
-        )
-    )
-)
 
 @Composable
 fun EmojiPicker(

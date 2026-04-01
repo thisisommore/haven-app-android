@@ -1,31 +1,25 @@
 package com.example.haven.xxdk
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import bindings.Cmix
-import com.example.haven.data.model.ChatModel
-import com.example.haven.data.DatabaseModule
-import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.xxdk.callbacks.ChannelEventModelBuilder
 import com.example.haven.xxdk.callbacks.ChannelUICallbacks
 import com.example.haven.xxdk.callbacks.DmEvents
 import com.example.haven.xxdk.callbacks.DmReceiver
 import com.example.haven.xxdk.callbacks.DmReceiverBuilder
-import com.example.haven.xxdk.callbacks.ReceiverHelpers
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.File
 
 open class XXDK(
-    private val context: Context,
+    internal val context: Context,
 ) : XXDKP {
     companion object {
-        private const val TAG = "XXDK"
+        internal const val TAG = "XXDK"
     }
     override var status by mutableStateOf("...")
     override var statusPercentage by mutableIntStateOf(0)
@@ -44,13 +38,13 @@ open class XXDK(
     var pendingApnsTokenHex: String? = null
 
     // Callbacks
-    private var eventModelBuilder: ChannelEventModelBuilder? = null
-    private var channelUICallbacks: ChannelUICallbacks? = null
-    private var dmReceiver: DmReceiver? = null
-    private var dmReceiverBuilder: DmReceiverBuilder? = null
-    private var dmEvents: DmEvents? = null
+    internal var eventModelBuilder: ChannelEventModelBuilder? = null
+    internal var channelUICallbacks: ChannelUICallbacks? = null
+    internal var dmReceiver: DmReceiver? = null
+    internal var dmReceiverBuilder: DmReceiverBuilder? = null
+    internal var dmEvents: DmEvents? = null
 
-    private var savedPrivateIdentity: ByteArray = byteArrayOf()
+    internal var savedPrivateIdentity: ByteArray = byteArrayOf()
 
     init {
         bindings.Bindings.setTimeSource(NetTime)
@@ -104,261 +98,10 @@ open class XXDK(
         }
     }
 
-    override suspend fun loadClients(privateIdentity: ByteArray) = withContext(Dispatchers.IO) {
-        progress(XXDKProgress.LoadingIdentity)
-        
-        val liveCmix = cmix ?: error("cmix is not available")
-        
-        val publicIdentity = Parser.decodeIdentity(bindings.Bindings.getPublicChannelIdentityFromPrivate(privateIdentity))
-        codename = publicIdentity.codename
-        codeset = publicIdentity.codesetVersion
-        savePrivateIdentity(privateIdentity)
-        
-        progress(XXDKProgress.CreatingIdentity)
-        
-        // Load notifications
-        val notifs = try {
-            bindings.Bindings.loadNotifications(liveCmix.id)
-        } catch (e: Exception) {
-            Log.e(TAG, "Could not load notifications: ${e.message}")
-            null
-        }
-        this@XXDK.notifications = notifs
-        
-        progress(XXDKProgress.SyncingNotifications)
-        progress(XXDKProgress.ConnectingToNodes)
-        progress(XXDKProgress.SettingUpRemoteKV)
-        
-        // Set up remoteKV
-        try {
-            val kv = liveCmix.remoteKV
-            remoteKV = kv
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to set up remote KV: ${e.message}")
-        }
-        
-        progress(XXDKProgress.WaitingForNetwork)
-        progress(XXDKProgress.PreparingChannelsManager)
-        
-        // Create Channels Manager for returning users
-        // NOTE: iOS uses loadChannelsManager with storageTag from RemoteKV
-        // Android uses newChannelsManager until RemoteKVKeyChangeListener is fully implemented
-        var channelsManager: bindings.ChannelsManager? = null
-        try {
-            val extensionJSON = "[]".toByteArray()
-            channelsManager = bindings.Bindings.newChannelsManager(
-                liveCmix.id,
-                privateIdentity,
-                eventModelBuilder!!,
-                extensionJSON,
-                notifs?.id ?: 0,
-                channelUICallbacks!!
-            )
-            Log.d(TAG, "ChannelsManager created for returning user")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to create channels manager: ${e.message}", e)
-        }
-        
-        // Create DM client for returning users
-        var dmClient: bindings.DMClient? = null
-        try {
-            val dmReceiverBuilder = DmReceiverBuilder(context)
-            val dmCallbacks = object : bindings.DmCallbacks {
-                override fun eventUpdate(p0: Long, p1: ByteArray?) {
-                    // Handle DM callbacks
-                }
-            }
-            dmClient = bindings.DMClient(
-                liveCmix.id,
-                notifs?.id ?: 0,
-                privateIdentity,
-                dmReceiverBuilder,
-                dmCallbacks
-            )
-            Log.d(TAG, "DMClient created for returning user")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to create DM client for returning user: ${e.message}", e)
-        }
-        
-        // Initialize messaging classes with bindings if available
-        channelsManager?.let {
-            channel = Channel(it, liveCmix.id)
-            Log.d(TAG, "Channel messaging initialized for returning user")
-        }
-        dmClient?.let {
-            dm = DirectMessage(it)
-            Log.d(TAG, "DM messaging initialized for returning user")
-        }
-        
-        progress(XXDKProgress.ReadyExistingUser)
-    }
+    override suspend fun loadClients(privateIdentity: ByteArray) = performLoadClients(privateIdentity)
 
-    override suspend fun setupClients(privateIdentity: ByteArray, successCallback: () -> Unit) = withContext(Dispatchers.IO) {
-        val liveCmix = cmix ?: error("cmix is not available")
-        val repository = DatabaseModule.provideRepository(context)
-        
-        progress(XXDKProgress.LoadingIdentity)
-        kotlinx.coroutines.delay(500) // Small delay for UX
-        
-        val publicIdentity = Parser.decodeIdentity(bindings.Bindings.getPublicChannelIdentityFromPrivate(privateIdentity))
-        codename = publicIdentity.codename
-        codeset = publicIdentity.codesetVersion
-        savePrivateIdentity(privateIdentity)
-        
-        progress(XXDKProgress.CreatingIdentity)
-        kotlinx.coroutines.delay(500)
-        
-        // Notifications
-        progress(XXDKProgress.SyncingNotifications)
-        try {
-            val notifs = bindings.Bindings.loadNotifications(liveCmix.id)
-            this@XXDK.notifications = notifs
-        } catch (e: Exception) {
-            Log.e(TAG, "Could not load notifications: ${e.message}")
-        }
-        kotlinx.coroutines.delay(500)
-        
-        progress(XXDKProgress.ConnectingToNodes)
-        kotlinx.coroutines.delay(500)
-        
-        progress(XXDKProgress.SettingUpRemoteKV)
-        try {
-            val kv = liveCmix.remoteKV
-            remoteKV = kv
-            // TODO: Set up storage tag listener when RemoteKV is properly implemented
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to set up remote KV: ${e.message}")
-        }
-        kotlinx.coroutines.delay(500)
-        
-        progress(XXDKProgress.WaitingForNetwork)
-        kotlinx.coroutines.delay(800)
-        
-        progress(XXDKProgress.PreparingChannelsManager)
-        
-        // Create Channels Manager
-        var channelsManager: bindings.ChannelsManager? = null
-        try {
-            val extensionJSON = "[]".toByteArray()
-            channelsManager = bindings.Bindings.newChannelsManager(
-                liveCmix.id,
-                privateIdentity,
-                eventModelBuilder!!,
-                extensionJSON,
-                notifications?.id ?: 0,
-                channelUICallbacks!!
-            )
-            Log.d(TAG, "ChannelsManager created successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to create channels manager: ${e.message}", e)
-        }
-        kotlinx.coroutines.delay(600)
-        
-        // Create DM client
-        var dmClient: bindings.DMClient? = null
-        try {
-            val dmReceiverBuilder = DmReceiverBuilder(context)
-            val dmCallbacks = object : bindings.DmCallbacks {
-                override fun eventUpdate(p0: Long, p1: ByteArray?) {
-                    // Handle DM callbacks
-                }
-            }
-            dmClient = bindings.DMClient(
-                liveCmix.id,
-                notifications?.id ?: 0,
-                privateIdentity,
-                dmReceiverBuilder,
-                dmCallbacks
-            )
-            Log.d(TAG, "DMClient created successfully")
-            
-            val selfPubKey = dmClient.publicKey
-            val token = dmClient.token.toInt()
-            
-            // Create self chat
-            val currentCodename = codename
-            if (!currentCodename.isNullOrEmpty()) {
-                val existingSelfChat = repository.getChatByPubKey(selfPubKey)
-                if (existingSelfChat == null) {
-                    val selfChat = ChatModel(
-                        name = "<self>",
-                        pubKey = selfPubKey,
-                        dmToken = token,
-                        color = 0xE97451
-                    )
-                    val selfSender = MessageSenderModel(
-                        id = java.util.UUID.nameUUIDFromBytes(selfPubKey).toString(),
-                        pubkey = selfPubKey,
-                        codename = currentCodename,
-                        color = 0xE97451
-                    )
-                    repository.insertChat(selfChat)
-                    repository.insertSender(selfSender)
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to setup DM client: ${e.message}", e)
-        }
-        
-        // Initialize messaging classes with bindings if available
-        channelsManager?.let { 
-            channel = Channel(it, liveCmix.id)
-            Log.d(TAG, "Channel messaging initialized")
-        }
-        dmClient?.let { 
-            dm = DirectMessage(it)
-            Log.d(TAG, "DM messaging initialized")
-        }
-        
-        progress(XXDKProgress.JoiningChannels)
-        
-        // Join xxIOS channel (same as iOS)
-        try {
-            val channelInfo = channel.joinChannelFromURL(XX_IOS_CHAT)
-            val channelId = channelInfo?.channelID ?: "xxIOS"
-            
-            // Set notifications to push for all messages
-            channel.setNotifications(channelId, 
-                level = Channel.CHANNEL_NOTIFY_ALL,
-                status = Channel.CHANNEL_NOTIFY_PUSH
-            )
-            
-            // Create local chat entry if not exists
-            val existingChannel = repository.getChatByChannelId(channelId)
-            if (existingChannel == null) {
-                val channelChat = ChatModel(
-                    name = channelInfo?.name ?: "xxGeneralChat",
-                    channelId = channelId
-                )
-                repository.insertChat(channelChat)
-                Log.d(TAG, "Created xxIOS channel chat in database")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to join xxIOS channel: ${e.message}", e)
-            // Still create a local entry as fallback
-            try {
-                val existingChannel = repository.getChatByChannelId("xxIOS")
-                if (existingChannel == null) {
-                    val channelChat = ChatModel(
-                        name = "xxGeneralChat",
-                        channelId = "xxIOS"
-                    )
-                    repository.insertChat(channelChat)
-                }
-            } catch (e2: Exception) {
-                Log.e(TAG, "Failed to create fallback channel: ${e2.message}")
-            }
-        }
-        kotlinx.coroutines.delay(500)
-        
-        progress(XXDKProgress.Ready)
-        kotlinx.coroutines.delay(500)
-        
-        // Mark setup complete
-        storage?.isSetupComplete = true
-        
-        successCallback()
-    }
+    override suspend fun setupClients(privateIdentity: ByteArray, successCallback: () -> Unit) =
+        performSetupClients(privateIdentity, successCallback)
 
     override fun savePrivateIdentity(privateIdentity: ByteArray) {
         val liveCmix = cmix ?: error("cmix not initialized")
@@ -395,74 +138,7 @@ open class XXDK(
         savedPrivateIdentity
     }
 
-    override suspend fun logout() = withContext(Dispatchers.IO) {
-        progress(XXDKProgress.Idle)
-        
-        // 1. Stop network follower
-        runCatching {
-            cmix?.stopNetworkFollower()
-        }.onFailure {
-            Log.w(TAG, "Failed to stop network follower: ${it.message}")
-        }
-        
-        // 2. Wait for running processes (with timeout)
-        var retryCount = 0
-        while (retryCount < 30) { // 3 seconds timeout
-            try {
-                if (cmix?.hasRunningProcessies() != true) break
-            } catch (e: Exception) {
-                break
-            }
-            delay(100)
-            retryCount++
-        }
-        if (retryCount >= 30) {
-            Log.w(TAG, "Force stopping processes after timeout")
-        }
-        
-        // 3. Remove cmix from Go-side tracker to release references
-        cmix?.let {
-            try {
-                bindings.Bindings.deleteCmixInstance(it.getID())
-            } catch (e: Exception) {
-                Log.w(TAG, "Failed to delete cmix instance: ${e.message}")
-            }
-        }
-        
-        // 4. Reset binding objects
-        channel = Channel()
-        dm = DirectMessage()
-        cmix = null
-        remoteKV = null
-        notifications = null
-        storageTagListener = null
-        savedPrivateIdentity = byteArrayOf()
-        
-        // 5. Clear caches
-        ReceiverHelpers.clearInstance()
-        
-        // 6. Clear database (messages, reactions, senders, chats)
-        try {
-            val repository = DatabaseModule.provideRepository(context)
-            repository.clearAllData()
-            Log.d(TAG, "Database cleared successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to clear database: ${e.message}")
-        }
-        
-        // 7. Delete stateDir and recreate it
-        val stateFile = File(stateDir)
-        if (stateFile.exists()) {
-            stateFile.deleteRecursively()
-        }
-        stateFile.mkdirs()
-        
-        // Reset status
-        codename = null
-        codeset = 0
-        status = XXDKProgress.Idle.label
-        statusPercentage = 0
-    }
+    override suspend fun logout() = performLogout()
 
     override fun storeApnsToken(token: String) {
         pendingApnsTokenHex = token
