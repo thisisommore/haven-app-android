@@ -314,11 +314,14 @@ internal fun HomeScreen(
                                 },
                                 modifier = Modifier.padding(horizontal = 12.dp)
                             )
-                            HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 20.dp),
-                                color = MaterialTheme.colorScheme.outlineVariant,
-                                thickness = 0.5.dp
-                            )
+                            val isLastItem = chat.id == chats.lastOrNull()?.id
+                            if (!isLastItem) {
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 20.dp),
+                                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f),
+                                    thickness = 0.5.dp
+                                )
+                            }
                         }
                     }
                 }
