@@ -120,7 +120,7 @@ fun MessageBubble(
     val context = LocalContext.current
 
     // More space between different senders, less space within same sender cluster
-    val verticalPadding = if (isNewSender) 40.dp else 2.dp
+    val verticalPadding = if (isNewSender) 40.dp else 1.dp
     
     Row(
         modifier = modifier
