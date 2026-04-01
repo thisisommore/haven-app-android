@@ -70,15 +70,20 @@ fun MessageBubble(
     val bubbleShape = when {
         // First message in cluster: round top (20), medium bottom (12)
         isFirstInCluster && !isLastInCluster -> {
-            RoundedCornerShape(20.dp)
+            RoundedCornerShape(
+                topStart = 20.dp,
+                topEnd = 20.dp,
+                bottomStart = 12.dp,
+                bottomEnd = 12.dp
+            )
         }
         // Middle message: all corners medium (12)
         !isFirstInCluster && !isLastInCluster -> {
             RoundedCornerShape(12.dp)
         }
-        // Last message: medium top (12), bottom depends on direction
+        // Last message (or single message): top depends on if first, bottom depends on direction
         else -> {
-            val topRadius = 12.dp
+            val topRadius = if (isFirstInCluster) 20.dp else 12.dp
             val bottomOuterRadius = 20.dp  // side away from sender
             val bottomInnerRadius = 0.dp   // side toward sender (sharp)
             
