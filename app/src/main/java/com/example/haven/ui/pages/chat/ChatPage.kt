@@ -184,16 +184,20 @@ internal fun ChatScreen(
                 val isFirstInCluster = previousMessage?.senderId != message.senderId
                 val isLastInCluster = nextMessage?.senderId != message.senderId
                 
-                MessageBubble(
-                    message = message,
-                    onReplyClick = { onReplyClick(message) },
-                    isReplyingTo = replyingTo?.id == message.id,
-                    senderName = getSenderName(message.senderId),
-                    showSenderName = isFirstInCluster,
-                    isFirstInCluster = isFirstInCluster,
-                    isLastInCluster = isLastInCluster,
-                    isNewSender = isFirstInCluster
-                )
+                // Calculate spacing: more space between different senders
+                val bottomPadding = if (isLastInCluster) 40.dp else 1.dp
+                
+                Box(modifier = Modifier.padding(bottom = bottomPadding)) {
+                    MessageBubble(
+                        message = message,
+                        onReplyClick = { onReplyClick(message) },
+                        isReplyingTo = replyingTo?.id == message.id,
+                        senderName = getSenderName(message.senderId),
+                        showSenderName = isFirstInCluster,
+                        isFirstInCluster = isFirstInCluster,
+                        isLastInCluster = isLastInCluster
+                    )
+                }
             }
         }
 

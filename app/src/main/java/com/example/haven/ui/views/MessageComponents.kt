@@ -62,7 +62,6 @@ fun MessageBubble(
     showSenderName: Boolean = true,
     isFirstInCluster: Boolean = true,
     isLastInCluster: Boolean = true,
-    isNewSender: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val isMe = !message.isIncoming
@@ -119,13 +118,9 @@ fun MessageBubble(
     var showMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    // More space between different senders, less space within same sender cluster
-    val verticalPadding = if (isNewSender) 40.dp else 1.dp
-    
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = verticalPadding),
+            .fillMaxWidth(),
         horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start
     ) {
         Card(
