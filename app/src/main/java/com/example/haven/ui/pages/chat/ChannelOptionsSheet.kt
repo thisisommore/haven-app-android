@@ -213,7 +213,7 @@ private fun ChannelOptionsContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 30.dp),
+                        .padding(horizontal = 26.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -224,11 +224,7 @@ private fun ChannelOptionsContent(
                     )
                     Switch(
                         checked = isDMEnabled,
-                        onCheckedChange = viewModel::toggleDirectMessages,
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = MaterialTheme.colorScheme.primary,
-                            checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
-                        )
+                        onCheckedChange = viewModel::toggleDirectMessages
                     )
                 }
 
@@ -238,7 +234,7 @@ private fun ChannelOptionsContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { /* Handle share */ }
-                            .padding(horizontal = 30.dp),
+                            .padding(horizontal = 26.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -391,7 +387,7 @@ private fun ChannelOptionsContent(
 @Composable
 private fun CardDivider() {
     HorizontalDivider(
-        modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp),
         thickness = 1.dp,
         color = DividerColor
     )
@@ -403,7 +399,7 @@ private fun OptionItem(label: String, value: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 30.dp)
+            .padding(horizontal = 26.dp)
     ) {
         Text(
             text = label,
@@ -433,7 +429,7 @@ private fun NicknameEditorItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 30.dp)
+            .padding(horizontal = 26.dp)
     ) {
         Text(
             text = "Your Nickname",
