@@ -46,7 +46,7 @@ fun ChatListItem(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .heightIn(min = 80.dp)
+                .heightIn(min = 86.dp)
                 .clickable(onClick = onClick)
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -141,7 +141,7 @@ fun ChatListItem(
         ),
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 80.dp)
+            .heightIn(min = 86.dp)
             .clickable(onClick = onClick)
     )
 }
