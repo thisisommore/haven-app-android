@@ -215,7 +215,7 @@ private fun MessageFooter(
                 fontFamily = com.example.haven.ui.theme.InterFontFamily,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Normal
             ),
-            color = contentColor.copy(alpha = 0.8f),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Clip
         )
@@ -293,7 +293,7 @@ fun ReplyPreview(
 }
 
 private fun formatTime(date: java.util.Date): String {
-    return SimpleDateFormat("h:mm a", Locale.getDefault()).format(date)
+    return SimpleDateFormat("h:mm a", Locale.getDefault()).format(date).replace(" ", "")
 }
 
 private fun stripHtmlTags(html: String): String {
