@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -47,7 +49,7 @@ import com.example.haven.ui.views.ReplyPreview
 
 private val ChatBgColor = Color(0xFFFFF8F5) // Light peach background
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 internal fun ChatScreen(
     chat: ChatModel?,
@@ -81,8 +83,6 @@ internal fun ChatScreen(
         modifier = modifier
             .fillMaxSize()
             .background(ChatBgColor)
-            .navigationBarsPadding()
-            .imePadding()
     ) {
         CenterAlignedTopAppBar(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
@@ -176,11 +176,16 @@ internal fun ChatScreen(
             )
         }
 
+        val isImeVisible = WindowInsets.isImeVisible
+        
         MessageInputBar(
             value = inputText,
             onValueChange = onInputChange,
             onSend = onSendClick,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .then(if (!isImeVisible) Modifier.navigationBarsPadding() else Modifier)
+                .imePadding()
         )
     }
 }
