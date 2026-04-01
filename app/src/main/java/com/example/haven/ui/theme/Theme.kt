@@ -16,15 +16,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    onSurface = Color.White,
-    onBackground = Color.White
-)
+private val DarkColorScheme = darkColorScheme()
 
-private val LightColorScheme = lightColorScheme(
-    onSurface = Color.Black,
-    onBackground = Color.Black
-)
+private val LightColorScheme = lightColorScheme()
 
 @Composable
 fun HavenTheme(
