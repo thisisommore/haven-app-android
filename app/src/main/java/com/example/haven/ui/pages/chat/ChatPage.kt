@@ -175,11 +175,18 @@ internal fun ChatScreen(
                 items = messages.asReversed(),
                 key = { it.id }
             ) { message ->
+                // Get index in the reversed list
+                val index = messages.asReversed().indexOf(message)
+                val previousMessage = if (index > 0) messages.asReversed()[index - 1] else null
+                // Show sender name only if previous message is from different sender
+                val showSenderName = previousMessage?.senderId != message.senderId
+                
                 MessageBubble(
                     message = message,
                     onReplyClick = { onReplyClick(message) },
                     isReplyingTo = replyingTo?.id == message.id,
-                    senderName = getSenderName(message.senderId)
+                    senderName = getSenderName(message.senderId),
+                    showSenderName = showSenderName
                 )
             }
         }

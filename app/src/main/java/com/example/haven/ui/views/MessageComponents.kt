@@ -59,6 +59,7 @@ fun MessageBubble(
     onReactClick: () -> Unit = {},
     isReplyingTo: Boolean,
     senderName: String? = null,
+    showSenderName: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val isMe = !message.isIncoming
@@ -154,8 +155,8 @@ fun MessageBubble(
                     )
                 }
 
-                // Sender name for incoming messages
-                if (!isMe && senderName != null) {
+                // Sender name for incoming messages (only show for first message in group)
+                if (!isMe && senderName != null && showSenderName) {
                     Text(
                         text = senderName,
                         style = MaterialTheme.typography.labelSmall.copy(
