@@ -60,22 +60,41 @@ import com.example.haven.data.model.ChatModel
 import kotlinx.coroutines.delay
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
-private val SheetBackground   = Color(0xFFF3EFFF)
-private val CardBackground    = Color.White
 private val CardCornerRadius  = 40.dp
 private val ButtonCornerRadius = 28.dp
-
-private val PrimaryPurple     = Color(0xFF6750A4)
-private val DarkPurple        = Color(0xFF5D5387)
-private val OnSurface         = Color(0xFF1D1B20)
-private val LabelGray         = Color(0xFF79747E)
-private val PlaceholderGray   = Color(0xFFCAC4D0)
-private val DividerColor      = Color(0xFFEFEFEF)
 
 private val TitleFontSize     = 22.sp
 private val ValueFontSize     = 22.sp
 private val LabelFontSize     = 12.sp
 private val ButtonFontSize    = 22.sp
+
+// Theme-aware colors using MaterialTheme.colorScheme
+@Composable
+private fun sheetBackgroundColor(): Color = MaterialTheme.colorScheme.surfaceVariant
+
+@Composable
+private fun cardBackgroundColor(): Color = MaterialTheme.colorScheme.surface
+
+@Composable
+private fun primaryAccentColor(): Color = MaterialTheme.colorScheme.primary
+
+@Composable
+private fun buttonAccentColor(): Color = MaterialTheme.colorScheme.primary
+
+@Composable
+private fun buttonContentColor(): Color = MaterialTheme.colorScheme.onPrimary
+
+@Composable
+private fun onSurfaceColor(): Color = MaterialTheme.colorScheme.onSurface
+
+@Composable
+private fun labelColor(): Color = MaterialTheme.colorScheme.onSurfaceVariant
+
+@Composable
+private fun placeholderColor(): Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+
+@Composable
+private fun dividerColor(): Color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f)
 
 /**
  * Main Channel Options Sheet component – pixel-perfect to the design spec.
@@ -102,7 +121,7 @@ fun ChannelOptionsSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = SheetBackground,
+        containerColor = sheetBackgroundColor(),
         tonalElevation = 0.dp,
         scrimColor = Color.Black.copy(alpha = 0.32f),
         shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp),
@@ -114,7 +133,7 @@ fun ChannelOptionsSheet(
                     .width(32.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(PrimaryPurple.copy(alpha = 0.4f))
+                    .background(primaryAccentColor().copy(alpha = 0.4f))
             )
         }
     ) {
@@ -174,7 +193,7 @@ private fun ChannelOptionsContent(
             text = if (isDM) "DM Options" else "Channel Options",
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Medium,
-                color = PrimaryPurple,
+                color = primaryAccentColor(),
                 fontSize = TitleFontSize
             ),
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 60.dp)
@@ -187,7 +206,7 @@ private fun ChannelOptionsContent(
                     .height(200.dp),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = PrimaryPurple)
+                CircularProgressIndicator(color = primaryAccentColor())
             }
         } else {
             // ── Main Options Card ──────────────────────────────────────────────
@@ -195,7 +214,7 @@ private fun ChannelOptionsContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(CardCornerRadius))
-                    .background(CardBackground)
+                    .background(cardBackgroundColor())
                     .padding(vertical = 22.dp)
             ) {
                 // Channel Name
@@ -225,7 +244,7 @@ private fun ChannelOptionsContent(
                     Text(
                         "Direct Messages",
                         style = MaterialTheme.typography.bodyLarge.copy(fontSize = ButtonFontSize),
-                        color = OnSurface
+                        color = onSurfaceColor()
                     )
                     Switch(
                         checked = isDMEnabled,
@@ -259,7 +278,7 @@ private fun ChannelOptionsContent(
                         Text(
                             data.url,
                             style = MaterialTheme.typography.bodyLarge.copy(
-                                color = PrimaryPurple,
+                                color = primaryAccentColor(),
                                 fontSize = ButtonFontSize
                             ),
                             maxLines = 1,
@@ -270,7 +289,7 @@ private fun ChannelOptionsContent(
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                             contentDescription = "Share Link",
-                            tint = LabelGray,
+                            tint = labelColor(),
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -290,12 +309,12 @@ private fun ChannelOptionsContent(
                                     Text(
                                         "Password",
                                         style = MaterialTheme.typography.labelSmall.copy(fontSize = LabelFontSize),
-                                        color = LabelGray
+                                        color = labelColor()
                                     )
                                     Text(
                                         password,
                                         style = MaterialTheme.typography.bodyMedium.copy(
-                                            color = OnSurface
+                                            color = onSurfaceColor()
                                         ),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
@@ -329,7 +348,10 @@ private fun ChannelOptionsContent(
                         .height(56.dp)
                         .padding(horizontal = 20.dp),
                     shape = RoundedCornerShape(ButtonCornerRadius),
-                    colors = ButtonDefaults.buttonColors(containerColor = DarkPurple),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = buttonAccentColor(),
+                        contentColor = buttonContentColor()
+                    ),
                     contentPadding = PaddingValues(horizontal = 24.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxWidth()) {
@@ -366,7 +388,7 @@ private fun ChannelOptionsContent(
                     .height(56.dp)
                     .padding(horizontal = 20.dp),
                 shape = RoundedCornerShape(ButtonCornerRadius),
-                colors = ButtonDefaults.buttonColors(containerColor = CardBackground),
+                colors = ButtonDefaults.buttonColors(containerColor = cardBackgroundColor()),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
             ) {
                 Text(
@@ -385,7 +407,7 @@ private fun ChannelOptionsContent(
                 Text(
                     "Muted Users",
                     style = MaterialTheme.typography.labelLarge,
-                    color = PrimaryPurple,
+                    color = primaryAccentColor(),
                     modifier = Modifier.padding(horizontal = 20.dp).padding(bottom = 8.dp)
                 )
                 mutedUsers.forEach { user ->
@@ -439,7 +461,7 @@ private fun CardDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp),
         thickness = 1.dp,
-        color = DividerColor
+        color = dividerColor()
     )
 }
 
@@ -454,13 +476,13 @@ private fun OptionItem(label: String, value: String) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall.copy(fontSize = LabelFontSize),
-            color = LabelGray
+            color = labelColor()
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = value,
             style = MaterialTheme.typography.bodyLarge.copy(fontSize = ValueFontSize),
-            color = OnSurface
+            color = onSurfaceColor()
         )
     }
 }
@@ -473,7 +495,7 @@ private fun NicknameEditorItem(
 ) {
     val textStyle = TextStyle(
         fontSize = ValueFontSize,
-        color = OnSurface
+        color = onSurfaceColor()
     )
 
     Column(
@@ -484,7 +506,7 @@ private fun NicknameEditorItem(
         Text(
             text = "Your Nickname",
             style = MaterialTheme.typography.labelSmall.copy(fontSize = LabelFontSize),
-            color = LabelGray
+            color = labelColor()
         )
         Spacer(modifier = Modifier.height(4.dp))
 
@@ -493,14 +515,14 @@ private fun NicknameEditorItem(
             onValueChange = onNicknameChange,
             textStyle = textStyle,
             singleLine = true,
-            cursorBrush = SolidColor(PrimaryPurple),
+            cursorBrush = SolidColor(primaryAccentColor()),
             modifier = Modifier.fillMaxWidth(),
             decorationBox = { innerTextField ->
                 Box {
                     if (nickname.isEmpty()) {
                         Text(
                             "Enter nickname (max 24 chars)",
-                            style = textStyle.copy(color = PlaceholderGray)
+                            style = textStyle.copy(color = placeholderColor())
                         )
                     }
                     innerTextField()
@@ -550,18 +572,18 @@ private fun MutedUserRow(
             Icon(
                 imageVector = Icons.Outlined.SpeakerNotesOff,
                 contentDescription = null,
-                tint = LabelGray,
+                tint = labelColor(),
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 displayName,
                 style = MaterialTheme.typography.bodyMedium,
-                color = OnSurface
+                color = onSurfaceColor()
             )
         }
         TextButton(onClick = onUnmute) {
-            Text("Unmute", color = PrimaryPurple)
+            Text("Unmute", color = primaryAccentColor())
         }
     }
 }
@@ -577,7 +599,7 @@ private fun ToastMessage(message: String) {
     ) {
         Row(
             modifier = Modifier
-                .background(PrimaryPurple, RoundedCornerShape(25.dp))
+                .background(primaryAccentColor(), RoundedCornerShape(25.dp))
                 .padding(horizontal = 20.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
