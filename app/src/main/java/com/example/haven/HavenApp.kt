@@ -69,7 +69,7 @@ internal fun HavenApp() {
     }
     // For new users: start directly at password setup
     // For existing users: start directly at home
-    var route by remember { 
+    var route by rememberSaveable { 
         mutableStateOf(if (appStorage.isSetupComplete) Route.home else Route.password) 
     }
     
