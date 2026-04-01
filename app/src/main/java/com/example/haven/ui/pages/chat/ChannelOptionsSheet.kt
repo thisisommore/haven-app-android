@@ -106,7 +106,7 @@ fun ChannelOptionsSheet(
         tonalElevation = 0.dp,
         scrimColor = Color.Black.copy(alpha = 0.32f),
         shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp),
-        modifier = modifier.heightIn(min = screenHeight * 0.92f),
+        modifier = modifier.heightIn(min = screenHeight * 0.93f),
         dragHandle = {
             Box(
                 modifier = Modifier
