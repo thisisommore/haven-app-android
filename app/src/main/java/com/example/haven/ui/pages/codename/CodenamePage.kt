@@ -144,16 +144,6 @@ internal fun CodenamePage(
                     .padding(top = 24.dp)
                     .navigationBarsPadding()
             ) {
-                if (isLoading) {
-                    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            CircularWavyProgressIndicator()
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(status, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                    }
-                }
-
                 if (error != null) {
                     Text(
                         text = error,

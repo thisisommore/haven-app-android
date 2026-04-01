@@ -265,19 +265,18 @@ internal fun HavenApp() {
                         }
                     },
                     onClaim = {
+                        // Navigate to landing immediately, setup continues in background
+                        route = Route.landing
                         scope.launch {
-                            codenameBusy = true
                             runCatching {
                                 val identity = codenames.first { it.pubkey == selectedCodename }
                                 xxdk.applyIdentity(identity)
                                 xxdk.setupClients(identity.privateIdentity) {
                                     appStorage.isSetupComplete = true
                                 }
-                                route = Route.landing
                             }.onFailure {
-                                codenameError = it.message ?: "Could not claim codename"
+                                Log.e("HavenApp", "Claim failed: ${it.message}")
                             }
-                            codenameBusy = false
                         }
                     },
                     status = xxdk.status,
