@@ -91,7 +91,24 @@ internal fun HavenApp() {
 
     var password by rememberSaveable { mutableStateOf("") }
     var confirm by rememberSaveable { mutableStateOf("") }
-    var codenames by remember { mutableStateOf<List<GeneratedIdentity>>(emptyList()) }
+    // Codenames with custom saver - store as list of simple data (pubkey,codename,codeset only)
+    var codenames by rememberSaveable(
+        stateSaver = androidx.compose.runtime.saveable.listSaver(
+            save = { list ->
+                list.map { listOf(it.pubkey, it.codename, it.codeset.toString()) }
+            },
+            restore = { savedList ->
+                savedList.map { 
+                    GeneratedIdentity(
+                        privateIdentity = byteArrayOf(), // Will be regenerated if needed
+                        codename = it[1],
+                        codeset = it[2].toInt(),
+                        pubkey = it[0]
+                    )
+                }
+            }
+        )
+    ) { mutableStateOf<List<GeneratedIdentity>>(emptyList()) }
     var selectedCodename by rememberSaveable { mutableStateOf("") }
     var logFilter by rememberSaveable { mutableStateOf("ALL") }
     var logSearch by rememberSaveable { mutableStateOf("") }
@@ -204,6 +221,20 @@ internal fun HavenApp() {
             }
 
             Route.codenameGenerator -> {
+                // Regenerate identities if restored from config change with empty private data
+                LaunchedEffect(codenames) {
+                    if (codenames.isNotEmpty() && codenames.first().privateIdentity.isEmpty()) {
+                        codenameBusy = true
+                        runCatching {
+                            codenames = xxdk.generateIdentities(10)
+                            selectedCodename = ""
+                        }.onFailure {
+                            codenameError = it.message ?: "Could not regenerate codenames"
+                        }
+                        codenameBusy = false
+                    }
+                }
+                
                 CodenamePage(
                     modifier = Modifier.fillMaxSize(),
                     codenames = codenames,
