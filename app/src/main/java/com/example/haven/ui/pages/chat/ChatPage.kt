@@ -222,7 +222,8 @@ internal fun ChatScreen(
                         recentEmojiStore.addRecentEmoji(emoji)
                     }
                 },
-                recentEmojis = recentEmojis
+                recentEmojis = recentEmojis,
+                modifier = Modifier.navigationBarsPadding()
             )
         }
     }
