@@ -1,6 +1,7 @@
 package com.example.haven.ui.views
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -40,7 +41,8 @@ fun MessageInputBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .animateContentSize(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
