@@ -35,7 +35,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LoadingIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -181,10 +181,9 @@ internal fun HomeScreen(
                                 fontWeight = FontWeight.Normal,
                                 color = MaterialTheme.colorScheme.primary
                             )
-                            if (isLoading) {
-                                LoadingIndicator(
-                                    modifier = Modifier.size(20.dp),
-                                    color = MaterialTheme.colorScheme.primary
+                            if (statusPercentage < 100) {
+                                CircularWavyProgressIndicator(
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
                         }
