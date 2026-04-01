@@ -185,9 +185,11 @@ internal fun ChatScreen(
                 val isLastInCluster = nextMessage?.senderId != message.senderId
                 
                 // Calculate spacing: more space between different senders
-                val bottomPadding = if (isLastInCluster) 40.dp else 1.dp
+                // With reverseLayout=true, items are laid out bottom-to-top
+                // Space should be at bottom of item that ends a cluster (next sender is different)
+                val padding = if (nextMessage?.senderId != message.senderId) 40.dp else 1.dp
                 
-                Box(modifier = Modifier.padding(bottom = bottomPadding)) {
+                Box(modifier = Modifier.padding(bottom = padding)) {
                     MessageBubble(
                         message = message,
                         onReplyClick = { onReplyClick(message) },
