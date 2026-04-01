@@ -52,8 +52,8 @@ import android.util.Log
 @Composable
 internal fun HavenApp() {
     val context = LocalContext.current.applicationContext
-    val appStorage = remember { XXDKStorage.getInstance(context) }
-    val xxdk = remember { XXDK(context).apply { setAppStorage(appStorage) } }
+    val appStorage = remember { HavenApplication.getStorage(context) }
+    val xxdk = remember { HavenApplication.getXXDK(context) }
     // Use application-scoped coroutines that survive config changes
     val scope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
     val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModel.Factory(context, xxdk))
@@ -175,17 +175,20 @@ internal fun HavenApp() {
 
             Route.password -> {
                 // Automatically reset setup and start NDF download on page entry
+                // Only run once when first entering password page (not on config change)
                 LaunchedEffect(Unit) {
-                    runCatching {
-                        appStorage.clearAll()
-                        password = ""
-                        confirm = ""
-                        passwordError = null
-                        ndfDeferred = scope.async {
-                            xxdk.downloadNdf()
+                    if (!appStorage.isSetupComplete && ndfDeferred == null) {
+                        runCatching {
+                            appStorage.clearAll()
+                            password = ""
+                            confirm = ""
+                            passwordError = null
+                            ndfDeferred = scope.async {
+                                xxdk.downloadNdf()
+                            }
+                        }.onFailure {
+                            Log.e("HavenApp", "Reset setup failed: ${it.message}")
                         }
-                    }.onFailure {
-                        Log.e("HavenApp", "Reset setup failed: ${it.message}")
                     }
                 }
                 
@@ -295,6 +298,7 @@ internal fun HavenApp() {
                             runCatching {
                                 xxdk.logout()
                                 appStorage.clearAll()
+                                HavenApplication.reset()
                                 route = Route.password
                             }.onFailure {
                                 Log.e("HavenApp", "Logout failed: ${it.message}")
