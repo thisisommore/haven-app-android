@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun ImportKeyDialog(
-    viewModel: ChannelOptionsViewModel,
+    viewModel: ChannelOptionsController,
     onDismiss: () -> Unit
 ) {
     val importError by viewModel.importError.collectAsState()

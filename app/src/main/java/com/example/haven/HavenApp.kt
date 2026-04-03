@@ -31,14 +31,14 @@ import kotlinx.coroutines.async
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.haven.ui.pages.chat.ChatScreen
-import com.example.haven.ui.pages.chat.ChatViewModel
-import com.example.haven.ui.pages.chat.ChannelOptionsViewModel
-import com.example.haven.ui.pages.codename.CodenamePage
-import com.example.haven.ui.pages.home.HomeScreen
-import com.example.haven.ui.pages.home.HomeViewModel
+import com.example.haven.ui.pages.chat.ChatView
+import com.example.haven.ui.pages.chat.ChatPageController
+import com.example.haven.ui.pages.chat.ChannelOptionsController
+import com.example.haven.ui.pages.codename.CodenameGeneratorView
+import com.example.haven.ui.pages.home.HomeView
+import com.example.haven.ui.pages.home.HomePageController
 import com.example.haven.ui.pages.landing.LandingPage
-import com.example.haven.ui.pages.password.PasswordPage
+import com.example.haven.ui.pages.password.PasswordCreationView
 import com.example.haven.ui.views.ShakeDetector
 import com.example.haven.ui.views.logviewer.LogPage
 import com.example.haven.xxdk.GeneratedIdentity
@@ -58,12 +58,12 @@ internal fun HavenApp() {
     val xxdk = remember { HavenApplication.getXXDK(context) }
     // Use application-scoped coroutines that survive config changes
     val scope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
-    val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModel.Factory(context, xxdk))
-    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory(context))
+    val chatController: ChatPageController = viewModel(factory = ChatPageController.Factory(context, xxdk))
+    val homeController: HomePageController = viewModel(factory = HomePageController.Factory(context))
 
     // Observe real messages from database
-    val chatMessages by chatViewModel.messages.collectAsState()
-    val inputText by chatViewModel.inputText.collectAsState()
+    val chatMessages by chatController.messages.collectAsState()
+    val inputText by chatController.inputText.collectAsState()
 
     // Shake to view logs
     var showShakeDialog by remember { mutableStateOf(false) }
@@ -230,7 +230,7 @@ internal fun HavenApp() {
                     }
                 }
                 
-                PasswordPage(
+                PasswordCreationView(
                     modifier = Modifier.fillMaxSize(),
                     password = password,
                     confirm = confirm,
@@ -283,7 +283,7 @@ internal fun HavenApp() {
                     }
                 }
                 
-                CodenamePage(
+                CodenameGeneratorView(
                     modifier = Modifier.fillMaxSize(),
                     codenames = codenames,
                     selected = selectedCodename,
@@ -324,12 +324,12 @@ internal fun HavenApp() {
             }
 
             Route.home -> {
-                HomeScreen(
-                    viewModel = homeViewModel,
+                HomeView(
+                    controller = homeController,
                     xxdk = xxdk,
                     onOpenChat = { id -> 
                         chatId = id
-                        chatViewModel.loadChat(id)
+                        chatController.loadChat(id)
                         route = Route.chat 
                     },
                     onNewChat = { /* TODO: implement new chat */ },
@@ -352,37 +352,37 @@ internal fun HavenApp() {
             }
 
             Route.chat -> {
-                val currentChat by chatViewModel.currentChat.collectAsState()
-                val isCurrentUserMuted by chatViewModel.isCurrentUserMuted.collectAsState()
-                val reactions by chatViewModel.reactions.collectAsState()
-                val channelOptionsViewModel: ChannelOptionsViewModel = viewModel(
-                    factory = ChannelOptionsViewModel.createFactory(context, xxdk)
+                val currentChat by chatController.currentChat.collectAsState()
+                val isCurrentUserMuted by chatController.isCurrentUserMuted.collectAsState()
+                val reactions by chatController.reactions.collectAsState()
+                val channelOptionsController: ChannelOptionsController = viewModel(
+                    factory = ChannelOptionsController.createFactory(context, xxdk)
                 )
                 var showOptionsSheet by remember { mutableStateOf(false) }
 
-                ChatScreen(
+                ChatView(
                     chat = currentChat,
                     messages = chatMessages,
                     inputText = inputText,
-                    onInputChange = { chatViewModel.onInputChange(it) },
-                    onSendClick = { chatViewModel.sendMessage() },
+                    onInputChange = { chatController.onInputChange(it) },
+                    onSendClick = { chatController.sendMessage() },
                     onReplyClick = { /* TODO: implement reply */ },
                     onBackClick = { route = Route.home },
-                    getSenderName = { senderId -> chatViewModel.getSenderName(senderId) },
+                    getSenderName = { senderId -> chatController.getSenderName(senderId) },
                     showOptionsSheet = showOptionsSheet,
                     onOptionsDismiss = { showOptionsSheet = false },
                     onLeaveChannel = { route = Route.home },
                     onDeleteChat = { route = Route.home },
                     onInfoClick = {
                         currentChat?.let { chat ->
-                            channelOptionsViewModel.loadChannelOptions(chat)
+                            channelOptionsController.loadChannelOptions(chat)
                             showOptionsSheet = true
                         }
                     },
-                    optionsViewModel = channelOptionsViewModel,
+                    optionsController = channelOptionsController,
                     isCurrentUserMuted = isCurrentUserMuted,
-                    onSendReaction = { messageId, emoji -> chatViewModel.sendReaction(messageId, emoji) },
-                    onDeleteMessage = { messageId -> chatViewModel.deleteMessage(messageId) },
+                    onSendReaction = { messageId, emoji -> chatController.sendReaction(messageId, emoji) },
+                    onDeleteMessage = { messageId -> chatController.deleteMessage(messageId) },
                     reactions = reactions,
                     modifier = Modifier.fillMaxSize()
                 )

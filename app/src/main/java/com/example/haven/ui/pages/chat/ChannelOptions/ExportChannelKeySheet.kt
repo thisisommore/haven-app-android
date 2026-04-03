@@ -56,7 +56,7 @@ import java.io.File
  */
 @Composable
 fun ExportKeyDialog(
-    viewModel: ChannelOptionsViewModel,
+    viewModel: ChannelOptionsController,
     onDismiss: () -> Unit
 ) {
     val exportKeyContent by viewModel.exportKeyContent.collectAsState()

@@ -66,7 +66,7 @@ import com.example.haven.ui.pages.chat.ReactionPickerSheet
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-internal fun ChatScreen(
+internal fun ChatView(
     chat: ChatModel?,
     messages: List<ChatMessageModel>,
     inputText: String,
@@ -82,7 +82,7 @@ internal fun ChatScreen(
     onLeaveChannel: () -> Unit = {},
     onDeleteChat: () -> Unit = {},
     onInfoClick: () -> Unit = {},
-    optionsViewModel: ChannelOptionsViewModel? = null,
+    optionsController: ChannelOptionsController? = null,
     isCurrentUserMuted: Boolean = false,
     onSendReaction: (String, String) -> Unit = { _, _ -> },
     onDeleteMessage: (String) -> Unit = {},
@@ -390,10 +390,10 @@ internal fun ChatScreen(
         }
 
         // Channel Options Sheet
-        if (showOptionsSheet && chat != null && optionsViewModel != null) {
+        if (showOptionsSheet && chat != null && optionsController != null) {
             ChannelOptionsSheet(
                 chat = chat,
-                viewModel = optionsViewModel,
+                viewModel = optionsController,
                 onDismiss = onOptionsDismiss,
                 onLeaveChannel = onLeaveChannel,
                 onDeleteChat = onDeleteChat

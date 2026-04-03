@@ -24,9 +24,10 @@ enum class JoinSheetState {
 }
 
 /**
- * ViewModel for Join Channel sheet
+ * Controller for Join Channel sheet
+ * Matches iOS NewChatSheet logic
  */
-class JoinChannelViewModel(
+class JoinChannelController(
     private val xxdk: XXDK,
     private val repository: DatabaseRepository
 ) : ViewModel() {
@@ -273,7 +274,8 @@ class JoinChannelViewModel(
     }
 
     /**
-     * Factory for creating ViewModel with dependencies
+     * Factory for creating Controller with dependencies
+     * Matches iOS pattern
      */
     class Factory(
         private val context: Context,
@@ -281,8 +283,8 @@ class JoinChannelViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(JoinChannelViewModel::class.java)) {
-                return JoinChannelViewModel(
+            if (modelClass.isAssignableFrom(JoinChannelController::class.java)) {
+                return JoinChannelController(
                     xxdk,
                     DatabaseRepository(context.applicationContext)
                 ) as T

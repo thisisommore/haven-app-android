@@ -33,10 +33,10 @@ data class MutedUser(
 }
 
 /**
- * ViewModel for Channel Options sheet
- * Mirrors iOS ChannelOptionsController
+ * Controller for Channel Options sheet
+ * Matches iOS ChannelOptionsController
  */
-class ChannelOptionsViewModel(
+class ChannelOptionsController(
     private val repository: DatabaseRepository,
     private val xxdk: XXDK
 ) : ViewModel() {
@@ -374,11 +374,12 @@ class ChannelOptionsViewModel(
     }
 
     companion object {
-        private const val TAG = "ChannelOptionsViewModel"
+        private const val TAG = "ChannelOptionsController"
         private const val MAX_NICKNAME_LENGTH = 24
 
         /**
-         * Factory for creating ViewModel with dependencies
+         * Factory for creating Controller with dependencies
+         * Matches iOS pattern
          */
         fun createFactory(
             context: Context,
@@ -386,8 +387,8 @@ class ChannelOptionsViewModel(
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(ChannelOptionsViewModel::class.java)) {
-                    return ChannelOptionsViewModel(
+                if (modelClass.isAssignableFrom(ChannelOptionsController::class.java)) {
+                    return ChannelOptionsController(
                         DatabaseRepository(context.applicationContext),
                         xxdk
                     ) as T

@@ -46,7 +46,7 @@ import com.example.haven.xxdk.GeneratedIdentity
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun CodenamePage(
+internal fun CodenameGeneratorView(
     modifier: Modifier = Modifier,
     codenames: List<GeneratedIdentity>,
     selected: String,

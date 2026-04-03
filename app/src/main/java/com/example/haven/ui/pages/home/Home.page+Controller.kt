@@ -33,9 +33,10 @@ data class ChatWithPreview(
 )
 
 /**
- * ViewModel for Home screen with real database integration
+ * Controller for Home screen with real database integration
+ * Matches iOS HomePageController
  */
-class HomeViewModel(
+class HomePageController(
     private val repository: DatabaseRepository
 ) : ViewModel() {
 
@@ -120,7 +121,7 @@ class HomeViewModel(
                 // Check if chat already exists with this pubkey
                 val existingChat = repository.getChatByPubKey(qrData.pubKey)
                 if (existingChat != null) {
-                    Log.d("HomeViewModel", "Chat already exists for this user")
+                    Log.d("HomePageController", "Chat already exists for this user")
                     return@launch
                 }
                 
@@ -128,13 +129,13 @@ class HomeViewModel(
                 val identityJson = try {
                     bindings.Bindings.constructIdentity(qrData.pubKey, qrData.codeset.toLong())
                 } catch (e: Exception) {
-                    Log.e("HomeViewModel", "Failed to construct identity: ${e.message}")
+                    Log.e("HomePageController","Failed to construct identity: ${e.message}")
                     return@launch
                 }
                 
                 val identity = Parser.decodeIdentity(identityJson)
                     ?: run {
-                        Log.e("HomeViewModel", "Failed to decode identity")
+                        Log.e("HomePageController","Failed to decode identity")
                         return@launch
                     }
                 
@@ -154,10 +155,10 @@ class HomeViewModel(
                 )
                 
                 repository.insertChat(newChat)
-                Log.d("HomeViewModel", "Created DM chat with: ${identity.codename}")
+                Log.d("HomePageController", "Created DM chat with: ${identity.codename}")
                 
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Failed to handle QR code: ${e.message}", e)
+                Log.e("HomePageController","Failed to handle QR code: ${e.message}", e)
             }
         }
     }
@@ -182,9 +183,9 @@ class HomeViewModel(
                     isSecret = isSecret
                 )
                 repository.insertChat(newChat)
-                Log.d("HomeViewModel", "Created channel: $name")
+                Log.d("HomePageController", "Created channel: $name")
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Failed to create channel: ${e.message}", e)
+                Log.e("HomePageController","Failed to create channel: ${e.message}", e)
             }
         }
     }
@@ -195,8 +196,8 @@ class HomeViewModel(
     class Factory(private val context: Context) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-                return HomeViewModel(DatabaseRepository(context.applicationContext)) as T
+            if (modelClass.isAssignableFrom(HomePageController::class.java)) {
+                return HomePageController(DatabaseRepository(context.applicationContext)) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

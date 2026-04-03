@@ -67,7 +67,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.haven.ui.views.ChatListItem
+import com.example.haven.ui.pages.home.ChatRowView
 import com.example.haven.ui.views.EmptyChatsState
 import com.example.haven.xxdk.XXDK
 import androidx.compose.ui.platform.LocalContext
@@ -75,8 +75,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun HomeScreen(
-    viewModel: HomeViewModel,
+internal fun HomeView(
+    controller: HomePageController,
     xxdk: XXDK? = null,
     onOpenChat: (String) -> Unit,
     onNewChat: () -> Unit = {},
@@ -85,8 +85,8 @@ internal fun HomeScreen(
     isSetupComplete: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    val search by viewModel.searchQuery.collectAsState()
-    val chats by viewModel.filteredChats.collectAsState(initial = emptyList())
+    val search by controller.searchQuery.collectAsState()
+    val chats by controller.filteredChats.collectAsState(initial = emptyList())
     val isLoading = !isSetupComplete && statusPercentage != 100
     val context = LocalContext.current
 
@@ -347,7 +347,7 @@ internal fun HomeScreen(
                     // ── Search bar: pill-shaped with icon ───────────
                     TextField(
                         value = search,
-                        onValueChange = { viewModel.onSearchChange(it) },
+                        onValueChange = { controller.onSearchChange(it) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(4.dp)),
@@ -398,10 +398,10 @@ internal fun HomeScreen(
                             items = chats,
                             key = { it.id }
                         ) { chat ->
-                            ChatListItem(
+                            ChatRowView(
                                 chat = chat,
                                 onClick = {
-                                    viewModel.clearUnreadCount(chat.id)
+                                    controller.clearUnreadCount(chat.id)
                                     onOpenChat(chat.id)
                                 },
                                 modifier = Modifier.padding(horizontal = 12.dp)
@@ -422,20 +422,20 @@ internal fun HomeScreen(
 
         // Join Channel Sheet
         if (showJoinChannelSheet && xxdk != null) {
-            val joinChannelViewModel: JoinChannelViewModel = viewModel(
-                factory = JoinChannelViewModel.Factory(
+            val joinChannelController: JoinChannelController = viewModel(
+                factory = JoinChannelController.Factory(
                     context = LocalContext.current,
                     xxdk = xxdk
                 )
             )
             JoinChannelSheet(
-                viewModel = joinChannelViewModel,
+                controller = joinChannelController,
                 onDismiss = {
-                    joinChannelViewModel.reset()
+                    joinChannelController.reset()
                     showJoinChannelSheet = false
                 },
                 onChannelJoined = {
-                    joinChannelViewModel.reset()
+                    joinChannelController.reset()
                     showJoinChannelSheet = false
                 }
             )
@@ -461,7 +461,7 @@ internal fun HomeScreen(
                     // Handle scanned QR code
                     val qrData = com.example.haven.xxdk.QRCodeUtils.parseQRCode(code)
                     if (qrData != null) {
-                        viewModel.handleScannedQR(qrData)
+                        controller.handleScannedQR(qrData)
                     }
                 },
                 onShowMyQR = {
@@ -484,7 +484,7 @@ internal fun HomeScreen(
                     )
                     if (result != null) {
                         // Save to database via ViewModel
-                        viewModel.createChannel(
+                        controller.createChannel(
                             channelId = result.channelId,
                             name = result.name,
                             description = result.description,

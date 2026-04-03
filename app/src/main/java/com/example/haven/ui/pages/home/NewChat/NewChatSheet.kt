@@ -93,13 +93,13 @@ private fun dividerColor(): Color = MaterialTheme.colorScheme.outlineVariant.cop
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JoinChannelSheet(
-    viewModel: JoinChannelViewModel,
+    controller: JoinChannelController,
     onDismiss: () -> Unit,
     onChannelJoined: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val activeSheet by viewModel.activeSheet.collectAsState()
+    val activeSheet by controller.activeSheet.collectAsState()
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -126,20 +126,20 @@ fun JoinChannelSheet(
         when (activeSheet) {
             JoinSheetState.INVITE_INPUT -> {
                 InviteInputContent(
-                    viewModel = viewModel,
+                    controller = controller,
                     onDismiss = onDismiss,
                     modifier = Modifier.navigationBarsPadding()
                 )
             }
             JoinSheetState.PASSWORD_INPUT -> {
                 PasswordInputContent(
-                    viewModel = viewModel,
+                    controller = controller,
                     modifier = Modifier.navigationBarsPadding()
                 )
             }
             JoinSheetState.CONFIRMATION -> {
                 ConfirmationContent(
-                    viewModel = viewModel,
+                    controller = controller,
                     onChannelJoined = onChannelJoined,
                     modifier = Modifier.navigationBarsPadding()
                 )
@@ -150,19 +150,19 @@ fun JoinChannelSheet(
 
 @Composable
 private fun InviteInputContent(
-    viewModel: JoinChannelViewModel,
+    controller: JoinChannelController,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val inviteLink by viewModel.inviteLink.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val toastMessage by viewModel.toastMessage.collectAsState()
+    val inviteLink by controller.inviteLink.collectAsState()
+    val errorMessage by controller.errorMessage.collectAsState()
+    val isLoading by controller.isLoading.collectAsState()
+    val toastMessage by controller.toastMessage.collectAsState()
 
     LaunchedEffect(toastMessage) {
         toastMessage?.let {
             delay(2000)
-            viewModel.clearToast()
+            controller.clearToast()
         }
     }
 
@@ -210,7 +210,7 @@ private fun InviteInputContent(
 
                 BasicTextField(
                     value = inviteLink,
-                    onValueChange = viewModel::onInviteLinkChange,
+                    onValueChange = controller::onInviteLinkChange,
                     textStyle = textStyle,
                     cursorBrush = SolidColor(primaryAccentColor()),
                     modifier = Modifier
@@ -246,7 +246,7 @@ private fun InviteInputContent(
 
         // ── Join Button ──────────────────────────────────────────────────────────
         Button(
-            onClick = { viewModel.validateAndProceed() },
+            onClick = { controller.validateAndProceed() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
@@ -290,12 +290,12 @@ private fun InviteInputContent(
 
 @Composable
 private fun PasswordInputContent(
-    viewModel: JoinChannelViewModel,
+    controller: JoinChannelController,
     modifier: Modifier = Modifier
 ) {
-    val password by viewModel.password.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
+    val password by controller.password.collectAsState()
+    val errorMessage by controller.errorMessage.collectAsState()
+    val isLoading by controller.isLoading.collectAsState()
 
     Column(
         modifier = modifier
@@ -349,7 +349,7 @@ private fun PasswordInputContent(
 
                 BasicTextField(
                     value = password,
-                    onValueChange = viewModel::onPasswordChange,
+                    onValueChange = controller::onPasswordChange,
                     textStyle = textStyle,
                     cursorBrush = SolidColor(primaryAccentColor()),
                     singleLine = true,
@@ -390,14 +390,14 @@ private fun PasswordInputContent(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             TextButton(
-                onClick = { viewModel.goBack() },
+                onClick = { controller.goBack() },
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Cancel", color = labelColor())
             }
 
             Button(
-                onClick = { viewModel.validatePassword() },
+                onClick = { controller.validatePassword() },
                 modifier = Modifier
                     .weight(2f)
                     .height(56.dp),
@@ -430,17 +430,17 @@ private fun PasswordInputContent(
 
 @Composable
 private fun ConfirmationContent(
-    viewModel: JoinChannelViewModel,
+    controller: JoinChannelController,
     onChannelJoined: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val channelData by viewModel.channelData.collectAsState()
-    val inviteLink by viewModel.inviteLink.collectAsState()
-    val enableDM by viewModel.enableDM.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val isJoining by viewModel.isJoining.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
-    val joinSuccess by viewModel.joinSuccess.collectAsState()
+    val channelData by controller.channelData.collectAsState()
+    val inviteLink by controller.inviteLink.collectAsState()
+    val enableDM by controller.enableDM.collectAsState()
+    val isLoading by controller.isLoading.collectAsState()
+    val isJoining by controller.isJoining.collectAsState()
+    val errorMessage by controller.errorMessage.collectAsState()
+    val joinSuccess by controller.joinSuccess.collectAsState()
 
     LaunchedEffect(joinSuccess) {
         if (joinSuccess) {
@@ -537,7 +537,7 @@ private fun ConfirmationContent(
                 )
                 Switch(
                     checked = enableDM,
-                    onCheckedChange = { if (!isJoining) viewModel.onEnableDMChange(it) },
+                    onCheckedChange = { if (!isJoining) controller.onEnableDMChange(it) },
                     enabled = !isJoining
                 )
             }
@@ -587,14 +587,14 @@ private fun ConfirmationContent(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 TextButton(
-                    onClick = { viewModel.goBack() },
+                    onClick = { controller.goBack() },
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Cancel", color = labelColor())
                 }
 
                 Button(
-                    onClick = { viewModel.joinChannel() },
+                    onClick = { controller.joinChannel() },
                     modifier = Modifier
                         .weight(2f)
                         .height(56.dp),

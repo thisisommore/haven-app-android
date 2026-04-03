@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun PasswordPage(
+internal fun PasswordCreationView(
     modifier: Modifier = Modifier,
     password: String,
     confirm: String,

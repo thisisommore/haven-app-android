@@ -103,7 +103,7 @@ private fun dividerColor(): Color = MaterialTheme.colorScheme.outlineVariant.cop
 @Composable
 fun ChannelOptionsSheet(
     chat: ChatModel,
-    viewModel: ChannelOptionsViewModel,
+    viewModel: ChannelOptionsController,
     onDismiss: () -> Unit,
     onLeaveChannel: () -> Unit,
     onDeleteChat: () -> Unit,
@@ -151,7 +151,7 @@ fun ChannelOptionsSheet(
 @Composable
 private fun ChannelOptionsContent(
     chat: ChatModel,
-    viewModel: ChannelOptionsViewModel,
+    viewModel: ChannelOptionsController,
     onDismiss: () -> Unit,
     onLeaveChannel: () -> Unit,
     onDeleteChat: () -> Unit,

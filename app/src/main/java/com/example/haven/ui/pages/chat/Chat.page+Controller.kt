@@ -19,9 +19,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /**
- * ViewModel for Chat screen with real database integration and XXDK sending
+ * Controller for Chat screen with real database integration and XXDK sending
+ * Matches iOS ChatPageController
  */
-class ChatViewModel(
+class ChatPageController(
     private val context: Context,
     private val repository: DatabaseRepository,
     private val xxdk: XXDK
@@ -120,7 +121,7 @@ class ChatViewModel(
             // PubKey is base64 encoded string, decode to ByteArray
             android.util.Base64.decode(publicIdentity.pubKey, android.util.Base64.NO_WRAP)
         } catch (e: Exception) {
-            android.util.Log.e("ChatViewModel", "Failed to get self pubkey: ${e.message}")
+            android.util.Log.e("ChatPageController", "Failed to get self pubkey: ${e.message}")
             return false
         }
         
@@ -156,7 +157,7 @@ class ChatViewModel(
                     xxdk.channel.msg.send(text, chat.channelId)
                 }
             } catch (e: Exception) {
-                android.util.Log.e("ChatViewModel", "Failed to send message: ${e.message}")
+                android.util.Log.e("ChatPageController", "Failed to send message: ${e.message}")
             }
             
             _inputText.value = ""
@@ -183,7 +184,7 @@ class ChatViewModel(
                     xxdk.channel.msg.reply(text, chat.channelId, replyToMessageId)
                 }
             } catch (e: Exception) {
-                android.util.Log.e("ChatViewModel", "Failed to send reply: ${e.message}")
+                android.util.Log.e("ChatPageController", "Failed to send reply: ${e.message}")
             }
             
             _inputText.value = ""
@@ -220,7 +221,7 @@ class ChatViewModel(
                     xxdk.channel.msg.react(emoji, messageId, chat.channelId)
                 }
             } catch (e: Exception) {
-                android.util.Log.e("ChatViewModel", "Failed to send reaction: ${e.message}")
+                android.util.Log.e("ChatPageController", "Failed to send reaction: ${e.message}")
             }
         }
     }
@@ -239,13 +240,14 @@ class ChatViewModel(
                 }
                 // For DMs, deletion might not be supported or work differently
             } catch (e: Exception) {
-                android.util.Log.e("ChatViewModel", "Failed to delete message: ${e.message}")
+                android.util.Log.e("ChatPageController", "Failed to delete message: ${e.message}")
             }
         }
     }
 
     /**
-     * Factory for creating ViewModel with repository and XXDK
+     * Factory for creating Controller with repository and XXDK
+     * Matches iOS pattern
      */
     class Factory(
         private val context: Context,
@@ -253,8 +255,8 @@ class ChatViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(ChatViewModel::class.java)) {
-                return ChatViewModel(
+            if (modelClass.isAssignableFrom(ChatPageController::class.java)) {
+                return ChatPageController(
                     context.applicationContext,
                     DatabaseRepository(context.applicationContext),
                     xxdk
