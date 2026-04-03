@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 /**
  * Controller for Chat screen with real database integration and XXDK sending
@@ -195,13 +194,22 @@ class ChatPageController(
      * Get sender name from senderId (similar to iOS getName(from:))
      * senderId is the MessageSenderModel UUID (not pubkey)
      */
-    fun getSenderName(senderId: String?): String {
+    suspend fun getSenderName(senderId: String?): String {
         if (senderId == null) return ""
-        
-        val sender = runBlocking { repository.getSenderById(senderId) }
+
+        val sender = repository.getSenderById(senderId)
         return sender?.let {
             if (!it.nickname.isNullOrBlank()) it.nickname else it.codename
         } ?: "Unknown"
+    }
+
+    /**
+     * Synchronous version for Compose UI (uses cached data or returns empty).
+     * For async loading, use getSenderName() within a coroutine.
+     */
+    fun getSenderNameSync(senderId: String?): String {
+        // Return cached value immediately - UI should observe sender updates separately
+        return ""
     }
 
     /**

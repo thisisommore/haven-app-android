@@ -6,17 +6,18 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import bindings.Cmix
+import com.example.haven.di.CoroutineDispatchers
 import com.example.haven.xxdk.callbacks.ChannelEventModelBuilder
 import com.example.haven.xxdk.callbacks.ChannelUICallbacks
 import com.example.haven.xxdk.callbacks.DmEvents
 import com.example.haven.xxdk.callbacks.DmReceiver
 import com.example.haven.xxdk.callbacks.DmReceiverBuilder
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
 open class XXDK(
     internal val context: Context,
+    internal val dispatchers: CoroutineDispatchers = CoroutineDispatchers()
 ) : XXDKP {
     companion object {
         internal const val TAG = "XXDK"
@@ -66,13 +67,13 @@ open class XXDK(
         }
     }
 
-    override suspend fun downloadNdf(): ByteArray = withContext(Dispatchers.IO) {
+    override suspend fun downloadNdf(): ByteArray = withContext(dispatchers.io) {
         progress(XXDKProgress.DownloadingNdf)
         val cert = context.resources.openRawResource(com.example.haven.R.raw.mainnet).use { it.readBytes().decodeToString() }
         bindings.Bindings.downloadAndVerifySignedNdfWithUrl(MAINNET_NDF_URL, cert)
     }
 
-    override suspend fun newCmix(downloadedNdf: ByteArray) = withContext(Dispatchers.IO) {
+    override suspend fun newCmix(downloadedNdf: ByteArray) = withContext(dispatchers.io) {
         progress(XXDKProgress.SettingUpCmix)
         val secret = storage?.password?.encodeToByteArray() ?: error("Password missing")
         val stateFile = File(stateDir)
@@ -83,14 +84,14 @@ open class XXDK(
         bindings.Bindings.newCmix(String(downloadedNdf), stateDir, secret, "")
     }
 
-    override suspend fun loadCmix() = withContext(Dispatchers.IO) {
+    override suspend fun loadCmix() = withContext(dispatchers.io) {
         progress(XXDKProgress.LoadingCmix)
         val secret = storage?.password?.encodeToByteArray() ?: error("Password missing")
         cmix = bindings.Bindings.loadCmix(stateDir, secret, byteArrayOf())
     }
 
     override suspend fun startNetworkFollower() {
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.io) {
             progress(XXDKProgress.StartingNetworkFollower)
             cmix?.startNetworkFollower(5_000)
             cmix?.waitForNetwork(30_000)
@@ -114,7 +115,7 @@ open class XXDK(
         return liveCmix.ekvGet("MyPrivateIdentity")
     }
 
-    override suspend fun generateIdentities(amountOfIdentities: Int): List<GeneratedIdentity> = withContext(Dispatchers.IO) {
+    override suspend fun generateIdentities(amountOfIdentities: Int): List<GeneratedIdentity> = withContext(dispatchers.io) {
         val liveCmix = cmix ?: return@withContext emptyList()
         List(amountOfIdentities) { index ->
             val privateIdentity = bindings.Bindings.generateChannelIdentity(liveCmix.id)
@@ -128,11 +129,11 @@ open class XXDK(
         }
     }
 
-    override suspend fun exportIdentity(password: String): ByteArray = withContext(Dispatchers.IO) {
+    override suspend fun exportIdentity(password: String): ByteArray = withContext(dispatchers.io) {
         loadSavedPrivateIdentity()
     }
 
-    override suspend fun importIdentity(password: String, data: ByteArray): ByteArray = withContext(Dispatchers.IO) {
+    override suspend fun importIdentity(password: String, data: ByteArray): ByteArray = withContext(dispatchers.io) {
         savedPrivateIdentity = bindings.Bindings.importPrivateIdentity(password, data)
         status = "Identity imported"
         savedPrivateIdentity

@@ -6,19 +6,28 @@ import android.util.Log
 import bindings.DMReceiver
 import bindings.DMReceiverBuilder
 import bindings.DmCallbacks
-import com.example.haven.data.model.ChatModel
 import com.example.haven.data.DatabaseModule
+import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.MessageStatus
-import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.xxdk.MessageDecoding
 import com.example.haven.xxdk.Parser
-
-import com.example.haven.xxdk.callbacks.ReceiverHelpers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 
 /**
  * DMReceiver implementation for message processing
  * Mirrors iOS DMReceiver implementation
+ *
+ * Architecture:
+ * - Implements Java callbacks from XXDK native layer
+ * - Uses CallbackCoroutineScope to launch async operations
+ * - NEVER uses runBlocking (avoids blocking XXDK threads)
+ *
+ * Best Practices Applied:
+ * 1. **No runBlocking**: Native callbacks launch coroutines instead
+ * 2. **SupervisorJob**: One failed message doesn't stop others
+ * 3. **Structured Concurrency**: All coroutines are scoped and cancellable
+ * 4. **Exception Handling**: Errors are logged and don't crash the app
+ * 5. **Thread Safety**: Mutable state is minimal and properly isolated
  */
 class DmReceiver(private val context: Context) : DMReceiver {
     companion object {
@@ -27,8 +36,16 @@ class DmReceiver(private val context: Context) : DMReceiver {
 
     private val repository by lazy { DatabaseModule.provideRepository(context) }
     private val receiverHelpers by lazy { ReceiverHelpers.getInstance(context) }
+    private val callbackScope by lazy { CallbackScopeProvider.getInstance() }
     private var msgCnt: Long = 0
 
+    /**
+     * Update the sent status of a message.
+     * Called by XXDK when a message delivery status changes.
+     *
+     * Note: This runs on a native callback thread, so we launch a coroutine
+     * and return immediately without blocking.
+     */
     override fun updateSentStatus(
         uuid: Long,
         messageID: ByteArray?,
@@ -38,7 +55,7 @@ class DmReceiver(private val context: Context) : DMReceiver {
     ) {
         val parsedStatus = MessageStatus.fromValue(status.toInt())
 
-        runBlocking {
+        callbackScope.launchCallback {
             try {
                 // Try to find message by UUID first
                 var message = repository.getMessageById(uuid)
@@ -55,7 +72,7 @@ class DmReceiver(private val context: Context) : DMReceiver {
                     } else {
                         repository.updateMessageStatus(message.id, parsedStatus)
                     }
-                    return@runBlocking
+                    return@launchCallback
                 }
 
                 // Try reaction
@@ -80,8 +97,10 @@ class DmReceiver(private val context: Context) : DMReceiver {
     }
 
     override fun deleteMessage(messageID: ByteArray?, senderPubKey: ByteArray?): Boolean {
-        Log.d(TAG, "Delete message: ${Base64.encodeToString(messageID, Base64.NO_WRAP)}, " +
-                "${Base64.encodeToString(senderPubKey, Base64.NO_WRAP)}")
+        Log.d(
+            TAG, "Delete message: ${Base64.encodeToString(messageID, Base64.NO_WRAP)}, " +
+                "${Base64.encodeToString(senderPubKey, Base64.NO_WRAP)}"
+        )
         return true
     }
 
@@ -95,6 +114,13 @@ class DmReceiver(private val context: Context) : DMReceiver {
         return "[]".toByteArray()
     }
 
+    /**
+     * Receive a message from the XXDK network.
+     * This is called on a native thread, so we launch a coroutine and return immediately.
+     *
+     * @return The message ID (immediately, since we can't suspend here).
+     *         The actual database insert happens asynchronously.
+     */
     override fun receive(
         messageID: ByteArray,
         nickname: String,
@@ -108,7 +134,9 @@ class DmReceiver(private val context: Context) : DMReceiver {
         mType: Long,
         status: Long
     ): Long {
-        val decodedMessage = MessageDecoding.decodeMessage(Base64.encodeToString(text, Base64.NO_WRAP))
+        val decodedMessage = MessageDecoding.decodeMessage(
+            Base64.encodeToString(text, Base64.NO_WRAP)
+        )
         if (decodedMessage == null) {
             Log.e(TAG, "Failed to decode message in receive(), skipping")
             return 0L
@@ -121,9 +149,13 @@ class DmReceiver(private val context: Context) : DMReceiver {
             return 0L
         }
 
-        return runBlocking {
+        // Generate ID immediately (can't suspend in callback)
+        val messageId = System.currentTimeMillis()
+
+        // Launch async processing
+        callbackScope.launchCallback {
             try {
-                val m = persistIncoming(
+                persistIncoming(
                     message = decodedMessage,
                     codename = codename,
                     partnerKey = partnerKey,
@@ -134,12 +166,12 @@ class DmReceiver(private val context: Context) : DMReceiver {
                     timestamp = timestamp,
                     status = status
                 )
-                m.id
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to persist incoming message: ${e.message}")
-                0L
             }
         }
+
+        return messageId
     }
 
     override fun receiveReaction(
@@ -187,9 +219,11 @@ class DmReceiver(private val context: Context) : DMReceiver {
             return 0L
         }
 
-        return runBlocking {
+        val messageId = System.currentTimeMillis()
+
+        callbackScope.launchCallback {
             try {
-                val m = persistIncoming(
+                persistIncoming(
                     message = decodedReply,
                     codename = codename,
                     partnerKey = partnerKey,
@@ -200,12 +234,12 @@ class DmReceiver(private val context: Context) : DMReceiver {
                     timestamp = timestamp,
                     status = status
                 )
-                m.id
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to persist reply: ${e.message}")
-                0L
             }
         }
+
+        return messageId
     }
 
     override fun receiveText(
@@ -233,9 +267,11 @@ class DmReceiver(private val context: Context) : DMReceiver {
             return 0L
         }
 
-        return runBlocking {
+        val messageId = System.currentTimeMillis()
+
+        callbackScope.launchCallback {
             try {
-                val m = persistIncoming(
+                persistIncoming(
                     message = decodedText,
                     codename = codename,
                     partnerKey = partnerKey,
@@ -246,12 +282,12 @@ class DmReceiver(private val context: Context) : DMReceiver {
                     timestamp = timestamp,
                     status = status
                 )
-                m.id
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to persist text message: ${e.message}")
-                0L
             }
         }
+
+        return messageId
     }
 
     private suspend fun persistIncoming(
@@ -322,6 +358,7 @@ class DmReceiver(private val context: Context) : DMReceiver {
         }
     }
 }
+
 /**
  * Builder for DMReceiver
  * Mirrors iOS DMReceiverBuilder implementation
@@ -334,6 +371,7 @@ class DmReceiverBuilder(private val context: Context) : DMReceiverBuilder {
         return receiver
     }
 }
+
 /**
  * DM events callback implementation
  * Mirrors iOS DMReceiver's DmCallbacks implementation
@@ -356,18 +394,22 @@ class DmEvents : DmCallbacks {
                 // DmNotificationUpdate
                 Log.d(TAG, "DM Notification Update received")
             }
+
             2000L -> {
                 // DmBlockedUser
                 Log.d(TAG, "DM Blocked User received")
             }
+
             3000L -> {
                 // DmMessageReceived
                 Log.d(TAG, "DM Message Received received")
             }
+
             4000L -> {
                 // DmMessageDeleted
                 Log.d(TAG, "DM Message Deleted received")
             }
+
             else -> {
                 Log.w(TAG, "Unknown DM event type: $eventType")
             }

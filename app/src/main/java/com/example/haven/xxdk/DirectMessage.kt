@@ -3,15 +3,18 @@ package com.example.haven.xxdk
 import android.util.Base64
 import android.util.Log
 import bindings.DMClient
-import kotlinx.coroutines.Dispatchers
+import com.example.haven.di.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 
 /**
  * DirectMessage implementation using XXDK bindings
  * Mirrors iOS DirectMessage implementation
  */
-class DirectMessage(private val dmClient: DMClient? = null) : DirectMessageP {
-    
+class DirectMessage(
+    private val dmClient: DMClient? = null,
+    private val dispatchers: CoroutineDispatchers = CoroutineDispatchers()
+) : DirectMessageP {
+
     companion object {
         private const val TAG = "DirectMessage"
         private const val LEASE_TIME_MS = 7L * 24 * 60 * 60 * 1000 // 7 days
@@ -29,7 +32,7 @@ class DirectMessage(private val dmClient: DMClient? = null) : DirectMessageP {
     val publicKey: ByteArray
         get() = dmClient?.publicKey ?: byteArrayOf()
 
-    override suspend fun send(msg: String, toPubKey: ByteArray, partnerToken: Int) = withContext(Dispatchers.IO) {
+    override suspend fun send(msg: String, toPubKey: ByteArray, partnerToken: Int) = withContext(dispatchers.io) {
         val client = dmClient ?: run {
             Log.e(TAG, "DM client not available")
             return@withContext
@@ -61,7 +64,7 @@ class DirectMessage(private val dmClient: DMClient? = null) : DirectMessageP {
         toPubKey: ByteArray,
         partnerToken: Int,
         replyToMessageIdB64: String,
-    ) = withContext(Dispatchers.IO) {
+    ) = withContext(dispatchers.io) {
         val client = dmClient ?: run {
             Log.e(TAG, "DM client not available")
             return@withContext
@@ -95,7 +98,7 @@ class DirectMessage(private val dmClient: DMClient? = null) : DirectMessageP {
         toMessageIdB64: String,
         toPubKey: ByteArray,
         partnerToken: Int,
-    ) = withContext(Dispatchers.IO) {
+    ) = withContext(dispatchers.io) {
         val client = dmClient ?: run {
             Log.e(TAG, "DM client not available")
             return@withContext

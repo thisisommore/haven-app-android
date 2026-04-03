@@ -368,7 +368,7 @@ internal fun HavenApp() {
                     onSendClick = { chatController.sendMessage() },
                     onReplyClick = { /* TODO: implement reply */ },
                     onBackClick = { route = Route.home },
-                    getSenderName = { senderId -> chatController.getSenderName(senderId) },
+                    getSenderName = { senderId -> chatController.getSenderNameSync(senderId) },
                     showOptionsSheet = showOptionsSheet,
                     onOptionsDismiss = { showOptionsSheet = false },
                     onLeaveChannel = { route = Route.home },

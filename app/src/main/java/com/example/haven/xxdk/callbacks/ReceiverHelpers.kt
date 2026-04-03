@@ -1,16 +1,17 @@
 package com.example.haven.xxdk.callbacks
 
 import android.content.Context
+import android.util.Log
+import com.example.haven.data.DatabaseModule
 import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.ChatMessageModel
-import com.example.haven.data.DatabaseModule
 import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.data.model.MessageStatus
-import bindings.Bindings
 import com.example.haven.xxdk.Parser
+import bindings.Bindings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.UUID
 
@@ -61,15 +62,17 @@ class ReceiverHelpers private constructor(private val context: Context) {
     /**
      * Check if sender's pubKey matches the "<self>" chat pubKey
      * Lazy-loads from database if not cached
+     *
+     * Note: This is a suspend function to avoid blocking threads.
+     * Call from coroutines only, never from synchronous callbacks.
      */
-    fun isSenderSelf(senderPubKey: ByteArray?): Boolean {
+    suspend fun isSenderSelf(senderPubKey: ByteArray?): Boolean {
         if (senderPubKey == null) return false
-        
+
         // Lazy-load self pubkey if not cached
         if (cachedSelfChatPubKey == null) {
-            // Query synchronously using runBlocking and firstOrNull
             try {
-                cachedSelfChatPubKey = runBlocking(Dispatchers.IO) {
+                cachedSelfChatPubKey = withContext(Dispatchers.IO) {
                     repository.getAllChats()
                         .firstOrNull { chats ->
                             chats.any { it.name == "<self>" }
@@ -77,12 +80,24 @@ class ReceiverHelpers private constructor(private val context: Context) {
                         ?.firstOrNull { it.name == "<self>" }
                         ?.pubKey
                 }
-                android.util.Log.d("ReceiverHelpers", "Self pubkey loaded: ${cachedSelfChatPubKey != null}")
+                Log.d("ReceiverHelpers", "Self pubkey loaded: ${cachedSelfChatPubKey != null}")
             } catch (e: Exception) {
-                android.util.Log.e("ReceiverHelpers", "Failed to load self pubkey: ${e.message}")
+                Log.e("ReceiverHelpers", "Failed to load self pubkey: ${e.message}")
             }
         }
-        
+
+        return cachedSelfChatPubKey?.contentEquals(senderPubKey) ?: false
+    }
+
+    /**
+     * Synchronous version of isSenderSelf for use in legacy callbacks.
+     * Uses cached value only - returns false if not cached.
+     *
+     * ⚠️ DEPRECATED: Prefer the suspend version isSenderSelf()
+     * This method will return incorrect results until preloadSelfPubKey() is called.
+     */
+    fun isSenderSelfSync(senderPubKey: ByteArray?): Boolean {
+        if (senderPubKey == null) return false
         return cachedSelfChatPubKey?.contentEquals(senderPubKey) ?: false
     }
     

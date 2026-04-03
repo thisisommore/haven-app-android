@@ -2,13 +2,13 @@ package com.example.haven.xxdk
 
 import android.util.Log
 import com.example.haven.data.DatabaseModule
+import com.example.haven.xxdk.callbacks.CallbackScopeProvider
 import com.example.haven.xxdk.callbacks.ReceiverHelpers
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.File
 
-internal suspend fun XXDK.performLogout() = withContext(Dispatchers.IO) {
+internal suspend fun XXDK.performLogout() = withContext(dispatchers.io) {
     progress(XXDKProgress.Idle)
 
     // 1. Stop network follower
@@ -51,8 +51,9 @@ internal suspend fun XXDK.performLogout() = withContext(Dispatchers.IO) {
     storageTagListener = null
     savedPrivateIdentity = byteArrayOf()
 
-    // 5. Clear caches
+    // 5. Clear caches and shutdown callback scope
     ReceiverHelpers.clearInstance()
+    CallbackScopeProvider.shutdown()
 
     // 6. Clear database (messages, reactions, senders, chats)
     try {

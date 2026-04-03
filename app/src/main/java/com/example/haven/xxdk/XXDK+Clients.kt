@@ -4,13 +4,16 @@ import android.util.Log
 import com.example.haven.data.DatabaseModule
 import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.MessageSenderModel
+import com.example.haven.xxdk.callbacks.CallbackScopeProvider
 import com.example.haven.xxdk.callbacks.DmReceiverBuilder
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-internal suspend fun XXDK.performLoadClients(privateIdentity: ByteArray) = withContext(Dispatchers.IO) {
+internal suspend fun XXDK.performLoadClients(privateIdentity: ByteArray) = withContext(dispatchers.io) {
+    // Ensure callback scope is initialized for receiving messages
+    CallbackScopeProvider.getInstance()
+
     progress(XXDKProgress.LoadingIdentity)
 
     val liveCmix = cmix ?: error("cmix is not available")
@@ -90,7 +93,7 @@ internal suspend fun XXDK.performLoadClients(privateIdentity: ByteArray) = withC
         Log.d(XXDK.TAG, "Channel messaging initialized for returning user")
     }
     dmClient?.let {
-        dm = DirectMessage(it)
+        dm = DirectMessage(it, dispatchers)
         Log.d(XXDK.TAG, "DM messaging initialized for returning user")
     }
 
@@ -100,7 +103,10 @@ internal suspend fun XXDK.performLoadClients(privateIdentity: ByteArray) = withC
 internal suspend fun XXDK.performSetupClients(
     privateIdentity: ByteArray,
     successCallback: () -> Unit
-) = withContext(Dispatchers.IO) {
+) = withContext(dispatchers.io) {
+    // Ensure callback scope is initialized for receiving messages
+    CallbackScopeProvider.getInstance()
+
     val liveCmix = cmix ?: error("cmix is not available")
     val repository = DatabaseModule.provideRepository(context)
 
@@ -212,7 +218,7 @@ internal suspend fun XXDK.performSetupClients(
         Log.d(XXDK.TAG, "Channel messaging initialized")
     }
     dmClient?.let {
-        dm = DirectMessage(it)
+        dm = DirectMessage(it, dispatchers)
         Log.d(XXDK.TAG, "DM messaging initialized")
     }
 
