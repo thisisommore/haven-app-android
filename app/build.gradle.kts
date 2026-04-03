@@ -21,11 +21,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        
-        // 16 KB page size support for Android 15+
-        ndk {
-            debugSymbolLevel = "FULL"
-        }
     }
     
     androidResources {
@@ -62,22 +57,12 @@ android {
         }
     }
     
-    // 16 KB page size support for Android 15+
+    // Workaround for ML Kit libraries not yet fully 16 KB aligned
+    // Google is still working on fixing libimage_processing_util_jni.so
+    // This extracts native libs to filesystem for compatibility
     packaging {
         jniLibs {
-            useLegacyPackaging = false
-            // Keep native libraries uncompressed and aligned
-            keepDebugSymbols += "**/*.so"
-        }
-    }
-    
-    // Enable 16 KB page alignment for native libraries
-    tasks.withType<com.android.build.gradle.tasks.PackageAndroidArtifact>().configureEach {
-        jniFolders.forEach { folder ->
-            folder.walkTopDown().filter { it.isFile && it.extension == "so" }.forEach { file ->
-                // Ensure 16 KB alignment
-                file.setExecutable(true, false)
-            }
+            useLegacyPackaging = true
         }
     }
 }
@@ -110,7 +95,7 @@ dependencies {
     implementation("androidx.camera:camera-view:$cameraxVersion")
     
     // ML Kit for QR code scanning
-    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
     implementation(files("/Users/ommore/Documents/github/xx-network/ios/client/bindings.aar"))
     testImplementation(libs.junit)

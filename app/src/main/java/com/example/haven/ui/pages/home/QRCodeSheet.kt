@@ -164,8 +164,9 @@ fun QRCodeSheet(
                 color = labelColor(),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 24.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
             )
             
             Spacer(modifier = Modifier.height(24.dp))
