@@ -221,7 +221,7 @@ internal suspend fun XXDK.performSetupClients(
     // Join xxIOS channel (same as iOS)
     try {
         val channelInfo = channel.joinChannelFromURL(XX_IOS_CHAT)
-        val channelId = channelInfo?.channelID ?: "xxIOS"
+        val channelId = channelInfo?.channelId ?: "xxIOS"
 
         // Set notifications to push for all messages
         channel.setNotifications(

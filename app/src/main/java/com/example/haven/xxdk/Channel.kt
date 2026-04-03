@@ -7,6 +7,23 @@ import bindings.ChannelsManager
 import org.json.JSONObject
 
 /**
+ * Privacy level for channel URLs
+ */
+enum class PrivacyLevel {
+    PUBLIC,
+    SECRET
+}
+
+/**
+ * Data class for channel information from JSON
+ */
+data class ChannelInfoJson(
+    val channelId: String,
+    val name: String,
+    val description: String
+)
+
+/**
  * Data class for share URL information
  */
 data class ShareUrlData(
@@ -201,9 +218,143 @@ class Channel(
     }
     
     /**
+     * Check if current user is admin of a channel
+     */
+    fun isAdmin(channelId: String): Boolean {
+        val cm = channelsManager ?: return false
+        
+        return try {
+            val channelIdBytes = Base64.decode(channelId, Base64.NO_WRAP)
+            cm.isChannelAdmin(channelIdBytes)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to check admin status: ${e.message}", e)
+            false
+        }
+    }
+    
+    /**
+     * Export channel admin key
+     */
+    fun exportAdminKey(channelId: String, encryptionPassword: String): ByteArray? {
+        val cm = channelsManager ?: run {
+            Log.e(TAG, "Channels manager not available")
+            return null
+        }
+        
+        return try {
+            val channelIdBytes = Base64.decode(channelId, Base64.NO_WRAP)
+            cm.exportChannelAdminKey(channelIdBytes, encryptionPassword)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to export admin key: ${e.message}", e)
+            null
+        }
+    }
+    
+    /**
+     * Import channel admin key
+     */
+    fun importAdminKey(channelId: String, encryptionPassword: String, privateKey: String): Boolean {
+        val cm = channelsManager ?: run {
+            Log.e(TAG, "Channels manager not available")
+            return false
+        }
+        
+        return try {
+            val channelIdBytes = Base64.decode(channelId, Base64.NO_WRAP)
+            cm.importChannelAdminKey(channelIdBytes, encryptionPassword, privateKey.toByteArray())
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to import admin key: ${e.message}", e)
+            false
+        }
+    }
+    
+    /**
+     * Get the privacy level for a given channel URL
+     * Returns PUBLIC (0,1) or SECRET (2)
+     */
+    fun getPrivacyLevel(url: String): PrivacyLevel {
+        return try {
+            val typeValue = bindings.Bindings.getShareUrlType(url)
+            if (typeValue == 2L) PrivacyLevel.SECRET else PrivacyLevel.PUBLIC
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get privacy level: ${e.message}", e)
+            PrivacyLevel.PUBLIC // Default to public on error
+        }
+    }
+    
+    /**
+     * Decode a public URL to pretty print format
+     */
+    fun decodePublicURL(url: String): String {
+        return try {
+            bindings.Bindings.decodePublicURL(url)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to decode public URL: ${e.message}", e)
+            throw e
+        }
+    }
+    
+    /**
+     * Decode a private URL with password
+     */
+    fun decodePrivateURL(url: String, password: String): String {
+        return try {
+            bindings.Bindings.decodePrivateURL(url, password)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to decode private URL: ${e.message}", e)
+            throw e
+        }
+    }
+    
+    /**
+     * Get channel JSON from pretty print format
+     */
+    fun getChannelJSON(prettyPrint: String): ChannelInfoJson? {
+        return try {
+            val jsonBytes = bindings.Bindings.getChannelJSON(prettyPrint)
+            val json = JSONObject(jsonBytes.decodeToString())
+            ChannelInfoJson(
+                channelId = json.optString("ChannelID"),
+                name = json.optString("Name"),
+                description = json.optString("Description")
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get channel JSON: ${e.message}", e)
+            null
+        }
+    }
+    
+    /**
+     * Get channel data from a private URL with password
+     */
+    fun getPrivateChannelFrom(url: String, password: String): ChannelInfoJson? {
+        return try {
+            val prettyPrint = decodePrivateURL(url, password)
+            getChannelJSON(prettyPrint)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get private channel: ${e.message}", e)
+            null
+        }
+    }
+    
+    /**
+     * Get channel data from a public URL
+     */
+    fun getChannelFrom(url: String): ChannelInfoJson? {
+        return try {
+            val prettyPrint = decodePublicURL(url)
+            getChannelJSON(prettyPrint)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get channel from URL: ${e.message}", e)
+            null
+        }
+    }
+    
+    /**
      * Join a channel from a URL (public share link)
      */
-    fun joinChannelFromURL(url: String): ChannelInfo? {
+    fun joinChannelFromURL(url: String): ChannelInfoJson? {
         val cm = channelsManager ?: run {
             Log.e(TAG, "Channels manager not available")
             return null
@@ -214,7 +365,13 @@ class Channel(
             val resultBytes = cm.joinChannel(prettyPrint)
             val channelInfo = parseChannelInfo(resultBytes)
             Log.d(TAG, "Joined channel: ${channelInfo?.name}")
-            channelInfo
+            channelInfo?.let {
+                ChannelInfoJson(
+                    channelId = it.getChannelID(),
+                    name = it.getName(),
+                    description = it.getDescription()
+                )
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to join channel from URL: ${e.message}", e)
             null
@@ -224,7 +381,7 @@ class Channel(
     /**
      * Join a channel using pretty print format
      */
-    fun joinChannel(prettyPrint: String): ChannelInfo? {
+    fun joinChannel(prettyPrint: String): ChannelInfoJson? {
         val cm = channelsManager ?: run {
             Log.e(TAG, "Channels manager not available")
             return null
@@ -233,13 +390,21 @@ class Channel(
         return try {
             val resultBytes = cm.joinChannel(prettyPrint)
             val channelInfo = parseChannelInfo(resultBytes)
-            Log.d(TAG, "Joined channel: ${channelInfo?.name}")
-            channelInfo
+            Log.d(TAG, "Joined channel: ${channelInfo?.getName()}")
+            channelInfo?.let {
+                ChannelInfoJson(
+                    channelId = it.getChannelID(),
+                    name = it.getName(),
+                    description = it.getDescription()
+                )
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to join channel: ${e.message}", e)
             null
         }
     }
+    
+
     
     /**
      * Set notification level for a channel

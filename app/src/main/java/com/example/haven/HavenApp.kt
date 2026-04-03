@@ -295,6 +295,7 @@ internal fun HavenApp() {
             Route.home -> {
                 HomeScreen(
                     viewModel = homeViewModel,
+                    xxdk = xxdk,
                     onOpenChat = { id -> 
                         chatId = id
                         chatViewModel.loadChat(id)

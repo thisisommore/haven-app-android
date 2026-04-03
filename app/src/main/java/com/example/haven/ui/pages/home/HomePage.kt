@@ -53,7 +53,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.foundation.Canvas
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -63,15 +62,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.haven.ui.pages.home.ChatWithPreview
-import com.example.haven.ui.pages.home.HomeViewModel
 import com.example.haven.ui.views.ChatListItem
 import com.example.haven.ui.views.EmptyChatsState
+import com.example.haven.xxdk.XXDK
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun HomeScreen(
     viewModel: HomeViewModel,
+    xxdk: XXDK? = null,
     onOpenChat: (String) -> Unit,
     onNewChat: () -> Unit = {},
     onLogout: () -> Unit = {},
@@ -86,6 +87,7 @@ internal fun HomeScreen(
     // Menu / logout state
     var showMenu by remember { mutableStateOf(false) }
     var showLogoutConfirm by remember { mutableStateOf(false) }
+    var showJoinChannelSheet by remember { mutableStateOf(false) }
 
     // ── Logout confirmation dialog ──────────────────────────────────
     if (showLogoutConfirm) {
@@ -223,6 +225,24 @@ internal fun HomeScreen(
                                 shape = RoundedCornerShape(4.dp)
                             ) {
                                 DropdownMenuItem(
+                                    text = { Text("Join Channel") },
+                                    onClick = {
+                                        showMenu = false
+                                        showJoinChannelSheet = true
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("New Chat") },
+                                    onClick = {
+                                        showMenu = false
+                                        onNewChat()
+                                    }
+                                )
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 12.dp),
+                                    color = MaterialTheme.colorScheme.outlineVariant
+                                )
+                                DropdownMenuItem(
                                     text = { Text("Export") },
                                     onClick = { showMenu = false }
                                 )
@@ -326,6 +346,27 @@ internal fun HomeScreen(
                     }
                 }
             }
+        }
+
+        // Join Channel Sheet
+        if (showJoinChannelSheet && xxdk != null) {
+            val joinChannelViewModel: JoinChannelViewModel = viewModel(
+                factory = JoinChannelViewModel.Factory(
+                    context = LocalContext.current,
+                    xxdk = xxdk
+                )
+            )
+            JoinChannelSheet(
+                viewModel = joinChannelViewModel,
+                onDismiss = {
+                    joinChannelViewModel.reset()
+                    showJoinChannelSheet = false
+                },
+                onChannelJoined = {
+                    joinChannelViewModel.reset()
+                    showJoinChannelSheet = false
+                }
+            )
         }
     }
 }
