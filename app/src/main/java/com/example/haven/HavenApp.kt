@@ -322,6 +322,7 @@ internal fun HavenApp() {
 
             Route.chat -> {
                 val currentChat by chatViewModel.currentChat.collectAsState()
+                val isCurrentUserMuted by chatViewModel.isCurrentUserMuted.collectAsState()
                 val channelOptionsViewModel: ChannelOptionsViewModel = viewModel(
                     factory = ChannelOptionsViewModel.createFactory(context, xxdk)
                 )
@@ -347,6 +348,7 @@ internal fun HavenApp() {
                         }
                     },
                     optionsViewModel = channelOptionsViewModel,
+                    isCurrentUserMuted = isCurrentUserMuted,
                     modifier = Modifier.fillMaxSize()
                 )
             }

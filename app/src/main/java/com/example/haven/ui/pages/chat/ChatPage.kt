@@ -30,6 +30,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.SpeakerNotesOff
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -76,6 +79,7 @@ internal fun ChatScreen(
     onDeleteChat: () -> Unit = {},
     onInfoClick: () -> Unit = {},
     optionsViewModel: ChannelOptionsViewModel? = null,
+    isCurrentUserMuted: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -256,25 +260,61 @@ internal fun ChatScreen(
 
         val isImeVisible = WindowInsets.isImeVisible
         
-        MessageInputBar(
-            value = inputText,
-            onValueChange = onInputChange,
-            onSend = onSendClick,
-            onEmojiClick = {
-                if (showEmojiPicker.value) {
-                    showEmojiPicker.value = false
-                    keyboardController?.show()
-                } else {
-                    showEmojiPicker.value = true
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
+        if (isCurrentUserMuted) {
+            // Show muted chip when user is muted
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .then(if (!isImeVisible) Modifier.navigationBarsPadding() else Modifier)
+                    .imePadding(),
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.SpeakerNotesOff,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "You are muted in this channel",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-            },
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .then(if (!isImeVisible && !showEmojiPicker.value) Modifier.navigationBarsPadding() else Modifier)
-                .imePadding()
-        )
+            }
+        } else {
+            MessageInputBar(
+                value = inputText,
+                onValueChange = onInputChange,
+                onSend = onSendClick,
+                onEmojiClick = {
+                    if (showEmojiPicker.value) {
+                        showEmojiPicker.value = false
+                        keyboardController?.show()
+                    } else {
+                        showEmojiPicker.value = true
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    }
+                },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .then(if (!isImeVisible && !showEmojiPicker.value) Modifier.navigationBarsPadding() else Modifier)
+                    .imePadding()
+            )
+        }
         
         if (showEmojiPicker.value) {
             EmojiPicker(

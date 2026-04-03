@@ -5,11 +5,13 @@ import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.data.model.MessageReactionModel
+import com.example.haven.data.model.ChannelMutedUserModel
 import com.example.haven.data.model.Converters
 import com.example.haven.data.model.ChatDao
 import com.example.haven.data.model.MessageSenderDao
 import com.example.haven.data.model.ChatMessageDao
 import com.example.haven.data.model.MessageReactionDao
+import com.example.haven.data.model.ChannelMutedUserDao
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -24,7 +26,8 @@ import androidx.room.TypeConverters
         ChatModel::class,
         MessageSenderModel::class,
         ChatMessageModel::class,
-        MessageReactionModel::class
+        MessageReactionModel::class,
+        ChannelMutedUserModel::class
     ],
     version = 1,
     exportSchema = true
@@ -35,6 +38,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun messageSenderDao(): MessageSenderDao
     abstract fun chatMessageDao(): ChatMessageDao
     abstract fun messageReactionDao(): MessageReactionDao
+    abstract fun channelMutedUserDao(): ChannelMutedUserDao
 
     companion object {
         const val DATABASE_NAME = "haven.db"

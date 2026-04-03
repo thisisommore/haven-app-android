@@ -5,6 +5,7 @@ import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.data.model.MessageReactionModel
+import com.example.haven.data.model.ChannelMutedUserModel
 import com.example.haven.data.model.MessageStatus
 import kotlinx.coroutines.flow.Flow
 
@@ -17,6 +18,7 @@ class DatabaseRepository(context: Context) {
     private val messageSenderDao = db.messageSenderDao()
     private val chatMessageDao = db.chatMessageDao()
     private val messageReactionDao = db.messageReactionDao()
+    private val channelMutedUserDao = db.channelMutedUserDao()
 
     // Chats
     fun getAllChats(): Flow<List<ChatModel>> = chatDao.getAll()
@@ -76,11 +78,25 @@ class DatabaseRepository(context: Context) {
     suspend fun updateReactionStatusByExternalId(externalId: String, status: MessageStatus) = 
         messageReactionDao.updateStatusByExternalId(externalId, status.value)
 
+    // Channel Muted Users
+    fun getMutedUsersByChannelId(channelId: String): Flow<List<ChannelMutedUserModel>> = 
+        channelMutedUserDao.getByChannelId(channelId)
+    suspend fun getMutedUsersByChannelIdSync(channelId: String): List<ChannelMutedUserModel> = 
+        channelMutedUserDao.getByChannelIdSync(channelId)
+    suspend fun getMutedUserByChannelIdAndPubkey(channelId: String, pubkey: ByteArray): ChannelMutedUserModel? = 
+        channelMutedUserDao.getByChannelIdAndPubkey(channelId, pubkey)
+    suspend fun insertMutedUser(mutedUser: ChannelMutedUserModel) = channelMutedUserDao.insert(mutedUser)
+    suspend fun deleteMutedUser(mutedUser: ChannelMutedUserModel) = channelMutedUserDao.delete(mutedUser)
+    suspend fun deleteMutedUsersByChannelId(channelId: String) = channelMutedUserDao.deleteByChannelId(channelId)
+    suspend fun deleteMutedUserByChannelIdAndPubkey(channelId: String, pubkey: ByteArray) = 
+        channelMutedUserDao.deleteByChannelIdAndPubkey(channelId, pubkey)
+
     // Clear all data (for logout)
     suspend fun clearAllData() {
         chatDao.deleteAll()
         messageSenderDao.deleteAll()
         chatMessageDao.deleteAll()
         messageReactionDao.deleteAll()
+        channelMutedUserDao.deleteByChannelId("%") // Delete all
     }
 }

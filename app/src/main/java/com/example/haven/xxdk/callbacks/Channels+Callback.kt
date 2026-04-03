@@ -8,6 +8,7 @@ import bindings.EventModelBuilder
 import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.data.DatabaseModule
+import com.example.haven.data.model.ChannelMutedUserModel
 import com.example.haven.data.model.MessageReactionModel
 import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.data.model.MessageStatus
@@ -323,9 +324,43 @@ class ChannelEventModelBuilder(private val context: Context) : EventModel, Event
     }
 
     override fun muteUser(channelID: ByteArray?, pubkey: ByteArray?, unmute: Boolean) {
-        // Post notification for UI to refresh mute status
-        Log.d(TAG, "User mute status changed for channel: " +
-                "${channelID?.let { Base64.encodeToString(it, Base64.NO_WRAP) }}")
+        if (channelID == null || pubkey == null) {
+            Log.e(TAG, "muteUser called with null channelID or pubkey")
+            return
+        }
+
+        val channelIdB64 = Base64.encodeToString(channelID, Base64.NO_WRAP)
+
+        runBlocking {
+            try {
+                // Verify channel exists
+                val chat = repository.getChatByChannelId(channelIdB64)
+                if (chat == null) {
+                    Log.e(TAG, "muteUser: Channel not found: $channelIdB64")
+                    return@runBlocking
+                }
+
+                val existing = repository.getMutedUserByChannelIdAndPubkey(channelIdB64, pubkey)
+
+                if (unmute) {
+                    if (existing != null) {
+                        repository.deleteMutedUser(existing)
+                        Log.d(TAG, "User unmuted in channel: $channelIdB64")
+                    }
+                } else {
+                    if (existing == null) {
+                        val mutedUser = ChannelMutedUserModel(
+                            channelId = channelIdB64,
+                            pubkey = pubkey
+                        )
+                        repository.insertMutedUser(mutedUser)
+                        Log.d(TAG, "User muted in channel: $channelIdB64")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to persist mute state: ${e.message}")
+            }
+        }
     }
 
     private suspend fun fetchChannel(channelId: String): ChatModel? {

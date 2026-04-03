@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -42,6 +43,13 @@ class ChatViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    // Current user muted state
+    private val _isCurrentUserMuted = MutableStateFlow(false)
+    val isCurrentUserMuted: StateFlow<Boolean> = _isCurrentUserMuted.asStateFlow()
+
+    // Job for collecting muted users
+    private var mutedUsersCollectionJob: kotlinx.coroutines.Job? = null
+
     /**
      * Load a chat by its ID and start observing messages
      */
@@ -51,19 +59,53 @@ class ChatViewModel(
             val chat = repository.getChatById(chatId)
             _currentChat.value = chat
             if (chat != null) {
-                // Cancel previous collection
+                // Cancel previous collections
                 messagesCollectionJob?.cancel()
+                mutedUsersCollectionJob?.cancel()
+                
                 // Start collecting messages from the new chat
                 messagesCollectionJob = viewModelScope.launch {
                     repository.getMessagesByChatId(chatId).collect { messageList ->
                         _messages.value = messageList
                     }
                 }
+                
+                // Start collecting muted users for channels
+                if (chat.channelId != null) {
+                    mutedUsersCollectionJob = viewModelScope.launch {
+                        repository.getMutedUsersByChannelId(chat.channelId).collectLatest { mutedUsers ->
+                            _isCurrentUserMuted.value = checkIfCurrentUserMuted(mutedUsers)
+                        }
+                    }
+                } else {
+                    _isCurrentUserMuted.value = false
+                }
+                
                 // Mark all messages as read when opening chat
                 repository.markAllMessagesAsRead(chatId)
             }
             _isLoading.value = false
         }
+    }
+
+    /**
+     * Check if the current user is muted in the channel
+     * Compares against self user's pubkey from XXDK
+     */
+    private fun checkIfCurrentUserMuted(mutedUsers: List<com.example.haven.data.model.ChannelMutedUserModel>): Boolean {
+        // Get current user's public key from XXDK
+        val selfPubKey = try {
+            val privateIdentity = xxdk.loadSavedPrivateIdentity()
+            val publicIdentityBytes = bindings.Bindings.getPublicChannelIdentityFromPrivate(privateIdentity)
+            val publicIdentity = com.example.haven.xxdk.Parser.decodeIdentity(publicIdentityBytes)
+            // PubKey is base64 encoded string, decode to ByteArray
+            android.util.Base64.decode(publicIdentity.pubKey, android.util.Base64.NO_WRAP)
+        } catch (e: Exception) {
+            android.util.Log.e("ChatViewModel", "Failed to get self pubkey: ${e.message}")
+            return false
+        }
+        
+        return mutedUsers.any { it.pubkey.contentEquals(selfPubKey) }
     }
 
     /**

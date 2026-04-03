@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0930cdcdc1306414fb268e434f5e8917",
+    "identityHash": "3f710d3f071d27227d63344f58f7925f",
     "entities": [
       {
         "tableName": "chats",
@@ -368,11 +368,66 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "channelMutedUsers",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `channelId` TEXT NOT NULL, `pubkey` BLOB NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`channelId`) REFERENCES `chats`(`channelId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "channelId",
+            "columnName": "channelId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pubkey",
+            "columnName": "pubkey",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_channelMutedUsers_channelId_pubkey",
+            "unique": true,
+            "columnNames": [
+              "channelId",
+              "pubkey"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_channelMutedUsers_channelId_pubkey` ON `${TABLE_NAME}` (`channelId`, `pubkey`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "chats",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "channelId"
+            ],
+            "referencedColumns": [
+              "channelId"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0930cdcdc1306414fb268e434f5e8917')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3f710d3f071d27227d63344f58f7925f')"
     ]
   }
 }
