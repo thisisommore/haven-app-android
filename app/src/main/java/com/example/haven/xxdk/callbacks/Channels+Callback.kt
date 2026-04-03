@@ -15,6 +15,7 @@ import com.example.haven.data.model.MessageStatus
 import com.example.haven.xxdk.MessageDecoding
 
 import com.example.haven.xxdk.callbacks.ReceiverHelpers
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import java.util.Date
 
@@ -42,7 +43,7 @@ class ChannelEventModelBuilder(private val context: Context) : EventModel, Event
     }
 
     override fun updateFromUUID(fromUUID: Long, messageUpdateInfoJSON: ByteArray) {
-        runBlocking {
+        runBlocking(Dispatchers.IO) {
             try {
                 val updateInfo = MessageUpdateInfo.fromJson(messageUpdateInfoJSON)
 
@@ -118,19 +119,31 @@ class ChannelEventModelBuilder(private val context: Context) : EventModel, Event
         hidden: Boolean
     ): Long {
         val messageIdB64 = Base64.encodeToString(messageID, Base64.NO_WRAP)
+        val channelIdB64 = Base64.encodeToString(channelID, Base64.NO_WRAP)
+        
+        Log.d(TAG, "receiveMessage: channel=$channelIdB64, msgId=$messageIdB64")
 
-        runBlocking {
-            if (repository.getMessageByExternalId(messageIdB64) != null) {
-                return@runBlocking
+        return runBlocking(Dispatchers.IO) {
+            // Check for existing message
+            val existingMessage = repository.getMessageByExternalId(messageIdB64)
+            if (existingMessage != null) {
+                Log.d(TAG, "Message already exists: $messageIdB64")
+                return@runBlocking existingMessage.id
             }
-        }
 
-        return try {
-            val (codename, color) = receiverHelpers.parseIdentity(pubKey, codeset)
-            val channelIdB64 = Base64.encodeToString(channelID, Base64.NO_WRAP)
+            try {
+                val (codename, color) = receiverHelpers.parseIdentity(pubKey, codeset)
+                Log.d(TAG, "Parsed identity: $codename, color=$color")
 
-            MessageDecoding.decodeMessage(text)?.let { decodedText ->
-                persistMessage(
+                val decodedText = MessageDecoding.decodeMessage(text)
+                if (decodedText == null) {
+                    Log.e(TAG, "Failed to decode message: $messageIdB64")
+                    return@runBlocking 0L
+                }
+                
+                Log.d(TAG, "Decoded text: $decodedText")
+
+                val result = persistMessage(
                     channelId = channelIdB64,
                     text = decodedText,
                     senderCodename = codename,
@@ -142,10 +155,13 @@ class ChannelEventModelBuilder(private val context: Context) : EventModel, Event
                     nickname = nickname,
                     status = status
                 )
-            } ?: 0L
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to receive message: ${e.message}")
-            0L
+                
+                Log.d(TAG, "persistMessage returned: $result")
+                result
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to receive message: ${e.message}", e)
+                0L
+            }
         }
     }
 
@@ -168,7 +184,7 @@ class ChannelEventModelBuilder(private val context: Context) : EventModel, Event
         val targetMessageIdB64 = Base64.encodeToString(reactionTo, Base64.NO_WRAP)
         val reactionMessageId = Base64.encodeToString(messageID, Base64.NO_WRAP)
 
-        return runBlocking {
+        return runBlocking(Dispatchers.IO) {
             try {
                 val (codename, color) = receiverHelpers.parseIdentity(pubKey, codeset)
 
@@ -229,10 +245,12 @@ class ChannelEventModelBuilder(private val context: Context) : EventModel, Event
     ): Long {
         val messageIdB64 = Base64.encodeToString(messageID, Base64.NO_WRAP)
 
-        runBlocking {
-            if (repository.getMessageByExternalId(messageIdB64) != null) {
-                return@runBlocking
-            }
+        // Check for existing message
+        val existingMessage = runBlocking {
+            repository.getMessageByExternalId(messageIdB64)
+        }
+        if (existingMessage != null) {
+            return existingMessage.id
         }
 
         val (nick, color) = try {
@@ -262,41 +280,35 @@ class ChannelEventModelBuilder(private val context: Context) : EventModel, Event
     override fun getMessage(messageID: ByteArray): ByteArray {
         val messageIdB64 = Base64.encodeToString(messageID, Base64.NO_WRAP)
 
-        return runBlocking {
-            try {
-                // Try to find message
-                val message = repository.getMessageByExternalId(messageIdB64)
-                if (message != null && message.senderId != null) {
-                    val sender = repository.getSenderById(message.senderId)
-                    if (sender != null) {
-                        val modelMsg = ModelMessage(
-                            pubKey = sender.pubkey,
-                            messageID = messageID
-                        )
-                        return@runBlocking modelMsg.toJson()
-                    }
+        return runBlocking(Dispatchers.IO) {
+            // Try to find message
+            val message = repository.getMessageByExternalId(messageIdB64)
+            if (message != null && message.senderId != null) {
+                val sender = repository.getSenderById(message.senderId)
+                if (sender != null) {
+                    val modelMsg = ModelMessage(
+                        pubKey = sender.pubkey,
+                        messageID = messageID
+                    )
+                    return@runBlocking modelMsg.toJson()
                 }
-
-                // Try reaction
-                val reaction = repository.getReactionByExternalId(messageIdB64)
-                if (reaction != null) {
-                    val sender = repository.getSenderById(reaction.senderId)
-                    if (sender != null) {
-                        val modelMsg = ModelMessage(
-                            pubKey = sender.pubkey,
-                            messageID = messageID
-                        )
-                        return@runBlocking modelMsg.toJson()
-                    }
-                }
-
-                // Return empty JSON instead of throwing
-                Log.e(TAG, "Message not found for getMessage: $messageIdB64")
-                """{"error":"Message not found"}""".toByteArray()
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to get message: ${e.message}")
-                """{"error":"${e.message}"}""".toByteArray()
             }
+
+            // Try reaction
+            val reaction = repository.getReactionByExternalId(messageIdB64)
+            if (reaction != null) {
+                val sender = repository.getSenderById(reaction.senderId)
+                if (sender != null) {
+                    val modelMsg = ModelMessage(
+                        pubKey = sender.pubkey,
+                        messageID = messageID
+                    )
+                    return@runBlocking modelMsg.toJson()
+                }
+            }
+
+            // Not found - throw exception like iOS does
+            throw Exception("Message not found: $messageIdB64")
         }
     }
 
@@ -385,13 +397,17 @@ class ChannelEventModelBuilder(private val context: Context) : EventModel, Event
             return 0L
         }
 
-        return runBlocking {
+        Log.d(TAG, "persistMessage: channelId=$channelId, msgId=$messageIdB64, text='$text'")
+
+        return runBlocking(Dispatchers.IO) {
             try {
                 val chat = fetchChannel(channelId)
                 if (chat == null) {
                     Log.e(TAG, "Channel not found: $channelId")
                     return@runBlocking 0L
                 }
+
+                Log.d(TAG, "Found chat: ${chat.id}")
 
                 val msg = receiverHelpers.persistIncomingMessage(
                     chat = chat,
@@ -407,9 +423,10 @@ class ChannelEventModelBuilder(private val context: Context) : EventModel, Event
                     status = status
                 )
 
+                Log.d(TAG, "Message persisted: ${msg.id}")
                 msg.id
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to persist message: ${e.message}")
+                Log.e(TAG, "Failed to persist message: ${e.message}", e)
                 0L
             }
         }

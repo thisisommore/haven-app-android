@@ -8,6 +8,7 @@ import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.data.DatabaseRepository
 import com.example.haven.xxdk.XXDK
+import com.example.haven.xxdk.callbacks.ReceiverHelpers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +21,7 @@ import kotlinx.coroutines.runBlocking
  * ViewModel for Chat screen with real database integration and XXDK sending
  */
 class ChatViewModel(
+    private val context: Context,
     private val repository: DatabaseRepository,
     private val xxdk: XXDK
 ) : ViewModel() {
@@ -59,6 +61,9 @@ class ChatViewModel(
             val chat = repository.getChatById(chatId)
             _currentChat.value = chat
             if (chat != null) {
+                // Preload self pubkey for incoming/outgoing detection
+                ReceiverHelpers.getInstance(context).preloadSelfPubKey()
+                
                 // Cancel previous collections
                 messagesCollectionJob?.cancel()
                 mutedUsersCollectionJob?.cancel()
@@ -195,6 +200,7 @@ class ChatViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(ChatViewModel::class.java)) {
                 return ChatViewModel(
+                    context.applicationContext,
                     DatabaseRepository(context.applicationContext),
                     xxdk
                 ) as T

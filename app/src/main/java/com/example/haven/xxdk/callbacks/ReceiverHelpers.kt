@@ -8,6 +8,9 @@ import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.data.model.MessageStatus
 import bindings.Bindings
 import com.example.haven.xxdk.Parser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 import java.util.Date
 import java.util.UUID
 
@@ -57,20 +60,57 @@ class ReceiverHelpers private constructor(private val context: Context) {
 
     /**
      * Check if sender's pubKey matches the "<self>" chat pubKey
+     * Lazy-loads from database if not cached
      */
-    suspend fun isSenderSelf(senderPubKey: ByteArray?): Boolean {
+    fun isSenderSelf(senderPubKey: ByteArray?): Boolean {
         if (senderPubKey == null) return false
-
+        
+        // Lazy-load self pubkey if not cached
         if (cachedSelfChatPubKey == null) {
-            val selfChat = repository.getAllChats()
-                .collect { chats ->
-                    chats.firstOrNull { it.name == "<self>" }?.let {
-                        cachedSelfChatPubKey = it.pubKey
-                    }
+            // Query synchronously using runBlocking and firstOrNull
+            try {
+                cachedSelfChatPubKey = runBlocking(Dispatchers.IO) {
+                    repository.getAllChats()
+                        .firstOrNull { chats ->
+                            chats.any { it.name == "<self>" }
+                        }
+                        ?.firstOrNull { it.name == "<self>" }
+                        ?.pubKey
                 }
+                android.util.Log.d("ReceiverHelpers", "Self pubkey loaded: ${cachedSelfChatPubKey != null}")
+            } catch (e: Exception) {
+                android.util.Log.e("ReceiverHelpers", "Failed to load self pubkey: ${e.message}")
+            }
         }
-
+        
         return cachedSelfChatPubKey?.contentEquals(senderPubKey) ?: false
+    }
+    
+    /**
+     * Preload the self pubkey cache
+     * Call this after login/setup to ensure cache is ready
+     */
+    suspend fun preloadSelfPubKey() {
+        if (cachedSelfChatPubKey != null) return
+        
+        try {
+            repository.getAllChats().collect { chats ->
+                chats.firstOrNull { it.name == "<self>" }?.let {
+                    cachedSelfChatPubKey = it.pubKey
+                    android.util.Log.d("ReceiverHelpers", "Self pubkey preloaded")
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("ReceiverHelpers", "Failed to preload self pubkey: ${e.message}")
+        }
+    }
+    
+    /**
+     * Clear the cached self pubkey
+     * Call on logout
+     */
+    fun clearSelfPubKeyCache() {
+        cachedSelfChatPubKey = null
     }
 
     /**
@@ -126,7 +166,12 @@ class ReceiverHelpers private constructor(private val context: Context) {
         timestamp: Long? = null,
         status: Long
     ): ChatMessageModel {
-        val isIncoming = !isSenderSelf(senderPubKey)
+        android.util.Log.d("ReceiverHelpers", "insertMessage: id=$id, msgId=$messageId, senderId=${sender?.id}")
+        
+        // Check if message is incoming (not from self)
+        val isIncoming = senderPubKey == null || !isSenderSelf(senderPubKey)
+        
+        android.util.Log.d("ReceiverHelpers", "isIncoming: $isIncoming")
 
         val msg = if (timestamp != null) {
             ChatMessageModel(
@@ -158,7 +203,9 @@ class ReceiverHelpers private constructor(private val context: Context) {
             )
         }
 
+        android.util.Log.d("ReceiverHelpers", "Inserting message to repository...")
         repository.insertMessage(msg)
+        android.util.Log.d("ReceiverHelpers", "Message inserted successfully")
 
         // Update unread count if incoming and after joinedAt
         if (isIncoming && msg.timestamp.after(chat.joinedAt)) {
@@ -184,8 +231,11 @@ class ReceiverHelpers private constructor(private val context: Context) {
         timestamp: Long? = null,
         status: Long
     ): ChatMessageModel {
+        android.util.Log.d("ReceiverHelpers", "persistIncomingMessage: chat=${chat.id}, msgId=$messageId, sender=$senderCodename")
+        
         val sender = senderCodename?.let { codename ->
             senderPubKey?.let { pubKey ->
+                android.util.Log.d("ReceiverHelpers", "Upserting sender: $codename")
                 upsertSender(
                     pubKey = pubKey,
                     codename = codename,
@@ -195,8 +245,12 @@ class ReceiverHelpers private constructor(private val context: Context) {
                 )
             }
         }
+        
+        android.util.Log.d("ReceiverHelpers", "Sender upserted: ${sender?.id}")
 
         val id = System.currentTimeMillis() // Generate unique ID
+        android.util.Log.d("ReceiverHelpers", "Inserting message with id: $id")
+        
         return insertMessage(
             chat = chat,
             sender = sender,
