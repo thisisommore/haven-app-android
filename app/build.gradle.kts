@@ -57,14 +57,7 @@ android {
         }
     }
     
-    // Workaround for ML Kit libraries not yet fully 16 KB aligned
-    // Google is still working on fixing libimage_processing_util_jni.so
-    // This extracts native libs to filesystem for compatibility
-    packaging {
-        jniLibs {
-            useLegacyPackaging = true
-        }
-    }
+
 }
 
 dependencies {
@@ -88,7 +81,7 @@ dependencies {
     implementation("com.google.zxing:core:3.5.3")
     
     // CameraX for QR scanning
-    val cameraxVersion = "1.3.3"
+    val cameraxVersion = "1.4.0"
     implementation("androidx.camera:camera-core:$cameraxVersion")
     implementation("androidx.camera:camera-camera2:$cameraxVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
