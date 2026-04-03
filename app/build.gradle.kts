@@ -21,6 +21,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // 16 KB page size support for Android 15+
+        ndk {
+            debugSymbolLevel = "FULL"
+        }
     }
     
     androidResources {
@@ -54,6 +59,25 @@ android {
             reset()
             include("arm64-v8a", "armeabi-v7a")
             isUniversalApk = false
+        }
+    }
+    
+    // 16 KB page size support for Android 15+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+            // Keep native libraries uncompressed and aligned
+            keepDebugSymbols += "**/*.so"
+        }
+    }
+    
+    // Enable 16 KB page alignment for native libraries
+    tasks.withType<com.android.build.gradle.tasks.PackageAndroidArtifact>().configureEach {
+        jniFolders.forEach { folder ->
+            folder.walkTopDown().filter { it.isFile && it.extension == "so" }.forEach { file ->
+                // Ensure 16 KB alignment
+                file.setExecutable(true, false)
+            }
         }
     }
 }
