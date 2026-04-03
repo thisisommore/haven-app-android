@@ -128,34 +128,19 @@ fun QRCodeSheet(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Header
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "QR Code",
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontSize = TitleFontSize
-                    ),
-                    color = primaryAccentColor()
-                )
-                IconButton(onClick = onDismiss) {
-                    Icon(
-                        imageVector = Icons.Outlined.Close,
-                        contentDescription = "Close",
-                        tint = labelColor()
-                    )
-                }
-            }
+            Text(
+                text = "QR Code",
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontSize = TitleFontSize
+                ),
+                color = primaryAccentColor(),
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 60.dp, bottom = 20.dp)
+            )
             
             // QR Code Display
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color.White)
                     .padding(16.dp),
