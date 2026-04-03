@@ -32,6 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.haven.ui.pages.home.ChatWithPreview
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Locale
 
 @Composable
@@ -212,18 +215,19 @@ fun EmptyChatsState(modifier: Modifier = Modifier) {
 }
 
 private fun formatChatTime(timestamp: Long): String {
-    val date = java.util.Date(timestamp)
-    val now = java.util.Date()
-    val diff = now.time - date.time
-    val dayInMillis = 24 * 60 * 60 * 1000
-    
+    val instant = Instant.ofEpochMilli(timestamp)
+    val date = instant.atZone(ZoneId.systemDefault()).toLocalDate()
+    val now = LocalDate.now(ZoneId.systemDefault())
+    val diffMillis = System.currentTimeMillis() - timestamp
+    val dayInMillis = 24 * 60 * 60 * 1000L
+
     return when {
-        diff < dayInMillis && date.day == now.day -> {
-            SimpleDateFormat("h:mma", Locale.getDefault()).format(date).lowercase()
+        diffMillis < dayInMillis && date.dayOfYear == now.dayOfYear -> {
+            SimpleDateFormat("h:mma", Locale.getDefault()).format(java.util.Date(timestamp)).lowercase()
         }
-        diff < 2 * dayInMillis -> "Yesterday"
-        diff < 7 * dayInMillis -> SimpleDateFormat("EEE", Locale.getDefault()).format(date)
-        else -> SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(date)
+        diffMillis < 2 * dayInMillis -> "Yesterday"
+        diffMillis < 7 * dayInMillis -> SimpleDateFormat("EEE", Locale.getDefault()).format(java.util.Date(timestamp))
+        else -> SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(java.util.Date(timestamp))
     }
 }
 

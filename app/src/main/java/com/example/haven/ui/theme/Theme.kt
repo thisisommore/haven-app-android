@@ -39,7 +39,10 @@ fun HavenTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            // Transparent status bar for edge-to-edge
+            // Configure edge-to-edge appearance
+            // Note: statusBarColor is deprecated in API 35, but we set it for compatibility
+            // with older versions. Modern apps should use WindowInsetsController.
+            @Suppress("DEPRECATION")
             window.statusBarColor = Color.Transparent.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }

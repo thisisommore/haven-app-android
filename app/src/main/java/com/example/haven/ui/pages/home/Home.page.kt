@@ -43,6 +43,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
@@ -77,6 +78,7 @@ internal fun HomeView(
     val chats by controller.filteredChats.collectAsState(initial = emptyList())
     val isLoading = !isSetupComplete && statusPercentage != 100
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     // Menu / logout state
     var showMenu by remember { mutableStateOf(false) }
@@ -520,7 +522,7 @@ internal fun HomeView(
             ExportIdentitySheet(
                 codename = xxdk.codename ?: "identity",
                 onExport = { password, onSuccess, onError ->
-                    kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                    coroutineScope.launch {
                         try {
                             val data = xxdk.exportIdentity(password)
                             onSuccess(data)
