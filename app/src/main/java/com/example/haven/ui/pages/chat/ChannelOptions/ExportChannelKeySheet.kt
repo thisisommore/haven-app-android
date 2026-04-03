@@ -31,7 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,8 +59,8 @@ fun ExportKeyDialog(
     viewModel: ChannelOptionsController,
     onDismiss: () -> Unit
 ) {
-    val exportKeyContent by viewModel.exportKeyContent.collectAsState()
-    val exportError by viewModel.exportError.collectAsState()
+    val exportKeyContent by viewModel.exportKeyContent.collectAsStateWithLifecycle()
+    val exportError by viewModel.exportError.collectAsStateWithLifecycle()
 
     var password by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current

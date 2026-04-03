@@ -40,6 +40,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,7 +75,7 @@ internal fun HomeView(
     isSetupComplete: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    val search by controller.searchQuery.collectAsState()
+    val search by controller.searchQuery.collectAsStateWithLifecycle()
     val chats by controller.filteredChats.collectAsState(initial = emptyList())
     val isLoading = !isSetupComplete && statusPercentage != 100
     val context = LocalContext.current

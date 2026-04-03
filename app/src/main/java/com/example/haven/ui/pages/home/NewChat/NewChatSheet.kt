@@ -35,7 +35,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,7 +99,7 @@ fun JoinChannelSheet(
     modifier: Modifier = Modifier
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val activeSheet by controller.activeSheet.collectAsState()
+    val activeSheet by controller.activeSheet.collectAsStateWithLifecycle()
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -154,10 +154,10 @@ private fun InviteInputContent(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val inviteLink by controller.inviteLink.collectAsState()
-    val errorMessage by controller.errorMessage.collectAsState()
-    val isLoading by controller.isLoading.collectAsState()
-    val toastMessage by controller.toastMessage.collectAsState()
+    val inviteLink by controller.inviteLink.collectAsStateWithLifecycle()
+    val errorMessage by controller.errorMessage.collectAsStateWithLifecycle()
+    val isLoading by controller.isLoading.collectAsStateWithLifecycle()
+    val toastMessage by controller.toastMessage.collectAsStateWithLifecycle()
 
     LaunchedEffect(toastMessage) {
         toastMessage?.let {
@@ -293,9 +293,9 @@ private fun PasswordInputContent(
     controller: JoinChannelController,
     modifier: Modifier = Modifier
 ) {
-    val password by controller.password.collectAsState()
-    val errorMessage by controller.errorMessage.collectAsState()
-    val isLoading by controller.isLoading.collectAsState()
+    val password by controller.password.collectAsStateWithLifecycle()
+    val errorMessage by controller.errorMessage.collectAsStateWithLifecycle()
+    val isLoading by controller.isLoading.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -434,13 +434,13 @@ private fun ConfirmationContent(
     onChannelJoined: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val channelData by controller.channelData.collectAsState()
-    val inviteLink by controller.inviteLink.collectAsState()
-    val enableDM by controller.enableDM.collectAsState()
-    val isLoading by controller.isLoading.collectAsState()
-    val isJoining by controller.isJoining.collectAsState()
-    val errorMessage by controller.errorMessage.collectAsState()
-    val joinSuccess by controller.joinSuccess.collectAsState()
+    val channelData by controller.channelData.collectAsStateWithLifecycle()
+    val inviteLink by controller.inviteLink.collectAsStateWithLifecycle()
+    val enableDM by controller.enableDM.collectAsStateWithLifecycle()
+    val isLoading by controller.isLoading.collectAsStateWithLifecycle()
+    val isJoining by controller.isJoining.collectAsStateWithLifecycle()
+    val errorMessage by controller.errorMessage.collectAsStateWithLifecycle()
+    val joinSuccess by controller.joinSuccess.collectAsStateWithLifecycle()
 
     LaunchedEffect(joinSuccess) {
         if (joinSuccess) {

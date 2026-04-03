@@ -42,7 +42,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -159,21 +159,21 @@ private fun ChannelOptionsContent(
 ) {
     val isDM = chat.dmToken != null
     val channelId = chat.channelId
-    val isAdmin by viewModel.isAdmin.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val isDMEnabled by viewModel.isDMEnabled.collectAsState()
-    val shareUrlData by viewModel.shareUrlData.collectAsState()
-    val channelNickname by viewModel.channelNickname.collectAsState()
-    val mutedUsers by viewModel.mutedUsers.collectAsState()
+    val isAdmin by viewModel.isAdmin.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val isDMEnabled by viewModel.isDMEnabled.collectAsStateWithLifecycle()
+    val shareUrlData by viewModel.shareUrlData.collectAsStateWithLifecycle()
+    val channelNickname by viewModel.channelNickname.collectAsStateWithLifecycle()
+    val mutedUsers by viewModel.mutedUsers.collectAsStateWithLifecycle()
 
     // Dialog states
-    val showLeaveConfirmation by viewModel.showLeaveConfirmation.collectAsState()
-    val showDeleteConfirmation by viewModel.showDeleteConfirmation.collectAsState()
-    val showExportDialog by viewModel.showExportDialog.collectAsState()
-    val showImportDialog by viewModel.showImportDialog.collectAsState()
+    val showLeaveConfirmation by viewModel.showLeaveConfirmation.collectAsStateWithLifecycle()
+    val showDeleteConfirmation by viewModel.showDeleteConfirmation.collectAsStateWithLifecycle()
+    val showExportDialog by viewModel.showExportDialog.collectAsStateWithLifecycle()
+    val showImportDialog by viewModel.showImportDialog.collectAsStateWithLifecycle()
 
     // Toast
-    val toastMessage by viewModel.toastMessage.collectAsState()
+    val toastMessage by viewModel.toastMessage.collectAsStateWithLifecycle()
 
     LaunchedEffect(toastMessage) {
         toastMessage?.let {

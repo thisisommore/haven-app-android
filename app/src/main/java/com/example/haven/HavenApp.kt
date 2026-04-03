@@ -18,7 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,8 +62,8 @@ internal fun HavenApp() {
     val homeController: HomePageController = viewModel(factory = HomePageController.Factory(context))
 
     // Observe real messages from database
-    val chatMessages by chatController.messages.collectAsState()
-    val inputText by chatController.inputText.collectAsState()
+    val chatMessages by chatController.messages.collectAsStateWithLifecycle()
+    val inputText by chatController.inputText.collectAsStateWithLifecycle()
 
     // Shake to view logs
     var showShakeDialog by remember { mutableStateOf(false) }
@@ -352,9 +352,9 @@ internal fun HavenApp() {
             }
 
             Route.chat -> {
-                val currentChat by chatController.currentChat.collectAsState()
-                val isCurrentUserMuted by chatController.isCurrentUserMuted.collectAsState()
-                val reactions by chatController.reactions.collectAsState()
+                val currentChat by chatController.currentChat.collectAsStateWithLifecycle()
+                val isCurrentUserMuted by chatController.isCurrentUserMuted.collectAsStateWithLifecycle()
+                val reactions by chatController.reactions.collectAsStateWithLifecycle()
                 val channelOptionsController: ChannelOptionsController = viewModel(
                     factory = ChannelOptionsController.createFactory(context, xxdk)
                 )
