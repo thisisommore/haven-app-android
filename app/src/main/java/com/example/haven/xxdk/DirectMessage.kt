@@ -16,6 +16,18 @@ class DirectMessage(private val dmClient: DMClient? = null) : DirectMessageP {
         private const val TAG = "DirectMessage"
         private const val LEASE_TIME_MS = 7L * 24 * 60 * 60 * 1000 // 7 days
     }
+    
+    /**
+     * Get the DM token for QR code sharing
+     */
+    val token: Long
+        get() = dmClient?.token ?: 0L
+    
+    /**
+     * Get the public key for QR code sharing
+     */
+    val publicKey: ByteArray
+        get() = dmClient?.publicKey ?: byteArrayOf()
 
     override suspend fun send(msg: String, toPubKey: ByteArray, partnerToken: Int) = withContext(Dispatchers.IO) {
         val client = dmClient ?: run {

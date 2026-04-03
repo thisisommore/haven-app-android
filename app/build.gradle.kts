@@ -74,6 +74,19 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+    
+    // QR Code generation (ZXing)
+    implementation("com.google.zxing:core:3.5.3")
+    
+    // CameraX for QR scanning
+    val cameraxVersion = "1.3.3"
+    implementation("androidx.camera:camera-core:$cameraxVersion")
+    implementation("androidx.camera:camera-camera2:$cameraxVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("androidx.camera:camera-view:$cameraxVersion")
+    
+    // ML Kit for QR code scanning
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
 
     implementation(files("/Users/ommore/Documents/github/xx-network/ios/client/bindings.aar"))
     testImplementation(libs.junit)

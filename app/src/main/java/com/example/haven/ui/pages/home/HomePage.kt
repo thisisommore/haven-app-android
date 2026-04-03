@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -88,6 +89,8 @@ internal fun HomeScreen(
     var showMenu by remember { mutableStateOf(false) }
     var showLogoutConfirm by remember { mutableStateOf(false) }
     var showJoinChannelSheet by remember { mutableStateOf(false) }
+    var showQRCodeSheet by remember { mutableStateOf(false) }
+    var showQRScannerSheet by remember { mutableStateOf(false) }
 
     // ── Logout confirmation dialog ──────────────────────────────────
     if (showLogoutConfirm) {
@@ -247,8 +250,18 @@ internal fun HomeScreen(
                                     onClick = { showMenu = false }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text("QR Code") },
-                                    onClick = { showMenu = false }
+                                    text = { Text("My QR") },
+                                    onClick = {
+                                        showMenu = false
+                                        showQRCodeSheet = true
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Scan QR") },
+                                    onClick = {
+                                        showMenu = false
+                                        showQRScannerSheet = true
+                                    }
                                 )
                                 HorizontalDivider(
                                     modifier = Modifier.padding(horizontal = 12.dp),
@@ -366,6 +379,36 @@ internal fun HomeScreen(
                     joinChannelViewModel.reset()
                     showJoinChannelSheet = false
                 }
+            )
+        }
+        
+        // QR Code Sheet - Show My QR
+        if (showQRCodeSheet && xxdk != null) {
+            val dmClient = xxdk.dm
+            if (dmClient != null) {
+                QRCodeSheet(
+                    dmToken = dmClient.token,
+                    pubKey = dmClient.publicKey,
+                    codeset = xxdk.codeset,
+                    onDismiss = { showQRCodeSheet = false }
+                )
+            }
+        }
+        
+        // QR Scanner Sheet - Scan QR
+        if (showQRScannerSheet) {
+            QRScannerSheet(
+                onCodeScanned = { code ->
+                    // Handle scanned QR code
+                    val qrData = com.example.haven.xxdk.QRCodeUtils.parseQRCode(code)
+                    if (qrData != null) {
+                        viewModel.handleScannedQR(qrData)
+                    }
+                },
+                onShowMyQR = {
+                    showQRCodeSheet = true
+                },
+                onDismiss = { showQRScannerSheet = false }
             )
         }
     }

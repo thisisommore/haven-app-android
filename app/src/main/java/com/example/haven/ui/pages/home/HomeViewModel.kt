@@ -1,12 +1,15 @@
 package com.example.haven.ui.pages.home
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.ChatMessageModel
 import com.example.haven.data.DatabaseRepository
+import com.example.haven.xxdk.QRCodeUtils
+import com.example.haven.xxdk.Parser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -105,6 +108,57 @@ class HomeViewModel(
     fun clearUnreadCount(chatId: String) {
         viewModelScope.launch {
             repository.clearUnreadCount(chatId)
+        }
+    }
+    
+    /**
+     * Handle scanned QR code and create DM chat
+     */
+    fun handleScannedQR(qrData: QRCodeUtils.QRData) {
+        viewModelScope.launch {
+            try {
+                // Check if chat already exists with this pubkey
+                val existingChat = repository.getChatByPubKey(qrData.pubKey)
+                if (existingChat != null) {
+                    Log.d("HomeViewModel", "Chat already exists for this user")
+                    return@launch
+                }
+                
+                // Construct identity from pubkey and codeset
+                val identityJson = try {
+                    bindings.Bindings.constructIdentity(qrData.pubKey, qrData.codeset.toLong())
+                } catch (e: Exception) {
+                    Log.e("HomeViewModel", "Failed to construct identity: ${e.message}")
+                    return@launch
+                }
+                
+                val identity = Parser.decodeIdentity(identityJson)
+                    ?: run {
+                        Log.e("HomeViewModel", "Failed to decode identity")
+                        return@launch
+                    }
+                
+                // Parse color from identity
+                val colorStr = identity.color.removePrefix("0x").removePrefix("0X")
+                val color = colorStr.toIntOrNull(16) ?: 0xE97451
+                
+                // Convert token to Int32 like iOS does
+                val dmToken = qrData.token.toInt()
+                
+                // Create new chat
+                val newChat = ChatModel(
+                    name = identity.codename,
+                    pubKey = qrData.pubKey,
+                    dmToken = dmToken,
+                    color = color
+                )
+                
+                repository.insertChat(newChat)
+                Log.d("HomeViewModel", "Created DM chat with: ${identity.codename}")
+                
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Failed to handle QR code: ${e.message}", e)
+            }
         }
     }
 
