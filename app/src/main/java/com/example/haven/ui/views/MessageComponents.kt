@@ -25,8 +25,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.outlined.Face
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -48,6 +52,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.haven.data.model.ChatMessageModel
+import com.example.haven.data.model.MessageReactionModel
+import com.example.haven.data.model.MessageStatus
+import com.example.haven.ui.components.SwipeToReplyContainer
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -55,17 +62,21 @@ import java.util.Locale
 @Composable
 fun MessageBubble(
     message: ChatMessageModel,
+    reactions: List<MessageReactionModel> = emptyList(),
     onReplyClick: () -> Unit,
     onReactClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
+    canDelete: Boolean = false,
     isReplyingTo: Boolean,
     senderName: String? = null,
     showSenderName: Boolean = true,
     isFirstInCluster: Boolean = true,
     isLastInCluster: Boolean = true,
+    enableSwipeToReply: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val isMe = !message.isIncoming
-    
+
     // Corner radius based on position in message cluster
     val bubbleShape = when {
         // First message in cluster: round top (20), medium bottom (12)
@@ -86,7 +97,7 @@ fun MessageBubble(
             val topRadius = if (isFirstInCluster) 20.dp else 12.dp
             val bottomOuterRadius = 20.dp  // side away from sender
             val bottomInnerRadius = 0.dp   // side toward sender (sharp)
-            
+
             if (isMe) {
                 // Outgoing: sharp bottom-right
                 RoundedCornerShape(
@@ -118,11 +129,9 @@ fun MessageBubble(
     var showMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth(),
-        horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start
-    ) {
+    // Content composable that will be wrapped with swipe
+    @Composable
+    fun MessageContent() {
         Card(
             shape = bubbleShape,
             colors = CardDefaults.cardColors(containerColor = backgroundColor, contentColor = contentColor),
@@ -196,6 +205,23 @@ fun MessageBubble(
                             )
                         }
                     )
+                    if (canDelete) {
+                        DropdownMenuItem(
+                            text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+                            onClick = {
+                                onDeleteClick()
+                                showMenu = false
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        )
+                    }
                 }
 
                 // Sender name for incoming messages (only show for first message in group)
@@ -230,7 +256,38 @@ fun MessageBubble(
                     contentColor = contentColor.copy(alpha = 0.8f),
                     modifier = Modifier.fillMaxWidth().wrapContentHeight()
                 )
+
+                // Reactions row
+                if (reactions.isNotEmpty()) {
+                    ReactionsRow(
+                        reactions = reactions,
+                        isMe = isMe,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
+        }
+    }
+
+    // Wrap with swipe-to-reply if enabled
+    if (enableSwipeToReply) {
+        SwipeToReplyContainer(
+            onSwipe = onReplyClick,
+            modifier = modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start
+            ) {
+                MessageContent()
+            }
+        }
+    } else {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start
+        ) {
+            MessageContent()
         }
     }
 }
@@ -248,6 +305,8 @@ private fun MessageFooter(
     contentColor: Color,
     modifier: Modifier = Modifier
 ) {
+    val status = message.getMessageStatus()
+
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.End,
@@ -263,6 +322,55 @@ private fun MessageFooter(
             maxLines = 1,
             overflow = TextOverflow.Clip
         )
+
+        // Status indicator for outgoing messages
+        if (isMe) {
+            Spacer(modifier = Modifier.width(4.dp))
+            when (status) {
+                MessageStatus.UNSENT -> {
+                    Icon(
+                        imageVector = Icons.Default.Schedule,
+                        contentDescription = "Sending",
+                        tint = contentColor.copy(alpha = 0.6f),
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+                MessageStatus.SENT -> {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Sent",
+                        tint = contentColor.copy(alpha = 0.6f),
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+                MessageStatus.DELIVERED -> {
+                    // Double checkmark for delivered
+                    Row {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Delivered",
+                            tint = contentColor.copy(alpha = 0.6f),
+                            modifier = Modifier.size(12.dp)
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = contentColor.copy(alpha = 0.6f),
+                            modifier = Modifier.size(12.dp).padding(start = (-8).dp)
+                        )
+                    }
+                }
+                MessageStatus.FAILED -> {
+                    Icon(
+                        imageVector = Icons.Default.Error,
+                        contentDescription = "Failed",
+                        tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+                else -> {}
+            }
+        }
     }
 }
 
@@ -338,6 +446,49 @@ fun ReplyPreview(
 
 private fun formatTime(date: java.util.Date): String {
     return SimpleDateFormat("h:mm a", Locale.getDefault()).format(date).replace(" ", "").lowercase()
+}
+
+@Composable
+private fun ReactionsRow(
+    reactions: List<MessageReactionModel>,
+    isMe: Boolean,
+    modifier: Modifier = Modifier
+) {
+    // Group reactions by emoji and count them
+    val groupedReactions = reactions.groupBy { it.emoji }
+        .mapValues { it.value.size }
+        .toList()
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start
+    ) {
+        groupedReactions.forEach { (emoji, count) ->
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                modifier = Modifier.padding(end = 4.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = emoji,
+                        fontSize = 14.sp
+                    )
+                    if (count > 1) {
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Text(
+                            text = count.toString(),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 private fun stripHtmlTags(html: String): String {

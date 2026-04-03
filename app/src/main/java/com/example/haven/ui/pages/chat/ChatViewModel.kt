@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.haven.data.model.ChatModel
 import com.example.haven.data.model.ChatMessageModel
+import com.example.haven.data.model.MessageReactionModel
 import com.example.haven.data.DatabaseRepository
 import com.example.haven.xxdk.XXDK
 import com.example.haven.xxdk.callbacks.ReceiverHelpers
@@ -33,6 +34,11 @@ class ChatViewModel(
     // Messages for current chat
     private val _messages = MutableStateFlow<List<ChatMessageModel>>(emptyList())
     val messages: StateFlow<List<ChatMessageModel>> = _messages.asStateFlow()
+
+    // Reactions for current chat messages
+    private val _reactions = MutableStateFlow<Map<String, List<MessageReactionModel>>>(emptyMap())
+    val reactions: StateFlow<Map<String, List<MessageReactionModel>>> = _reactions.asStateFlow()
+    private var reactionsCollectionJob: kotlinx.coroutines.Job? = null
     
     // Job for collecting messages
     private var messagesCollectionJob: kotlinx.coroutines.Job? = null
@@ -72,6 +78,14 @@ class ChatViewModel(
                 messagesCollectionJob = viewModelScope.launch {
                     repository.getMessagesByChatId(chatId).collect { messageList ->
                         _messages.value = messageList
+                    }
+                }
+
+                // Start collecting reactions for messages in this chat
+                reactionsCollectionJob?.cancel()
+                reactionsCollectionJob = viewModelScope.launch {
+                    repository.getReactionsByChatId(chatId).collect { reactionList ->
+                        _reactions.value = reactionList.groupBy { it.targetMessageId }
                     }
                 }
                 
@@ -187,6 +201,47 @@ class ChatViewModel(
         return sender?.let {
             if (!it.nickname.isNullOrBlank()) it.nickname else it.codename
         } ?: "Unknown"
+    }
+
+    /**
+     * Send a reaction (emoji) to a message.
+     * Reaction will be added to DB via callbacks when network confirms.
+     */
+    fun sendReaction(messageId: String, emoji: String) {
+        val chat = _currentChat.value ?: return
+
+        viewModelScope.launch {
+            try {
+                if (chat.pubKey != null && chat.dmToken != null) {
+                    // DM reaction
+                    xxdk.dm.react(emoji, messageId, chat.pubKey, chat.dmToken)
+                } else if (chat.channelId != null) {
+                    // Channel reaction
+                    xxdk.channel.msg.react(emoji, messageId, chat.channelId)
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("ChatViewModel", "Failed to send reaction: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Delete a message.
+     * Message deletion will be synced via callbacks.
+     */
+    fun deleteMessage(messageId: String) {
+        val chat = _currentChat.value ?: return
+
+        viewModelScope.launch {
+            try {
+                if (chat.channelId != null) {
+                    xxdk.channel.msg.delete(messageId, chat.channelId)
+                }
+                // For DMs, deletion might not be supported or work differently
+            } catch (e: Exception) {
+                android.util.Log.e("ChatViewModel", "Failed to delete message: ${e.message}")
+            }
+        }
     }
 
     /**

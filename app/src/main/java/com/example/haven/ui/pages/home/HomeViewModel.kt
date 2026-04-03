@@ -163,6 +163,33 @@ class HomeViewModel(
     }
 
     /**
+     * Create a new channel/space
+     */
+    fun createChannel(
+        channelId: String,
+        name: String,
+        description: String,
+        isAdmin: Boolean,
+        isSecret: Boolean
+    ) {
+        viewModelScope.launch {
+            try {
+                val newChat = ChatModel(
+                    channelId = channelId,
+                    name = name,
+                    channelDescription = description,
+                    isAdmin = isAdmin,
+                    isSecret = isSecret
+                )
+                repository.insertChat(newChat)
+                Log.d("HomeViewModel", "Created channel: $name")
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Failed to create channel: ${e.message}", e)
+            }
+        }
+    }
+
+    /**
      * Factory for creating ViewModel with repository
      */
     class Factory(private val context: Context) : ViewModelProvider.Factory {

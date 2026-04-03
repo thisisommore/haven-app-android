@@ -39,6 +39,7 @@ import com.example.haven.ui.pages.home.HomeScreen
 import com.example.haven.ui.pages.home.HomeViewModel
 import com.example.haven.ui.pages.landing.LandingPage
 import com.example.haven.ui.pages.password.PasswordPage
+import com.example.haven.ui.views.ShakeDetector
 import com.example.haven.ui.views.logviewer.LogPage
 import com.example.haven.xxdk.GeneratedIdentity
 import com.example.haven.xxdk.XXDK
@@ -59,10 +60,14 @@ internal fun HavenApp() {
     val scope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
     val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModel.Factory(context, xxdk))
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory(context))
-    
+
     // Observe real messages from database
     val chatMessages by chatViewModel.messages.collectAsState()
     val inputText by chatViewModel.inputText.collectAsState()
+
+    // Shake to view logs
+    var showShakeDialog by remember { mutableStateOf(false) }
+    ShakeDetector(onShake = { showShakeDialog = true })
     
     val allLogs = remember {
         listOf(
@@ -139,6 +144,32 @@ internal fun HavenApp() {
             Route.logViewer -> route = Route.home
             else -> { /* Let system handle back */ }
         }
+    }
+
+    // Shake to open log viewer dialog
+    if (showShakeDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showShakeDialog = false },
+            title = { Text("Developer Console") },
+            text = { Text("Do you want to open the log viewer?") },
+            confirmButton = {
+                androidx.compose.material3.TextButton(
+                    onClick = {
+                        showShakeDialog = false
+                        route = Route.logViewer
+                    }
+                ) {
+                    Text("Open Log Viewer")
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(
+                    onClick = { showShakeDialog = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 
     AnimatedContent(
@@ -323,11 +354,12 @@ internal fun HavenApp() {
             Route.chat -> {
                 val currentChat by chatViewModel.currentChat.collectAsState()
                 val isCurrentUserMuted by chatViewModel.isCurrentUserMuted.collectAsState()
+                val reactions by chatViewModel.reactions.collectAsState()
                 val channelOptionsViewModel: ChannelOptionsViewModel = viewModel(
                     factory = ChannelOptionsViewModel.createFactory(context, xxdk)
                 )
                 var showOptionsSheet by remember { mutableStateOf(false) }
-                
+
                 ChatScreen(
                     chat = currentChat,
                     messages = chatMessages,
@@ -341,7 +373,7 @@ internal fun HavenApp() {
                     onOptionsDismiss = { showOptionsSheet = false },
                     onLeaveChannel = { route = Route.home },
                     onDeleteChat = { route = Route.home },
-                    onInfoClick = { 
+                    onInfoClick = {
                         currentChat?.let { chat ->
                             channelOptionsViewModel.loadChannelOptions(chat)
                             showOptionsSheet = true
@@ -349,6 +381,9 @@ internal fun HavenApp() {
                     },
                     optionsViewModel = channelOptionsViewModel,
                     isCurrentUserMuted = isCurrentUserMuted,
+                    onSendReaction = { messageId, emoji -> chatViewModel.sendReaction(messageId, emoji) },
+                    onDeleteMessage = { messageId -> chatViewModel.deleteMessage(messageId) },
+                    reactions = reactions,
                     modifier = Modifier.fillMaxSize()
                 )
             }

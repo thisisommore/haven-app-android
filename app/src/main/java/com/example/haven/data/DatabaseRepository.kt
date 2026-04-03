@@ -63,8 +63,10 @@ class DatabaseRepository(context: Context) {
     suspend fun getUnreadMessageCount(chatId: String): Int = chatMessageDao.getUnreadCount(chatId)
 
     // Message Reactions
-    fun getReactionsByTargetMessageId(targetMessageId: String): Flow<List<MessageReactionModel>> = 
+    fun getReactionsByTargetMessageId(targetMessageId: String): Flow<List<MessageReactionModel>> =
         messageReactionDao.getByTargetMessageId(targetMessageId)
+    fun getReactionsByChatId(chatId: String): Flow<List<MessageReactionModel>> =
+        messageReactionDao.getByChatId(chatId)
     suspend fun getReactionById(id: Long): MessageReactionModel? = messageReactionDao.getById(id)
     suspend fun getReactionByExternalId(externalId: String): MessageReactionModel? = 
         messageReactionDao.getByExternalId(externalId)

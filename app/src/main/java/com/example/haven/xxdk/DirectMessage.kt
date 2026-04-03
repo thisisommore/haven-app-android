@@ -100,9 +100,9 @@ class DirectMessage(private val dmClient: DMClient? = null) : DirectMessageP {
             Log.e(TAG, "DM client not available")
             return@withContext
         }
-        
+
         val reactToBytes = Base64.decode(toMessageIdB64, Base64.NO_WRAP)
-        
+
         try {
             val cmixParamsJSON = byteArrayOf()
             client.sendReaction(
@@ -115,6 +115,33 @@ class DirectMessage(private val dmClient: DMClient? = null) : DirectMessageP {
             Log.d(TAG, "Reaction sent successfully")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to send reaction: ${e.message}", e)
+        }
+    }
+
+    /**
+     * Get the current nickname for DMs
+     * Returns empty string if no nickname is set
+     */
+    fun getNickname(): String {
+        return try {
+            dmClient?.getNickname() ?: ""
+        } catch (e: Exception) {
+            Log.d(TAG, "No nickname set: ${e.message}")
+            ""
+        }
+    }
+
+    /**
+     * Set the nickname for DMs
+     * @param nickname The nickname to set (empty string to clear)
+     */
+    fun setNickname(nickname: String) {
+        try {
+            dmClient?.setNickname(nickname)
+            Log.d(TAG, "Nickname set to: $nickname")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to set nickname: ${e.message}", e)
+            throw e
         }
     }
 }

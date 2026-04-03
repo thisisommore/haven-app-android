@@ -16,7 +16,10 @@ object DatabaseModule {
     
     @Volatile
     private var recentEmojiStore: RecentEmojiStore? = null
-    
+
+    @Volatile
+    private var recentReactionsStore: RecentReactionsStore? = null
+
     fun provideDatabase(context: Context): AppDatabase {
         return database ?: synchronized(this) {
             database ?: AppDatabase.getInstance(context).also { database = it }
@@ -34,7 +37,13 @@ object DatabaseModule {
             recentEmojiStore ?: RecentEmojiStore(context).also { recentEmojiStore = it }
         }
     }
-    
+
+    fun provideRecentReactionsStore(context: Context): RecentReactionsStore {
+        return recentReactionsStore ?: synchronized(this) {
+            recentReactionsStore ?: RecentReactionsStore(context).also { recentReactionsStore = it }
+        }
+    }
+
     fun clearInstance() {
         database = null
         repository = null

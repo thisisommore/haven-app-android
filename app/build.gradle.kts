@@ -90,7 +90,7 @@ dependencies {
     // ML Kit for QR code scanning
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
-    implementation(files("/Users/ommore/Documents/github/xx-network/ios/client/bindings.aar"))
+    implementation(files("libs/bindings.aar"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

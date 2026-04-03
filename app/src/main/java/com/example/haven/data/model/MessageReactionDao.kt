@@ -13,6 +13,14 @@ interface MessageReactionDao {
     @Query("SELECT * FROM messageReactions WHERE targetMessageId = :targetMessageId ORDER BY timestamp ASC")
     fun getByTargetMessageId(targetMessageId: String): Flow<List<MessageReactionModel>>
 
+    @Query("""
+        SELECT r.* FROM messageReactions r
+        INNER JOIN chatMessages m ON r.targetMessageId = m.externalId
+        WHERE m.chatId = :chatId
+        ORDER BY r.timestamp ASC
+    """)
+    fun getByChatId(chatId: String): Flow<List<MessageReactionModel>>
+
     @Query("SELECT * FROM messageReactions WHERE id = :id")
     suspend fun getById(id: Long): MessageReactionModel?
 

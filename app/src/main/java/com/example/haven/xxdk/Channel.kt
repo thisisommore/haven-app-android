@@ -352,6 +352,60 @@ class Channel(
     }
     
     /**
+     * Create a new channel with the given parameters
+     * Mirrors iOS Channel.create() implementation
+     *
+     * @param name Channel name
+     * @param description Channel description
+     * @param privacyLevel Privacy level (PUBLIC or SECRET)
+     * @param enableDms Whether to enable direct messages
+     * @return ChannelInfoJson if successful, null otherwise
+     */
+    fun createChannel(
+        name: String,
+        description: String,
+        privacyLevel: PrivacyLevel,
+        enableDms: Boolean
+    ): ChannelInfoJson? {
+        val cm = channelsManager ?: run {
+            Log.e(TAG, "Channels manager not available")
+            return null
+        }
+
+        return try {
+            // Generate the channel
+            val privacyLevelLong = if (privacyLevel == PrivacyLevel.SECRET) 2L else 0L
+            val prettyPrint = cm.generateChannel(name, description, privacyLevelLong)
+
+            // Join the channel we just created
+            val resultBytes = cm.joinChannel(prettyPrint)
+            val channelInfo = parseChannelInfo(resultBytes)
+
+            Log.d(TAG, "Created and joined channel: ${channelInfo?.getName()}")
+
+            channelInfo?.let { info ->
+                val channelId = info.getChannelID()
+
+                // Enable/disable DMs based on preference
+                if (enableDms) {
+                    enableDirectMessages(channelId)
+                } else {
+                    disableDirectMessages(channelId)
+                }
+
+                ChannelInfoJson(
+                    channelId = channelId,
+                    name = info.getName(),
+                    description = info.getDescription()
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create channel: ${e.message}", e)
+            null
+        }
+    }
+
+    /**
      * Join a channel from a URL (public share link)
      */
     fun joinChannelFromURL(url: String): ChannelInfoJson? {
