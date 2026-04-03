@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,7 +25,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -45,7 +43,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -398,39 +395,6 @@ internal fun ChatView(
                 onLeaveChannel = onLeaveChannel,
                 onDeleteChat = onDeleteChat
             )
-        }
-    }
-}
-
-// Legacy ChatPage for backward compatibility
-@Composable
-internal fun ChatPage(
-    modifier: Modifier,
-    messages: List<ChatMessageModel>
-) {
-    androidx.compose.foundation.lazy.LazyColumn(
-        modifier = modifier.fillMaxSize().padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        reverseLayout = true
-    ) {
-        items(messages.asReversed(), key = { it.id }) { msg ->
-            androidx.compose.foundation.layout.Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = if (msg.isIncoming) Arrangement.Start else Arrangement.End
-            ) {
-                androidx.compose.material3.Surface(
-                    color = if (msg.isIncoming)
-                        MaterialTheme.colorScheme.surfaceVariant
-                    else
-                        MaterialTheme.colorScheme.primaryContainer,
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    com.example.haven.ui.views.HtmlText(
-                        html = msg.message,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)
-                    )
-                }
-            }
         }
     }
 }

@@ -3,13 +3,9 @@ package com.example.haven.ui.pages.home
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,10 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 
@@ -134,80 +128,6 @@ fun PlusMenuButton(
             HorizontalDivider()
 
             // Logout
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        "Logout",
-                        color = MaterialTheme.colorScheme.error
-                    )
-                },
-                onClick = {
-                    showMenu = false
-                    onLogout()
-                }
-            )
-        }
-    }
-}
-
-/**
- * User Menu Button - Shows user-related menu
- * Mirrors iOS UserMenuButton
- */
-@Composable
-fun UserMenuButton(
-    codename: String?,
-    nickname: String?,
-    onNicknameTap: () -> Unit,
-    onExport: () -> Unit,
-    onShareQR: () -> Unit,
-    onLogout: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var showMenu by remember { mutableStateOf(false) }
-    val displayName = if (!nickname.isNullOrEmpty()) nickname else codename ?: "Loading..."
-
-    Box(modifier = modifier) {
-        IconButton(onClick = { showMenu = true }) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "User Menu",
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-
-        DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-        ) {
-            // Display Name (tappable to edit)
-            DropdownMenuItem(
-                text = { Text(displayName) },
-                onClick = {
-                    showMenu = false
-                    onNicknameTap()
-                }
-            )
-
-            HorizontalDivider()
-
-            DropdownMenuItem(
-                text = { Text("Export") },
-                onClick = {
-                    showMenu = false
-                    onExport()
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("QR Code") },
-                onClick = {
-                    showMenu = false
-                    onShareQR()
-                }
-            )
-
-            HorizontalDivider()
-
             DropdownMenuItem(
                 text = {
                     Text(
