@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
@@ -68,11 +67,11 @@ internal fun HavenApp() {
     val chatController: ChatPageController = viewModel(factory = ChatPageController.Factory(context, xxdk))
     val homeController: HomePageController = viewModel(factory = HomePageController.Factory(context))
     
-    // Observe XXDK state for immediate UI updates
-    // Using remember with state reads ensures Compose tracks these for recomposition
-    val xxdkCodename by remember { derivedStateOf { xxdk.codename } }
-    val xxdkStatus by remember { derivedStateOf { xxdk.status } }
-    val xxdkStatusPercentage by remember { derivedStateOf { xxdk.statusPercentage } }
+    // XXDK state reads - Compose tracks mutableStateOf changes automatically
+    // Reading these values directly during composition registers for recomposition
+    val xxdkCodename = xxdk.codename
+    val xxdkStatus = xxdk.status
+    val xxdkStatusPercentage = xxdk.statusPercentage
 
     // Observe real messages from database
     val chatMessages by chatController.messages.collectAsStateWithLifecycle()
