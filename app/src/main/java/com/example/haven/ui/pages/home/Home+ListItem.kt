@@ -244,7 +244,7 @@ private fun NotesEmptyRow(
             .fillMaxWidth()
             .heightIn(min = 88.dp)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
