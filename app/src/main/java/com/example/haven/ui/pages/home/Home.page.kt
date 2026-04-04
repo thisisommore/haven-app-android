@@ -1,69 +1,45 @@
 package com.example.haven.ui.pages.home
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.haven.ui.views.EmptyChatsState
 import com.example.haven.xxdk.XXDK
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun HomeView(
     controller: HomePageController,
@@ -77,12 +53,10 @@ internal fun HomeView(
 ) {
     val search by controller.searchQuery.collectAsStateWithLifecycle()
     val chats by controller.filteredChats.collectAsState(initial = emptyList())
-    val isLoading = !isSetupComplete && statusPercentage != 100
-    val context = LocalContext.current
+    val showSyncProgress = !isSetupComplete && statusPercentage != 100
     val coroutineScope = rememberCoroutineScope()
 
     // Menu / logout state
-    var showMenu by remember { mutableStateOf(false) }
     var showLogoutConfirm by remember { mutableStateOf(false) }
     var showJoinChannelSheet by remember { mutableStateOf(false) }
     var showCreateSpaceSheet by remember { mutableStateOf(false) }
@@ -180,195 +154,20 @@ internal fun HomeView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // ── Header: gradient background ─────────────────────────
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.surfaceContainer,
-                                MaterialTheme.colorScheme.surfaceContainer
-                            )
-                        )
-                    )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .padding(horizontal = 20.dp)
-                ) {
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // ── Top bar: title + loading + menu ─────────────
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Text(
-                                text = "Chat",
-                                style = MaterialTheme.typography.headlineLarge.copy(
-                                    fontSize = 38.sp,
-                                    letterSpacing = (-0.5).sp
-                                ),
-                                fontWeight = FontWeight.Normal,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            if (statusPercentage < 100) {
-                                CircularWavyProgressIndicator(
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-
-                        // Overflow / menu icon
-                        val primaryColor = MaterialTheme.colorScheme.primary
-                        Box {
-                            IconButton(onClick = { showMenu = true }) {
-                                // Custom thin plus icon
-                                Canvas(modifier = Modifier.size(50.dp)) {
-                                    val strokeWidth = 1.5.dp.toPx()
-                                    val centerX = size.width / 2
-                                    val centerY = size.height / 2
-                                    val lineLength = size.minDimension * 0.35f
-                                    
-                                    // Horizontal line
-                                    drawLine(
-                                        color = primaryColor,
-                                        start = androidx.compose.ui.geometry.Offset(centerX - lineLength, centerY),
-                                        end = androidx.compose.ui.geometry.Offset(centerX + lineLength, centerY),
-                                        strokeWidth = strokeWidth,
-                                        cap = androidx.compose.ui.graphics.StrokeCap.Round
-                                    )
-                                    // Vertical line
-                                    drawLine(
-                                        color = primaryColor,
-                                        start = androidx.compose.ui.geometry.Offset(centerX, centerY - lineLength),
-                                        end = androidx.compose.ui.geometry.Offset(centerX, centerY + lineLength),
-                                        strokeWidth = strokeWidth,
-                                        cap = androidx.compose.ui.graphics.StrokeCap.Round
-                                    )
-                                }
-                            }
-                            DropdownMenu(
-                                expanded = showMenu,
-                                onDismissRequest = { showMenu = false },
-                                shape = RoundedCornerShape(4.dp)
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text("Join Channel") },
-                                    onClick = {
-                                        showMenu = false
-                                        showJoinChannelSheet = true
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Create Space") },
-                                    onClick = {
-                                        showMenu = false
-                                        showCreateSpaceSheet = true
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("New Chat") },
-                                    onClick = {
-                                        showMenu = false
-                                        onNewChat()
-                                    }
-                                )
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(horizontal = 12.dp),
-                                    color = MaterialTheme.colorScheme.outlineVariant
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Nickname") },
-                                    onClick = {
-                                        showMenu = false
-                                        showNicknameSheet = true
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Export") },
-                                    onClick = {
-                                        showMenu = false
-                                        showExportIdentitySheet = true
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("My QR") },
-                                    onClick = {
-                                        showMenu = false
-                                        showQRCodeSheet = true
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Scan QR") },
-                                    onClick = {
-                                        showMenu = false
-                                        showQRScannerSheet = true
-                                    }
-                                )
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(horizontal = 12.dp),
-                                    color = MaterialTheme.colorScheme.outlineVariant
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            "Logout",
-                                            color = MaterialTheme.colorScheme.error
-                                        )
-                                    },
-                                    onClick = {
-                                        showMenu = false
-                                        showLogoutConfirm = true
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // ── Search bar: pill-shaped with icon ───────────
-                    TextField(
-                        value = search,
-                        onValueChange = { controller.onSearchChange(it) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(4.dp)),
-                        placeholder = {
-                            Text(
-                                "Search",
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontSize = 22.sp
-                                )
-                            )
-                        },
-                        singleLine = true,
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.surface,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            cursorColor = MaterialTheme.colorScheme.primary,
-                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        ),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(18.dp))
-                }
-            }
+            HomeHeader(
+                search = search,
+                onSearchChange = controller::onSearchChange,
+                showSyncProgress = showSyncProgress,
+                codename = xxdk?.codename.orEmpty(),
+                onJoinChannel = { showJoinChannelSheet = true },
+                onCreateSpace = { showCreateSpaceSheet = true },
+                onNewChat = onNewChat,
+                onScanQR = { showQRScannerSheet = true },
+                onNickname = { showNicknameSheet = true },
+                onExport = { showExportIdentitySheet = true },
+                onShowQRCode = { showQRCodeSheet = true },
+                onLogout = { showLogoutConfirm = true }
+            )
 
             // ── Chat list: white surface, rounded top corners ───────
             Surface(
@@ -435,14 +234,12 @@ internal fun HomeView(
         // QR Code Sheet - Show My QR
         if (showQRCodeSheet && xxdk != null) {
             val dmClient = xxdk.dm
-            if (dmClient != null) {
-                QRCodeSheet(
-                    dmToken = dmClient.token,
-                    pubKey = dmClient.publicKey,
-                    codeset = xxdk.codeset,
-                    onDismiss = { showQRCodeSheet = false }
-                )
-            }
+            QRCodeSheet(
+                dmToken = dmClient.token,
+                pubKey = dmClient.publicKey,
+                codeset = xxdk.codeset,
+                onDismiss = { showQRCodeSheet = false }
+            )
         }
         
         // QR Scanner Sheet - Scan QR
@@ -500,22 +297,19 @@ internal fun HomeView(
         // Nickname Sheet
         if (showNicknameSheet && xxdk != null) {
             val dmClient = xxdk.dm
-            if (dmClient != null) {
-                // Get current nickname from DirectMessage
-                val currentNickname = (dmClient as? com.example.haven.xxdk.DirectMessage)?.getNickname() ?: ""
-                NicknameSheet(
-                    codename = xxdk.codename ?: "",
-                    currentNickname = currentNickname,
-                    onDismiss = { showNicknameSheet = false },
-                    onSave = { nickname ->
-                        try {
-                            (dmClient as? com.example.haven.xxdk.DirectMessage)?.setNickname(nickname)
-                        } catch (e: Exception) {
-                            // Error handling
-                        }
+            val currentNickname = dmClient.getNickname()
+            NicknameSheet(
+                codename = xxdk.codename ?: "",
+                currentNickname = currentNickname,
+                onDismiss = { showNicknameSheet = false },
+                onSave = { nickname ->
+                    try {
+                        dmClient.setNickname(nickname)
+                    } catch (e: Exception) {
+                        // Error handling
                     }
-                )
-            }
+                }
+            )
         }
 
         // Export Identity Sheet
