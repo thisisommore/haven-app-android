@@ -35,6 +35,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -157,11 +158,14 @@ fun MessageBubble(
                         onLongClick = { showMenu = true }
                     )
             ) {
-                // Context Menu
+                // Context Menu - Material 3
                 DropdownMenu(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false },
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                    shape = RoundedCornerShape(4.dp),
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    tonalElevation = MenuDefaults.TonalElevation,
+                    shadowElevation = MenuDefaults.ShadowElevation
                 ) {
                     DropdownMenuItem(
                         text = { Text("Reply") },
@@ -175,7 +179,8 @@ fun MessageBubble(
                                 contentDescription = null,
                                 modifier = Modifier.size(20.dp)
                             )
-                        }
+                        },
+                        colors = MenuDefaults.itemColors()
                     )
                     DropdownMenuItem(
                         text = { Text("React") },
@@ -189,7 +194,8 @@ fun MessageBubble(
                                 contentDescription = null,
                                 modifier = Modifier.size(20.dp)
                             )
-                        }
+                        },
+                        colors = MenuDefaults.itemColors()
                     )
                     DropdownMenuItem(
                         text = { Text("Copy") },
@@ -203,11 +209,12 @@ fun MessageBubble(
                                 contentDescription = null,
                                 modifier = Modifier.size(20.dp)
                             )
-                        }
+                        },
+                        colors = MenuDefaults.itemColors()
                     )
                     if (canDelete) {
                         DropdownMenuItem(
-                            text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+                            text = { Text("Delete") },
                             onClick = {
                                 onDeleteClick()
                                 showMenu = false
@@ -216,10 +223,13 @@ fun MessageBubble(
                                 Icon(
                                     imageVector = Icons.Default.Delete,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.error,
                                     modifier = Modifier.size(20.dp)
                                 )
-                            }
+                            },
+                            colors = MenuDefaults.itemColors(
+                                textColor = MaterialTheme.colorScheme.error,
+                                leadingIconColor = MaterialTheme.colorScheme.error
+                            )
                         )
                     }
                 }

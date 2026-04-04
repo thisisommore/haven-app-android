@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
@@ -194,60 +195,70 @@ internal fun UserCodenameMenuChip(
             )
         }
 
-        DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false },
-            shape = RoundedCornerShape(4.dp)
+        MaterialTheme(
+            colorScheme = MaterialTheme.colorScheme,
+            typography = MaterialTheme.typography,
+            shapes = MaterialTheme.shapes
         ) {
-            Text(
-                text = menuTitle,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 12.dp),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-            DropdownMenuItem(
-                text = { Text("Nickname") },
-                onClick = {
-                    showMenu = false
-                    onNickname()
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Export") },
-                onClick = {
-                    showMenu = false
-                    onExport()
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("QR Code") },
-                onClick = {
-                    showMenu = false
-                    onShowQRCode()
-                }
-            )
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 12.dp),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        "Logout",
-                        color = MaterialTheme.colorScheme.error
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false },
+                shape = RoundedCornerShape(4.dp),
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                tonalElevation = MenuDefaults.TonalElevation,
+                shadowElevation = MenuDefaults.ShadowElevation
+            ) {
+                Text(
+                    text = menuTitle,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+                DropdownMenuItem(
+                    text = { Text("Nickname") },
+                    onClick = {
+                        showMenu = false
+                        onNickname()
+                    },
+                    colors = MenuDefaults.itemColors()
+                )
+                DropdownMenuItem(
+                    text = { Text("Export") },
+                    onClick = {
+                        showMenu = false
+                        onExport()
+                    },
+                    colors = MenuDefaults.itemColors()
+                )
+                DropdownMenuItem(
+                    text = { Text("QR Code") },
+                    onClick = {
+                        showMenu = false
+                        onShowQRCode()
+                    },
+                    colors = MenuDefaults.itemColors()
+                )
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+                DropdownMenuItem(
+                    text = { Text("Logout") },
+                    onClick = {
+                        showMenu = false
+                        onLogout()
+                    },
+                    colors = MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.error
                     )
-                },
-                onClick = {
-                    showMenu = false
-                    onLogout()
-                }
-            )
+                )
+            }
         }
     }
 }
@@ -287,36 +298,48 @@ internal fun PlusMenuButton(
             }
         }
 
-        DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false },
-            shape = RoundedCornerShape(4.dp)
+        MaterialTheme(
+            colorScheme = MaterialTheme.colorScheme,
+            typography = MaterialTheme.typography,
+            shapes = MaterialTheme.shapes
         ) {
-            DropdownMenuItem(
-                text = { Text("Join Channel") },
-                onClick = {
-                    showMenu = false
-                    onJoinChannel()
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Create Space") },
-                onClick = {
-                    showMenu = false
-                    onCreateSpace()
-                }
-            )
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 12.dp),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-            DropdownMenuItem(
-                text = { Text("Scan QR") },
-                onClick = {
-                    showMenu = false
-                    onScanQR()
-                }
-            )
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false },
+                shape = RoundedCornerShape(4.dp),
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                tonalElevation = MenuDefaults.TonalElevation,
+                shadowElevation = MenuDefaults.ShadowElevation
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Join Channel") },
+                    onClick = {
+                        showMenu = false
+                        onJoinChannel()
+                    },
+                    colors = MenuDefaults.itemColors()
+                )
+                DropdownMenuItem(
+                    text = { Text("Create Space") },
+                    onClick = {
+                        showMenu = false
+                        onCreateSpace()
+                    },
+                    colors = MenuDefaults.itemColors()
+                )
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+                DropdownMenuItem(
+                    text = { Text("Scan QR") },
+                    onClick = {
+                        showMenu = false
+                        onScanQR()
+                    },
+                    colors = MenuDefaults.itemColors()
+                )
+            }
         }
     }
 }
