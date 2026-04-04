@@ -113,13 +113,6 @@ fun QRScannerSheet(
         }
     }
     
-    // Reset torch on dispose
-    DisposableEffect(Unit) {
-        onDispose {
-            // Torch will be reset when camera is unbound
-        }
-    }
-    
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -129,39 +122,47 @@ fun QRScannerSheet(
             // Camera Preview
             val previewView = remember { PreviewView(context) }
             val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
-            
-            LaunchedEffect(cameraProviderFuture, isScanning, torchOn) {
+            var camera by remember { mutableStateOf<androidx.camera.core.Camera?>(null) }
+
+            // Camera setup - only rebind when scanning state changes, not torch
+            LaunchedEffect(cameraProviderFuture, isScanning) {
+                if (!isScanning || hasFoundCode) {
+                    cameraProviderFuture.get().unbindAll()
+                    camera = null
+                    return@LaunchedEffect
+                }
+
                 val cameraProvider = cameraProviderFuture.get()
-                
+
                 val preview = Preview.Builder()
                     .build()
                     .also { it.setSurfaceProvider(previewView.surfaceProvider) }
-                
+
                 val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-                
+
                 val barcodeScanner = BarcodeScanning.getClient(
                     BarcodeScannerOptions.Builder()
                         .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
                         .build()
                 )
-                
+
                 val imageAnalysis = ImageAnalysis.Builder()
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
-                
+
                 imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor()) { imageProxy ->
                     if (!isScanning || hasFoundCode) {
                         imageProxy.close()
                         return@setAnalyzer
                     }
-                    
+
                     val mediaImage = imageProxy.image
                     if (mediaImage != null) {
                         val image = InputImage.fromMediaImage(
                             mediaImage,
                             imageProxy.imageInfo.rotationDegrees
                         )
-                        
+
                         barcodeScanner.process(image)
                             .addOnSuccessListener { barcodes ->
                                 barcodes.firstOrNull()?.rawValue?.let { code ->
@@ -169,7 +170,7 @@ fun QRScannerSheet(
                                         hasFoundCode = true
                                         isScanning = false
                                         showSuccess = true
-                                        
+
                                         // Delay to show success animation
                                         android.os.Handler(android.os.Looper.getMainLooper())
                                             .postDelayed({
@@ -186,22 +187,26 @@ fun QRScannerSheet(
                         imageProxy.close()
                     }
                 }
-                
+
                 try {
                     cameraProvider.unbindAll()
-                    val camera = cameraProvider.bindToLifecycle(
+                    camera = cameraProvider.bindToLifecycle(
                         lifecycleOwner,
                         cameraSelector,
                         preview,
                         imageAnalysis
                     )
-                    
-                    // Control torch
-                    if (camera.cameraInfo.hasFlashUnit()) {
-                        camera.cameraControl.enableTorch(torchOn)
-                    }
                 } catch (e: Exception) {
                     Log.e("QRScanner", "Camera binding failed", e)
+                }
+            }
+
+            // Torch control - separate from camera binding
+            LaunchedEffect(camera, torchOn) {
+                camera?.let {
+                    if (it.cameraInfo.hasFlashUnit()) {
+                        it.cameraControl.enableTorch(torchOn)
+                    }
                 }
             }
             

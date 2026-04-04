@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.Deferred
@@ -48,6 +49,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import android.util.Log
 
 @Composable
@@ -57,6 +59,11 @@ internal fun HavenApp() {
     val xxdk = remember { HavenApplication.getXXDK(context) }
     // Use application-scoped coroutines that survive config changes
     val scope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
+
+    // Clean up scope when app is disposed
+    DisposableEffect(Unit) {
+        onDispose { scope.cancel() }
+    }
     val chatController: ChatPageController = viewModel(factory = ChatPageController.Factory(context, xxdk))
     val homeController: HomePageController = viewModel(factory = HomePageController.Factory(context))
 

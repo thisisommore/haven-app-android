@@ -111,7 +111,8 @@ fun ChannelOptionsSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    LaunchedEffect(chat) {
+    // Use stable key (chat.id) to prevent unnecessary reloads on recomposition
+    LaunchedEffect(chat.id) {
         viewModel.loadChannelOptions(chat)
     }
 

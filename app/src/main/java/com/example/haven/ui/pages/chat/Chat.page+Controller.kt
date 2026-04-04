@@ -72,8 +72,9 @@ class ChatPageController(
                 
                 // Cancel previous collections
                 messagesCollectionJob?.cancel()
+                reactionsCollectionJob?.cancel()
                 mutedUsersCollectionJob?.cancel()
-                
+
                 // Start collecting messages from the new chat
                 messagesCollectionJob = viewModelScope.launch {
                     repository.getMessagesByChatId(chatId).collect { messageList ->
@@ -82,7 +83,6 @@ class ChatPageController(
                 }
 
                 // Start collecting reactions for messages in this chat
-                reactionsCollectionJob?.cancel()
                 reactionsCollectionJob = viewModelScope.launch {
                     repository.getReactionsByChatId(chatId).collect { reactionList ->
                         _reactions.value = reactionList.groupBy { it.targetMessageId }
