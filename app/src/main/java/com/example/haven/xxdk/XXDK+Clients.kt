@@ -13,7 +13,6 @@ import org.json.JSONObject
 import java.util.UUID
 
 internal suspend fun XXDK.performLoadClients(privateIdentity: ByteArray) = withContext(dispatchers.io) {
-    Log.d(XXDK.TAG, "performLoadClients started")
     
     // Ensure callback scope is initialized for receiving messages
     CallbackScopeProvider.getInstance()
@@ -27,7 +26,7 @@ internal suspend fun XXDK.performLoadClients(privateIdentity: ByteArray) = withC
     // Update codename immediately - mutableStateOf handles thread safety
     codename = publicIdentity.codename
     codeset = publicIdentity.codesetVersion
-    Log.d(XXDK.TAG, "Codename set to: ${codename}")
+
     savePrivateIdentity(privateIdentity)
 
     progress(XXDKProgress.CreatingIdentity)
