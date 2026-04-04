@@ -53,7 +53,7 @@ internal fun HomeView(
 ) {
     val search by controller.searchQuery.collectAsStateWithLifecycle()
     val chats by controller.filteredChats.collectAsState(initial = emptyList())
-    val showSyncProgress = !isSetupComplete && statusPercentage != 100
+    val showSyncProgress = statusPercentage != 100
     val coroutineScope = rememberCoroutineScope()
 
     // Menu / logout state
