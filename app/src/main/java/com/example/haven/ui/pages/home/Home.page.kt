@@ -23,7 +23,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +44,7 @@ import kotlinx.coroutines.launch
 internal fun HomeView(
     controller: HomePageController,
     xxdk: XXDK? = null,
+    codename: String? = null,
     onOpenChat: (String) -> Unit,
     onLogout: () -> Unit = {},
     statusPercentage: Int = 0,
@@ -55,9 +55,6 @@ internal fun HomeView(
     val chats by controller.filteredChats.collectAsState(initial = emptyList())
     val showSyncProgress = !isSetupComplete && statusPercentage != 100
     val coroutineScope = rememberCoroutineScope()
-    
-    // Observe codename as state for immediate UI updates
-    val codename by remember { derivedStateOf { xxdk?.codename.orEmpty() } }
 
     // Menu / logout state
     var showLogoutConfirm by remember { mutableStateOf(false) }
@@ -161,7 +158,7 @@ internal fun HomeView(
                 search = search,
                 onSearchChange = controller::onSearchChange,
                 showSyncProgress = showSyncProgress,
-                codename = codename,
+                codename = codename.orEmpty(),
                 onJoinChannel = { showJoinChannelSheet = true },
                 onCreateSpace = { showCreateSpaceSheet = true },
 

@@ -348,6 +348,7 @@ internal fun HavenApp() {
                         }
                     },
                     statusPercentage = xxdk.statusPercentage,
+                    codename = xxdk.codename,
                     modifier = Modifier.fillMaxSize()
                 )
             }
