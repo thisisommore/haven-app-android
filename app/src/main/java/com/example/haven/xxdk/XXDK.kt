@@ -12,6 +12,9 @@ import com.example.haven.xxdk.callbacks.ChannelUICallbacks
 import com.example.haven.xxdk.callbacks.DmEvents
 import com.example.haven.xxdk.callbacks.DmReceiver
 import com.example.haven.xxdk.callbacks.DmReceiverBuilder
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -29,6 +32,10 @@ open class XXDK(
 
     override var channel: Channel = Channel()
     override var dm: DirectMessage = DirectMessage()
+    
+    // Ready state - indicates when channels/dm managers are initialized
+    internal val _isReady = MutableStateFlow(false)
+    val isReady: StateFlow<Boolean> = _isReady.asStateFlow()
 
     var stateDir: String = File(context.filesDir, DEFAULT_STATE_DIR).absolutePath
     var storage: XXDKStorage? = null

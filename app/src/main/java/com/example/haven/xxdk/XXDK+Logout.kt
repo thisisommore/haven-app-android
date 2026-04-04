@@ -43,6 +43,7 @@ internal suspend fun XXDK.performLogout() = withContext(dispatchers.io) {
     }
 
     // 4. Reset binding objects
+    _isReady.value = false
     channel = Channel()
     dm = DirectMessage()
     cmix = null
