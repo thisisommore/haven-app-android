@@ -136,7 +136,8 @@ internal fun HomeHeader(
                         "Search",
                         style = MaterialTheme.typography.bodyLarge.copy(
                             fontSize = 22.sp
-                        )
+                        ),
+                        color = MaterialTheme.colorScheme.primary
                     )
                 },
                 singleLine = true,

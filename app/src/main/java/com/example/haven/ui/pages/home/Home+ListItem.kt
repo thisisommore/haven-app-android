@@ -1,5 +1,5 @@
 package com.example.haven.ui.pages.home
-
+import com.example.haven.ui.theme.InterFontFamily
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -160,9 +160,9 @@ private fun ChatRowHeader(
         Text(
             text = displayName,
             style = MaterialTheme.typography.titleMedium.copy(
-                fontSize = if (isNotes) 20.sp else 22.sp
+                fontSize = if (isNotes) 20.sp else 22.sp,
             ),
-            fontWeight = if (chat.unreadCount > 0) FontWeight.SemiBold else FontWeight.Medium,
+            fontWeight = if (chat.unreadCount > 0) FontWeight.SemiBold else FontWeight.Normal,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -187,9 +187,10 @@ private fun ChatRowSupportingContent(
                     text = sender,
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = 4.dp, bottom = 0.dp),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Light
                 )
             }
         }
@@ -199,7 +200,8 @@ private fun ChatRowSupportingContent(
             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.Light
         )
     }
 }
@@ -222,7 +224,8 @@ private fun ChatRowTrailingContent(
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                }
+                },
+                fontWeight = FontWeight.Light
             )
         }
         if (chat.unreadCount > 0) {
@@ -251,11 +254,11 @@ private fun NotesEmptyRow(
             modifier = Modifier.size(38.dp),
             tint = MaterialTheme.colorScheme.primary
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = "Notes",
-            style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp),
-            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = 22.sp),
+            fontWeight = FontWeight.Normal,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

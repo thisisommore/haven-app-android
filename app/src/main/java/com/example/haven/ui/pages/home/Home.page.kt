@@ -182,7 +182,7 @@ internal fun HomeView(
                     EmptyChatsState(modifier = Modifier.fillMaxSize())
                 } else {
                     LazyColumn(
-                        contentPadding = PaddingValues(top = 12.dp, bottom = 80.dp)
+                        contentPadding = PaddingValues(top = 0.dp, bottom = 80.dp)
                     ) {
                         items(
                             items = chats,
