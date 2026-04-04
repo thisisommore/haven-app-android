@@ -333,7 +333,7 @@ internal fun HavenApp() {
                         chatController.loadChat(id)
                         route = Route.chat 
                     },
-                    onNewChat = { /* TODO: implement new chat */ },
+
                     isSetupComplete = appStorage.isSetupComplete,
                     onLogout = {
                         scope.launch {

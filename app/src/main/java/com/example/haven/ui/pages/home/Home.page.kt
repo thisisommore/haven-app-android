@@ -45,7 +45,6 @@ internal fun HomeView(
     controller: HomePageController,
     xxdk: XXDK? = null,
     onOpenChat: (String) -> Unit,
-    onNewChat: () -> Unit = {},
     onLogout: () -> Unit = {},
     statusPercentage: Int = 0,
     isSetupComplete: Boolean = false,
@@ -161,7 +160,7 @@ internal fun HomeView(
                 codename = xxdk?.codename.orEmpty(),
                 onJoinChannel = { showJoinChannelSheet = true },
                 onCreateSpace = { showCreateSpaceSheet = true },
-                onNewChat = onNewChat,
+
                 onScanQR = { showQRScannerSheet = true },
                 onNickname = { showNicknameSheet = true },
                 onExport = { showExportIdentitySheet = true },

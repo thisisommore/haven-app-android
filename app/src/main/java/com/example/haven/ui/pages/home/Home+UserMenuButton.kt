@@ -53,7 +53,6 @@ internal fun HomeHeader(
     codename: String,
     onJoinChannel: () -> Unit,
     onCreateSpace: () -> Unit,
-    onNewChat: () -> Unit,
     onScanQR: () -> Unit,
     onNickname: () -> Unit,
     onExport: () -> Unit,
@@ -119,7 +118,6 @@ internal fun HomeHeader(
                     PlusMenuButton(
                         onJoinChannel = onJoinChannel,
                         onCreateSpace = onCreateSpace,
-                        onNewChat = onNewChat,
                         onScanQR = onScanQR
                     )
                 }
@@ -257,7 +255,6 @@ internal fun UserCodenameMenuChip(
 internal fun PlusMenuButton(
     onJoinChannel: () -> Unit,
     onCreateSpace: () -> Unit,
-    onNewChat: () -> Unit,
     onScanQR: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -306,13 +303,6 @@ internal fun PlusMenuButton(
                 onClick = {
                     showMenu = false
                     onCreateSpace()
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("New Chat") },
-                onClick = {
-                    showMenu = false
-                    onNewChat()
                 }
             )
             HorizontalDivider(
