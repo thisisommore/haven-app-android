@@ -22,7 +22,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -84,23 +83,18 @@ internal fun HavenApp() {
     }
     
     // For returning users: auto-load cmix when home page is shown
-    // Use application-scoped coroutine to survive composition changes
-    DisposableEffect(route) {
-        if (route == Route.home && appStorage.isSetupComplete && xxdk.cmix == null) {
-            val job = scope.launch {
-                runCatching {
-                    xxdk.setAppStorage(appStorage)
-                    xxdk.loadCmix()
-                    xxdk.startNetworkFollower()
-                    val identity = xxdk.loadSavedPrivateIdentity()
-                    xxdk.loadClients(identity)
-                }.onFailure {
-                    Log.e("HavenApp", "Failed to load cmix for existing user: ${it.message}")
-                }
+    // Use LaunchedEffect with Unit to run once per app session, not on route changes
+    LaunchedEffect(Unit) {
+        if (appStorage.isSetupComplete && xxdk.cmix == null) {
+            runCatching {
+                xxdk.setAppStorage(appStorage)
+                xxdk.loadCmix()
+                xxdk.startNetworkFollower()
+                val identity = xxdk.loadSavedPrivateIdentity()
+                xxdk.loadClients(identity)
+            }.onFailure {
+                Log.e("HavenApp", "Failed to load cmix for existing user: ${it.message}")
             }
-            onDispose { job.cancel() }
-        } else {
-            onDispose { }
         }
     }
     var chatId by rememberSaveable { mutableStateOf("") }
