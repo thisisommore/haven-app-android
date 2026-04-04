@@ -198,7 +198,7 @@ internal fun UserCodenameMenuChip(
             expanded = showMenu,
             onDismissRequest = { showMenu = false },
             shape = RoundedCornerShape(12.dp),
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             tonalElevation = 4.dp,
             shadowElevation = 4.dp
         ) {
@@ -206,7 +206,7 @@ internal fun UserCodenameMenuChip(
                 text = menuTitle,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -286,7 +286,7 @@ internal fun PlusMenuButton(
             expanded = showMenu,
             onDismissRequest = { showMenu = false },
             shape = RoundedCornerShape(12.dp),
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             tonalElevation = 4.dp,
             shadowElevation = 4.dp
         ) {

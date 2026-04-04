@@ -163,7 +163,7 @@ fun MessageBubble(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false },
                     shape = RoundedCornerShape(12.dp),
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                     tonalElevation = 4.dp,
                     shadowElevation = 4.dp
                 ) {
