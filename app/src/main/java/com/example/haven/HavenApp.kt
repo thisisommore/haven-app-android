@@ -66,6 +66,11 @@ internal fun HavenApp() {
     }
     val chatController: ChatPageController = viewModel(factory = ChatPageController.Factory(context, xxdk))
     val homeController: HomePageController = viewModel(factory = HomePageController.Factory(context))
+    
+    // Observe XXDK state for immediate UI updates
+    val xxdkCodename by xxdk::codename
+    val xxdkStatus by xxdk::status
+    val xxdkStatusPercentage by xxdk::statusPercentage
 
     // Observe real messages from database
     val chatMessages by chatController.messages.collectAsStateWithLifecycle()
@@ -204,8 +209,8 @@ internal fun HavenApp() {
                 
                 LandingPage(
                     modifier = Modifier.fillMaxSize(),
-                    status = xxdk.status,
-                    statusPercentage = xxdk.statusPercentage,
+                    status = xxdkStatus,
+                    statusPercentage = xxdkStatusPercentage,
                     isSetupComplete = appStorage.isSetupComplete,
                     onLoadingComplete = { route = Route.home },
                     appStorage = appStorage
@@ -260,7 +265,7 @@ internal fun HavenApp() {
                     onImport = {
                         passwordError = "Import needs a real encrypted identity file."
                     },
-                    status = xxdk.status,
+                    status = xxdkStatus,
                     isLoading = passwordBusy,
                     error = passwordError
                 )
@@ -318,7 +323,7 @@ internal fun HavenApp() {
                             }
                         }
                     },
-                    status = xxdk.status,
+                    status = xxdkStatus,
                     isLoading = codenameBusy,
                     error = codenameError
                 )
@@ -348,7 +353,7 @@ internal fun HavenApp() {
                         }
                     },
                     statusPercentage = xxdk.statusPercentage,
-                    codename = xxdk.codename,
+                    codename = xxdkCodename,
                     modifier = Modifier.fillMaxSize()
                 )
             }
