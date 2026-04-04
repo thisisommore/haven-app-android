@@ -21,7 +21,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -216,38 +215,29 @@ internal fun UserCodenameMenuChip(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
-                )
+                Spacer(modifier = Modifier.height(8.dp))
                 DropdownMenuItem(
                     text = { Text("Nickname") },
                     onClick = {
                         showMenu = false
                         onNickname()
-                    },
-                    colors = MenuDefaults.itemColors()
+                    }
                 )
                 DropdownMenuItem(
                     text = { Text("Export") },
                     onClick = {
                         showMenu = false
                         onExport()
-                    },
-                    colors = MenuDefaults.itemColors()
+                    }
                 )
                 DropdownMenuItem(
                     text = { Text("QR Code") },
                     onClick = {
                         showMenu = false
                         onShowQRCode()
-                    },
-                    colors = MenuDefaults.itemColors()
+                    }
                 )
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
-                )
+                Spacer(modifier = Modifier.height(8.dp))
                 DropdownMenuItem(
                     text = { Text("Logout") },
                     onClick = {
@@ -316,28 +306,22 @@ internal fun PlusMenuButton(
                     onClick = {
                         showMenu = false
                         onJoinChannel()
-                    },
-                    colors = MenuDefaults.itemColors()
+                    }
                 )
                 DropdownMenuItem(
                     text = { Text("Create Space") },
                     onClick = {
                         showMenu = false
                         onCreateSpace()
-                    },
-                    colors = MenuDefaults.itemColors()
+                    }
                 )
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
-                )
+                Spacer(modifier = Modifier.height(8.dp))
                 DropdownMenuItem(
                     text = { Text("Scan QR") },
                     onClick = {
                         showMenu = false
                         onScanQR()
-                    },
-                    colors = MenuDefaults.itemColors()
+                    }
                 )
             }
         }
