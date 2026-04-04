@@ -8,7 +8,6 @@ import com.example.haven.data.model.MessageSenderModel
 import com.example.haven.xxdk.callbacks.CallbackScopeProvider
 import com.example.haven.xxdk.callbacks.DmReceiverBuilder
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.UUID
@@ -23,11 +22,9 @@ internal suspend fun XXDK.performLoadClients(privateIdentity: ByteArray) = withC
 
     val publicIdentity = Parser.decodeIdentity(bindings.Bindings.getPublicChannelIdentityFromPrivate(privateIdentity))
     
-    // Update codename on main thread for immediate UI update (matching iOS behavior)
-    withContext(dispatchers.main) {
-        codename = publicIdentity.codename
-        codeset = publicIdentity.codesetVersion
-    }
+    // Update codename immediately - mutableStateOf handles thread safety
+    codename = publicIdentity.codename
+    codeset = publicIdentity.codesetVersion
     savePrivateIdentity(privateIdentity)
 
     progress(XXDKProgress.CreatingIdentity)
@@ -173,11 +170,9 @@ internal suspend fun XXDK.performSetupClients(
 
     val publicIdentity = Parser.decodeIdentity(bindings.Bindings.getPublicChannelIdentityFromPrivate(privateIdentity))
     
-    // Update codename on main thread for immediate UI update (matching iOS behavior)
-    withContext(dispatchers.main) {
-        codename = publicIdentity.codename
-        codeset = publicIdentity.codesetVersion
-    }
+    // Update codename immediately - mutableStateOf handles thread safety
+    codename = publicIdentity.codename
+    codeset = publicIdentity.codesetVersion
     savePrivateIdentity(privateIdentity)
 
     progress(XXDKProgress.CreatingIdentity)
