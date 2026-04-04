@@ -158,14 +158,14 @@ fun MessageBubble(
                         onLongClick = { showMenu = true }
                     )
             ) {
-                // Context Menu - Material 3
+                // Context Menu - Material 3 Expressive
                 DropdownMenu(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false },
-                    shape = RoundedCornerShape(4.dp),
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    tonalElevation = MenuDefaults.TonalElevation,
-                    shadowElevation = MenuDefaults.ShadowElevation
+                    shape = RoundedCornerShape(12.dp),
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    tonalElevation = 4.dp,
+                    shadowElevation = 4.dp
                 ) {
                     DropdownMenuItem(
                         text = { Text("Reply") },
@@ -177,10 +177,9 @@ fun MessageBubble(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(24.dp)
                             )
-                        },
-                        colors = MenuDefaults.itemColors()
+                        }
                     )
                     DropdownMenuItem(
                         text = { Text("React") },
@@ -192,10 +191,9 @@ fun MessageBubble(
                             Icon(
                                 imageVector = Icons.Outlined.Face,
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(24.dp)
                             )
-                        },
-                        colors = MenuDefaults.itemColors()
+                        }
                     )
                     DropdownMenuItem(
                         text = { Text("Copy") },
@@ -207,10 +205,9 @@ fun MessageBubble(
                             Icon(
                                 imageVector = Icons.Default.MailOutline,
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(24.dp)
                             )
-                        },
-                        colors = MenuDefaults.itemColors()
+                        }
                     )
                     if (canDelete) {
                         DropdownMenuItem(
@@ -223,7 +220,7 @@ fun MessageBubble(
                                 Icon(
                                     imageVector = Icons.Default.Delete,
                                     contentDescription = null,
-                                    modifier = Modifier.size(20.dp)
+                                    modifier = Modifier.size(24.dp)
                                 )
                             },
                             colors = MenuDefaults.itemColors(

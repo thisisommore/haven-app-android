@@ -203,10 +203,10 @@ internal fun UserCodenameMenuChip(
             DropdownMenu(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false },
-                shape = RoundedCornerShape(4.dp),
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                tonalElevation = MenuDefaults.TonalElevation,
-                shadowElevation = MenuDefaults.ShadowElevation
+                shape = RoundedCornerShape(12.dp),
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                tonalElevation = 4.dp,
+                shadowElevation = 4.dp
             ) {
                 Text(
                     text = menuTitle,
@@ -306,10 +306,10 @@ internal fun PlusMenuButton(
             DropdownMenu(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false },
-                shape = RoundedCornerShape(4.dp),
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                tonalElevation = MenuDefaults.TonalElevation,
-                shadowElevation = MenuDefaults.ShadowElevation
+                shape = RoundedCornerShape(12.dp),
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                tonalElevation = 4.dp,
+                shadowElevation = 4.dp
             ) {
                 DropdownMenuItem(
                     text = { Text("Join Channel") },
