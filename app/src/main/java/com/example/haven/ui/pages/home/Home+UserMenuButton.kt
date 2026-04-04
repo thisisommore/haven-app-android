@@ -194,61 +194,55 @@ internal fun UserCodenameMenuChip(
             )
         }
 
-        MaterialTheme(
-            colorScheme = MaterialTheme.colorScheme,
-            typography = MaterialTheme.typography,
-            shapes = MaterialTheme.shapes
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false },
+            shape = RoundedCornerShape(12.dp),
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            tonalElevation = 4.dp,
+            shadowElevation = 4.dp
         ) {
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false },
-                shape = RoundedCornerShape(12.dp),
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                tonalElevation = 4.dp,
-                shadowElevation = 4.dp
-            ) {
-                Text(
-                    text = menuTitle,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+            Text(
+                text = menuTitle,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            DropdownMenuItem(
+                text = { Text("Nickname") },
+                onClick = {
+                    showMenu = false
+                    onNickname()
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Export") },
+                onClick = {
+                    showMenu = false
+                    onExport()
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("QR Code") },
+                onClick = {
+                    showMenu = false
+                    onShowQRCode()
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            DropdownMenuItem(
+                text = { Text("Logout") },
+                onClick = {
+                    showMenu = false
+                    onLogout()
+                },
+                colors = MenuDefaults.itemColors(
+                    textColor = MaterialTheme.colorScheme.error
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                DropdownMenuItem(
-                    text = { Text("Nickname") },
-                    onClick = {
-                        showMenu = false
-                        onNickname()
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Export") },
-                    onClick = {
-                        showMenu = false
-                        onExport()
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("QR Code") },
-                    onClick = {
-                        showMenu = false
-                        onShowQRCode()
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                DropdownMenuItem(
-                    text = { Text("Logout") },
-                    onClick = {
-                        showMenu = false
-                        onLogout()
-                    },
-                    colors = MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.error
-                    )
-                )
-            }
+            )
         }
     }
 }
@@ -288,42 +282,36 @@ internal fun PlusMenuButton(
             }
         }
 
-        MaterialTheme(
-            colorScheme = MaterialTheme.colorScheme,
-            typography = MaterialTheme.typography,
-            shapes = MaterialTheme.shapes
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false },
+            shape = RoundedCornerShape(12.dp),
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            tonalElevation = 4.dp,
+            shadowElevation = 4.dp
         ) {
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false },
-                shape = RoundedCornerShape(12.dp),
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                tonalElevation = 4.dp,
-                shadowElevation = 4.dp
-            ) {
-                DropdownMenuItem(
-                    text = { Text("Join Channel") },
-                    onClick = {
-                        showMenu = false
-                        onJoinChannel()
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Create Space") },
-                    onClick = {
-                        showMenu = false
-                        onCreateSpace()
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                DropdownMenuItem(
-                    text = { Text("Scan QR") },
-                    onClick = {
-                        showMenu = false
-                        onScanQR()
-                    }
-                )
-            }
+            DropdownMenuItem(
+                text = { Text("Join Channel") },
+                onClick = {
+                    showMenu = false
+                    onJoinChannel()
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Create Space") },
+                onClick = {
+                    showMenu = false
+                    onCreateSpace()
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            DropdownMenuItem(
+                text = { Text("Scan QR") },
+                onClick = {
+                    showMenu = false
+                    onScanQR()
+                }
+            )
         }
     }
 }
