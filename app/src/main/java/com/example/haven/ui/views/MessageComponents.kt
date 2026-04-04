@@ -158,12 +158,12 @@ fun MessageBubble(
                         onLongClick = { showMenu = true }
                     )
             ) {
-                // Context Menu - Material 3 Expressive
+                // Context Menu - Material 3 Expressive (Vibrant)
                 DropdownMenu(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false },
                     shape = RoundedCornerShape(12.dp),
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     tonalElevation = 4.dp,
                     shadowElevation = 4.dp
                 ) {

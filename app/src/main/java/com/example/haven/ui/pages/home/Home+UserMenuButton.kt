@@ -204,7 +204,7 @@ internal fun UserCodenameMenuChip(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false },
                 shape = RoundedCornerShape(12.dp),
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 tonalElevation = 4.dp,
                 shadowElevation = 4.dp
             ) {
@@ -218,7 +218,7 @@ internal fun UserCodenameMenuChip(
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 12.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant
+                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
                 )
                 DropdownMenuItem(
                     text = { Text("Nickname") },
@@ -246,7 +246,7 @@ internal fun UserCodenameMenuChip(
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 12.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant
+                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
                 )
                 DropdownMenuItem(
                     text = { Text("Logout") },
@@ -307,7 +307,7 @@ internal fun PlusMenuButton(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false },
                 shape = RoundedCornerShape(12.dp),
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 tonalElevation = 4.dp,
                 shadowElevation = 4.dp
             ) {
@@ -329,7 +329,7 @@ internal fun PlusMenuButton(
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 12.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant
+                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
                 )
                 DropdownMenuItem(
                     text = { Text("Scan QR") },
