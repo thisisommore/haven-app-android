@@ -109,6 +109,7 @@ internal fun HavenApp() {
                 xxdk.loadCmix()
                 xxdk.startNetworkFollower()
                 val identity = xxdk.loadSavedPrivateIdentity()
+                Log.d("HavenApp", "About to call loadClients")
                 xxdk.loadClients(identity)
             }.onFailure {
                 Log.e("HavenApp", "Failed to load cmix for existing user: ${it.message}")

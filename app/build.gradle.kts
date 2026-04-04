@@ -91,7 +91,7 @@ dependencies {
     // ML Kit for QR code scanning
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
-    implementation(files("libs/bindings.aar"))
+    implementation(files("/Users/ommore/Documents/github/xx-network/ios/client/bindings.aar"))
     testImplementation(libs.junit)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     androidTestImplementation(libs.androidx.junit)
