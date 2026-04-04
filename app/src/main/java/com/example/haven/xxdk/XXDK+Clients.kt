@@ -25,6 +25,7 @@ internal suspend fun XXDK.performLoadClients(privateIdentity: ByteArray) = withC
     // Update codename immediately - mutableStateOf handles thread safety
     codename = publicIdentity.codename
     codeset = publicIdentity.codesetVersion
+    Log.d(XXDK.TAG, "Codename set to: ${codename}")
     savePrivateIdentity(privateIdentity)
 
     progress(XXDKProgress.CreatingIdentity)

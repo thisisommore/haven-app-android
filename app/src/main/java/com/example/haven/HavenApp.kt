@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
@@ -72,6 +73,10 @@ internal fun HavenApp() {
     val xxdkCodename = xxdk.codename
     val xxdkStatus = xxdk.status
     val xxdkStatusPercentage = xxdk.statusPercentage
+    
+    SideEffect {
+        Log.d("HavenApp", "Composition: codename=$xxdkCodename, status=$xxdkStatus, progress=$xxdkStatusPercentage")
+    }
 
     // Observe real messages from database
     val chatMessages by chatController.messages.collectAsStateWithLifecycle()
