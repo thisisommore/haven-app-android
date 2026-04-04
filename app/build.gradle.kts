@@ -82,7 +82,7 @@ dependencies {
     implementation("com.google.zxing:core:3.5.3")
     
     // CameraX for QR scanning
-    val cameraxVersion = "1.4.0"
+    val cameraxVersion = "1.6.0"
     implementation("androidx.camera:camera-core:$cameraxVersion")
     implementation("androidx.camera:camera-camera2:$cameraxVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
